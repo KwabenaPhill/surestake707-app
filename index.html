@@ -444,7 +444,7 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v33</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v34</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -486,7 +486,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v33';
+const VERSION='v34';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -516,6 +516,7 @@ async function kget(k){const d=await db();return new Promise((res,rej)=>{const q
 async function kset(k,v){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
 async function kdel(k){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
 async function kall(){const d=await db();return new Promise((res,rej)=>{const out={};const c=d.transaction(ST).objectStore(ST).openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue();}else res(out);};c.onerror=()=>rej(c.error);});}
+async function kallState(){const d=await db();return new Promise((res,rej)=>{const out={};const t=d.transaction(ST,'readonly');const s=t.objectStore(ST);const q=s.getAllKeys();q.onsuccess=()=>{for(const k of q.result){if(String(k).includes(':')||k==='eliteFlyer')continue;const r=s.get(k);r.onsuccess=()=>{out[k]=r.result;};r.onerror=()=>rej(r.error);}};q.onerror=()=>rej(q.error);t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Storage read failed'));});}
 async function wipe(){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).clear();t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Storage clear failed'));});}
 function readOld(){return new Promise(res=>{let r;try{r=indexedDB.open('SS707_ScoreCardMaker',1);}catch(e){return res(null);}
   r.onupgradeneeded=e=>{e.target.transaction.abort();};r.onerror=()=>res(null);r.onblocked=()=>res(null);
@@ -1557,7 +1558,7 @@ function showTab(t){tab=t;document.querySelectorAll('.page').forEach(p=>p.classL
 document.querySelector('.bottom-nav').onclick=e=>{const b=e.target.closest('.nav-btn');if(b)showTab(b.dataset.tab);};
 
 // ---------- Start ----------
-async function loadAll(){const all=await kall();const B=blankState();
+async function loadAll(){const all=await kallState();const B=blankState();
   S.days=all.days||{};S.crestList=all.crestList||[];S.vrows=Array.isArray(all.vrows)&&all.vrows.length?all.vrows.map(r=>({...newRow(),...r})):[];S.videoDays=all.videoDays||{};
   S.vset={...DEF_VIDEO,...(all.vset||{})};if(S.vset.trans&&!(all.vset||{}).crestAnim)S.vset.crestAnim=S.vset.trans;delete S.vset.trans;
   S.vtpls=all.vtpls||B.vtpls;S.vtpls.forEach(t=>{if(t.id==='navy'&&t.name==='Navy')t.name='Blue';});S.vhist=all.vhist||[];S.logo=all.logo||null;S.members=all.members||[];S.followers=all.followers||[];S.prefs={...B.prefs,...(all.prefs||{})};S.imgIndex={...B.imgIndex,...(all.imgIndex||{})};S.finance={...B.finance,...(all.finance||{}),saved:Array.isArray(all.finance?.saved)?all.finance.saved:[],withdrawn:Array.isArray(all.finance?.withdrawn)?all.finance.withdrawn:[],otherIncome:Array.isArray(all.finance?.otherIncome)?all.finance.otherIncome:[],hide:!!(all.finance?.hide)};
@@ -1571,7 +1572,8 @@ async function loadAll(){const all=await kall();const B=blankState();
   if(!Object.keys(S.videoDays).length&&S.vrows.length){const built=buildVideoRowsForDay(todayKey());S.videoDays[todayKey()]={v1:built.v1,v2:built.v2,active:'v1',seeded:true};await kset('videoDays',S.videoDays);}
   if(!S.vtpls.some(t=>t.id===S.vset.tpl))S.vset.tpl='navy';if(!S.vrows.length)S.vrows=[];curId=S.vrows[0]?.id||null;LY=null;tplLoaded=null;}
 (async()=>{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});let loaded=false;const loadPromise=loadAll();const busyTimer=setTimeout(()=>{if(!loaded){renderHeader();showTab('home');toast('Storage is busy. Close other copies of Sure Stake and reopen.',5000);}},6000);try{await loadPromise;loaded=true;clearTimeout(busyTimer);}catch(e){loaded=true;clearTimeout(busyTimer);toast('Storage is not available. Nothing will be kept.',4000);if(!S.vrows.length)S.vrows=[newRow()];}
-  try{await cget('eliteFlyer');}catch(e){}renderVideoUI();renderHeader();showTab('home');await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
+  renderHeader();showTab('home');
+  try{await cget('eliteFlyer');}catch(e){}renderVideoUI();await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
 })();
 </script>
 <script src="./pwa.js"></script>
