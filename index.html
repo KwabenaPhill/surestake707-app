@@ -444,7 +444,7 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v32</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v33</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -486,7 +486,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v32';
+const VERSION='v33';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -511,12 +511,12 @@ const stripAge=t=>String(t||'').replace(AGE_RE,'').replace(/\n{3,}/g,'\n\n').rep
 
 // ---------- Storage (this app only) ----------
 const DBN='SS707_Hub',ST='kv';let dbp=null;
-function db(){if(!dbp)dbp=new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);r.onupgradeneeded=()=>r.result.createObjectStore(ST);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return dbp;}
+function db(){if(!dbp)dbp=new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);r.onupgradeneeded=()=>r.result.createObjectStore(ST);r.onversionchange=()=>{r.result.close();dbp=null;};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return dbp;}
 async function kget(k){const d=await db();return new Promise((res,rej)=>{const q=d.transaction(ST).objectStore(ST).get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);});}
 async function kset(k,v){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
 async function kdel(k){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
 async function kall(){const d=await db();return new Promise((res,rej)=>{const out={};const c=d.transaction(ST).objectStore(ST).openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue();}else res(out);};c.onerror=()=>rej(c.error);});}
-async function wipe(){if(dbp){(await dbp).close();dbp=null;}await new Promise(res=>{const r=indexedDB.deleteDatabase(DBN);r.onsuccess=r.onerror=r.onblocked=()=>res();});}
+async function wipe(){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).clear();t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Storage clear failed'));});}
 function readOld(){return new Promise(res=>{let r;try{r=indexedDB.open('SS707_ScoreCardMaker',1);}catch(e){return res(null);}
   r.onupgradeneeded=e=>{e.target.transaction.abort();};r.onerror=()=>res(null);r.onblocked=()=>res(null);
   r.onsuccess=()=>{const d=r.result;try{const s=d.transaction('kv').objectStore('kv');const out={};let n=0;['rows','settings','crests','customTpl'].forEach(k=>{const q=s.get(k);const f=()=>{if(++n===4){d.close();res(out);}};q.onsuccess=()=>{out[k]=q.result;f();};q.onerror=f;});}catch(e){d.close();res(null);}};});}
@@ -1294,8 +1294,9 @@ async function saveBackup(){try{await flushSaves();const data=await kall();Objec
   if(canShareFiles([f])&&confirm('Share the backup (OK) or save it to Downloads (Cancel)?')){try{await navigator.share({files:[f]});S.prefs.lastBackup=Date.now();save('prefs');refresh();return;}catch(e){if(e.name==='AbortError')return;}}
   const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);S.prefs.lastBackup=Date.now();save('prefs');refresh();toast('Backup saved to Downloads ✓');}catch(e){toast('Backup failed: '+e.message);}}
 function loadBackup(){pickFile('application/json,.json',false,async fs=>{const f=fs[0];if(!f)return;try{const o=JSON.parse(await f.text());if(o.app!=='SS707Hub'||!o.data)throw new Error('This is not a Sure Stake 707 Hub backup');
-  if(!confirm(`Restore the backup from ${o.saved?o.saved.slice(0,10):'unknown date'}? It replaces what is in the app now.`))return;await wipe();for(const [k,v] of Object.entries(o.data))await kset(k,v);
-  Object.keys(blobCache).forEach(k=>delete blobCache[k]);await loadAll();refresh();renderVideoUI();redraw();toast('Backup restored ✓');}catch(e){toast(e.message,3500);}});}
+  if(!confirm(`Restore the backup from ${o.saved?o.saved.slice(0,10):'unknown date'}? It replaces what is in the app now.`))return;
+  const d=await db();await new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');const s=t.objectStore(ST);s.clear();for(const [k,v] of Object.entries(o.data))s.put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error||new Error('Restore failed'));t.onabort=()=>rej(t.error||new Error('Restore failed'));});
+  Object.keys(blobCache).forEach(k=>delete blobCache[k]);await loadAll();refresh();renderVideoUI();redraw();toast('Backup restored ✓');}catch(e){toast(e.message==='Restore failed'?'Restore failed':e.message,3500);}});}
 
 // ---------- VIDEO ENGINE ----------
 const W=1080,H=1920;const cv=$('cv'),ctx=cv.getContext('2d');
@@ -1569,7 +1570,7 @@ async function loadAll(){const all=await kall();const B=blankState();
   for(const d of Object.values(S.days)){if((d.vipPicks||[]).length&&!(d.games||[]).some(g=>g.slot==='vip')){d.games=d.games||[];d.vipPicks.forEach(p=>{const i=p.text.lastIndexOf(' - ');d.games.push({id:uid(),slot:'vip',time:'',match:i>0?p.text.slice(0,i):p.text,pick:i>0?p.text.slice(i+3):'',res:p.res||null});});d.vipPicks=[];save('days');}}
   if(!Object.keys(S.videoDays).length&&S.vrows.length){const built=buildVideoRowsForDay(todayKey());S.videoDays[todayKey()]={v1:built.v1,v2:built.v2,active:'v1',seeded:true};await kset('videoDays',S.videoDays);}
   if(!S.vtpls.some(t=>t.id===S.vset.tpl))S.vset.tpl='navy';if(!S.vrows.length)S.vrows=[];curId=S.vrows[0]?.id||null;LY=null;tplLoaded=null;}
-(async()=>{try{await loadAll();}catch(e){toast('Storage is not available. Nothing will be kept.',4000);if(!S.vrows.length)S.vrows=[newRow()];}
+(async()=>{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});let loaded=false;const loadPromise=loadAll();const busyTimer=setTimeout(()=>{if(!loaded){renderHeader();showTab('home');toast('Storage is busy. Close other copies of Sure Stake and reopen.',5000);}},6000);try{await loadPromise;loaded=true;clearTimeout(busyTimer);}catch(e){loaded=true;clearTimeout(busyTimer);toast('Storage is not available. Nothing will be kept.',4000);if(!S.vrows.length)S.vrows=[newRow()];}
   try{await cget('eliteFlyer');}catch(e){}renderVideoUI();renderHeader();showTab('home');await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
 })();
 </script>
