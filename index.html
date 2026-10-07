@@ -441,10 +441,50 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 #p-history .rec-head>.sect{display:block;margin:0 0 10px}
 #p-history .rec-head .rec-range{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
 #p-history .rec-head .rec-range button{min-width:0;width:100%;padding:8px 6px}
+
+/* v35 Figma Make visual integration: one consistent Sure Stake 707 light/red UI */
+:root{--f:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--purple:#C8102E;--orange:#C8102E;--green:#25865F;--blue:#C8102E;--yellow:#C8102E;--red:#C8102E;--mute:#666872;--dim:#858792;--bg:#F7F8FA;--surface:#fff;--ink:#202127;--border:#E7E8EC}
+html{background:#F7F8FA}
+body{background:#F7F8FA;color:var(--ink);max-width:none;padding-bottom:88px;font-family:var(--f)}
+.app-top{max-width:1200px;padding:18px 20px 14px;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 5px rgba(32,33,39,.03)}
+.app-top .brand{gap:10px}.app-top .brand:before{content:'707';width:38px;height:38px;border-radius:10px;background:#C8102E;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;letter-spacing:.4px;flex:none}
+.app-top .blogo{width:38px;height:38px;border-radius:10px}.app-top .bn{font-size:14px;letter-spacing:1.6px;color:#202127}.app-top .bd{font-size:11px;color:#858792}.app-top .tver{color:#858792}
+.page{max-width:1200px;margin:0 auto;padding:22px 20px 92px}.page.active{animation:pageIn .2s ease both}
+.card,.summary-box,.set-list{background:#fff;border:1px solid var(--border);box-shadow:0 2px 12px rgba(32,33,39,.035);color:var(--ink)}
+.card{border-radius:13px}.summary-box{border-radius:12px}.ct,.ct.p,.ct.o,.ct.g,.ct.b,.ct.y{color:#202127}.ct{font-weight:750}.cs,.muted{color:#747681}.lbl,.set-title,.sect,.wk span{color:#777984}
+.summary-box .bl,.sbox .bl{color:#858792}.summary-box .bv{color:#202127}.summary-box .bv.c-p,.summary-box .bv.c-o,.summary-box .bv.c-y,.summary-box .bv.c-b{color:#C8102E}.summary-box .bv.c-g,.summary-box .bv.ended{color:#25865F}
+.sbox{background:#fff!important;border-color:var(--border)!important}.sbox .big,.sbox.p .big,.sbox.o .big,.sbox.y .big{color:#C8102E}
+.btn-save,.btn-save.green,.btn-save.yellow,.btn-save.orange{background:#C8102E;color:#fff}.btn-save:hover{filter:brightness(.96)}
+.btn-out,.btn-half,.btn-danger{background:#fff;border-color:#D9DAE0;color:#202127}.btn-half.purple,.btn-half.orange,.btn-half.yellow,.btn-half.blue{color:#C8102E;border-color:#D9DAE0}.btn-half.green{color:#25865F;border-color:#CFE5DB}.btn-half.red{color:#C8102E;border-color:#F0CDD2}
+.chip{background:#fff;border-color:#D9DAE0;color:#666872}.chip.on{background:#FFF0F2;border-color:#C8102E;color:#C8102E}
+input,textarea,select{background:#fff;border-color:#D9DAE0;color:#202127}.muted{color:#7C7E88}.link{color:#C8102E}
+.todo .ic,.mini button,.res button,.post,.code,.match,.tpls button,.nm,.lglist{background:#FAFAFB;border-color:#E2E3E7;color:#202127}.todo .pv,.res .n small,.mem .s,.mem ul,.post .ph span,.post pre{color:#777984}
+.mini button[data-p=tg],.mini button[data-p=wa],.mini button[data-p=x],.mini button[data-p=gpt],.mini button[data-p=gemini]{color:#C8102E;border-color:#E1E2E6}.mini button.done{background:#EDF8F2;border-color:#CDE7DB;color:#25865F}
+.post pre,.post textarea{background:#F7F8FA;border-color:#E2E3E7;color:#202127}.post textarea{background:#fff}.mimg{border-color:#E1E2E6}
+.daybar button{background:#fff;border-color:#D9DAE0;color:#202127}.hrow,.todo,.res,.rem,.pick,.pay{border-color:#ECECEF}.hrow .a{color:#202127}.hrow .a span{color:#858792}.hrow .b{color:#777984}
+.mem .t strong,.memhd strong{color:#202127}.mem .s{color:#777984}.tag.ok{color:#25865F;border-color:#BFE0D0}.tag.due{color:#9A7600;border-color:#E7D99E}.tag.exp{color:#C8102E;border-color:#F0C9CF}
+.set-list{overflow:hidden}.set-row{background:#fff;color:#202127;border-color:#ECECEF}.set-row .i{background:#FFF0F2;color:#C8102E}.set-row .t{color:#202127}.set-row .t small,.set-row .v{color:#858792}.set-row .ch{color:#A2A3AB}
+.bottom-nav{max-width:none;background:rgba(255,255,255,.97);border-top:1px solid #E0E1E5;box-shadow:0 -5px 22px rgba(32,33,39,.05)}.nav-btn{color:#8A8C96}.nav-btn.active{color:#C8102E}.nav-btn::before{background:#C8102E}.nav-btn .ni{filter:none}
+.sub{background:#F7F8FA;color:#202127}.subhead{background:rgba(255,255,255,.96);border-bottom-color:#E0E1E5}.subhead button{background:#fff;border-color:#D9DAE0;color:#202127}.subhead h2{color:#202127}.subbody{color:#202127}
+.modal-overlay{background:rgba(24,25,30,.35)}.modal-box{background:#fff;border-color:#E0E1E5;color:#202127}.modal-title{color:#202127}.toast{background:#202127;border-color:#202127;color:#fff}
+.cgrid button,.igrid button,.rshot,.sthumb{background:#fff;border-color:#E0E1E5}.cgrid span{color:#555862}.cgrid .cb{background:#fff;border-color:#ECECEF}.igrid .u{background:rgba(32,33,39,.78);color:#fff}
+.flyer{background:#fff;border-color:#D9DAE0}.dpill{color:#666872}.seg2{background:#F1F2F4;border-color:#E0E1E5}.seg2 button{color:#777984}.seg2 button.on{background:#fff;color:#C8102E;box-shadow:0 1px 4px rgba(32,33,39,.08)}
+#p-history .rec-range button.on{background:#C8102E;color:#fff}
+#p-elite .elite-tabs,#p-elite .member-filter,#p-elite .finance-range{background:#F1F2F4;border-color:#E0E1E5}.elite-tabs button,.member-filter button,.finance-range button{color:#777984!important}.elite-tabs button.on,.member-filter button.on,.finance-range button.on{background:#C8102E!important;color:#fff!important}
+#p-elite .finance-hero{background:linear-gradient(105deg,#C8102E,#E03348 72%,#B1162A);border:0;color:#fff;box-shadow:none}.finance-hero .label,.finance-hero .amount{color:#fff!important}.finance-hero:after{color:rgba(255,255,255,.08)}
+#p-elite .finance-stat,#p-elite .finance-detail{background:#fff;border-color:#E1E2E6;color:#202127}.finance-stat .fl,.finance-detail .dt span{color:#858792}.finance-stat .fv,.finance-detail .dt b{color:#202127}.finance-stat.income .fv{color:#25865F}.finance-stat.saved .fv,.finance-stat.out .fv{color:#C8102E}
+#p-elite .finance-actions button{background:#fff;color:#C8102E;border-color:#D9DAE0}.finance-tx{border-color:#ECECEF!important}.finance-tx .fx{background:#F3F4F6}.finance-tx .ft{color:#202127}.finance-tx .fs{color:#858792}.finance-tx.income .fa{color:#25865F}.finance-tx.saved .fa,.finance-tx.out .fa,.finance-tx.other .fa{color:#C8102E}
+#p-video .video-pair button,#p-video .match-tools button,#sub .font-chip,#sub .font-more{background:#fff;border-color:#D9DAE0;color:#555862}.video-pair button.on,.match-tools button:hover,#sub .font-chip.on{border-color:#C8102E!important;color:#C8102E!important;box-shadow:0 0 0 1px rgba(200,16,46,.1)!important}.video-pair button.on small{color:#C8102E}
+#p-video .screen{background:#111;border-color:#D9DAE0}.screen canvas{background:#111}.rec.on{background:#C8102E!important;color:#fff!important}
+#p-elite .finance-more button{background:#fff;border-color:#D9DAE0;color:#C8102E}
+#p-elite .vip-post-card{border-color:#E7D99E}.vip-post-card .memhd strong{color:#C8102E!important}.vip-post-card .memhd .ch{color:#C8102E!important}
+.page-footer{border-color:#E0E1E5;color:#858792}.footer-brand{color:#B2B3BA}
+@media(min-width:761px){body{padding-bottom:30px}.page{padding-bottom:30px}.bottom-nav{max-width:720px;border:1px solid #E0E1E5;border-radius:16px 16px 0 0}.app-top{padding-left:28px;padding-right:28px}.page{padding-left:28px;padding-right:28px}}
+@media(max-width:760px){.app-top{padding:15px 16px 12px}.page{padding:18px 16px 90px}.app-top .brand:before{width:34px;height:34px;font-size:11px}.app-top .bn{font-size:13px}.card{border-radius:12px}.summary-grid{gap:9px}.summary-box{padding:13px 6px}.bottom-nav{padding-top:3px}}
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v34</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v35</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -486,7 +526,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v34';
+const VERSION='v35';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
