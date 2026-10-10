@@ -442,9 +442,82 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 #p-history .rec-head .rec-range{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
 #p-history .rec-head .rec-range button{min-width:0;width:100%;padding:8px 6px}
 </style>
+
+<style id="design-midnight-red">
+/* v36 DESIGN: Midnight Red. One accent colour (#E5243B) on deep black. Visual layer only: no features, data or markup changed. Keep this block last in <head>. */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(./fonts/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;src:url(./fonts/inter-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(./fonts/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url(./fonts/inter-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:800;font-display:swap;src:url(./fonts/inter-latin-800-normal.woff2) format('woff2')}
+/* clean line icons for the tab bar (replace emoji) */
+.nav-btn .ni{font-size:0!important;width:24px;height:24px;display:block;background:currentColor;-webkit-mask:var(--ic) center/24px 24px no-repeat;mask:var(--ic) center/24px 24px no-repeat}
+.nav-btn[data-tab=home] .ni{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E")}
+.nav-btn[data-tab=history] .ni{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 20V10M10 20V4M16 20v-7M22 20H2'/%3E%3C/svg%3E")}
+.nav-btn[data-tab=video] .ni{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='2' y='5' width='14' height='14' rx='3'/%3E%3Cpath d='m16 10 6-3v10l-6-3z'/%3E%3C/svg%3E")}
+.nav-btn[data-tab=elite] .ni{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z'/%3E%3C/svg%3E")}
+.nav-btn[data-tab=settings] .ni{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1'/%3E%3C/svg%3E")}
+.nav-btn::before{display:none!important}
+.nav-btn{font-size:10.5px!important;font-weight:600!important;letter-spacing:.1px;gap:4px!important}
+/* ONE-COLOUR LAYER: every colour in the app becomes the single accent, white or grey */
+:root{--f:'Inter',-apple-system,system-ui,'Segoe UI',Roboto,sans-serif;
+--purple:var(--acc);--orange:var(--acc);--yellow:var(--acc);--blue:var(--acc);--green:#FFFFFF;--red:var(--acc);
+--mute:#A1A1A6;--dim:#6E6E73}
+html,body{background:var(--bg)!important}
+body{letter-spacing:-.1px}
+/* header */
+.app-top{background:var(--bg)!important;border:0!important;padding:20px 18px 12px!important}
+.app-top .bn{font-weight:800!important;letter-spacing:.4px!important;font-size:21px!important}
+.app-top .bd{color:var(--dim)!important;font-weight:500!important;font-size:13px!important}
+.tver{color:var(--dim)!important;background:var(--card);border-radius:99px;padding:4px 10px;font-size:12px!important;font-weight:600}
+/* surfaces */
+.card,.card.tint,.summary-box,.sbox,.set-list,#p-elite .finance-hero,#p-elite .vip-post-card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:var(--r)!important;box-shadow:var(--shadow,none)!important}
+.card.tint{border-color:var(--accLine)!important}
+#p-elite .finance-hero:before{display:none!important}
+#p-elite .finance-hero .label{color:var(--dim)!important}
+/* titles */
+.ct,#p-home .ct,#p-history .ct,#p-video .ct,#p-elite .ct,#sub .ct{color:#fff!important}
+.sect,.set-title,.wk span{color:var(--dim)!important;font-weight:600!important;letter-spacing:1.6px!important;font-size:11px!important}
+.summary-box .bv,.sbox .big,.streakrow b,.wk b{color:#fff!important}
+.summary-box .lbl,.sbox .lbl{color:var(--dim)!important}
+/* buttons: one solid accent, everything else neutral */
+.btn-save,.btn-save.green,.btn-save.yellow,.btn-save.orange,.btn-save.rec{background:var(--acc)!important;color:var(--onAcc)!important;border-radius:var(--rb)!important;box-shadow:none!important;font-weight:700!important}
+.btn-out{background:transparent!important;border:1px solid var(--accLine)!important;color:var(--acc)!important;border-radius:var(--rb)!important}
+.btn-half,.btn-half.blue,.btn-half.green,.btn-half.orange,.btn-half.purple,.btn-half.yellow,.btn-half.red,.mini button,.res button,.res-btn{background:var(--card2)!important;border:1px solid var(--line)!important;color:#fff!important;border-radius:var(--rb)!important}
+.btn-danger{background:transparent!important;border:1px solid var(--line)!important;color:var(--acc)!important;border-radius:var(--rb)!important}
+.link{color:var(--acc)!important}
+/* selected / on states: accent outline, never a second colour */
+.chip.on,.layouts button.on,.tpls button.on,#p-video .video-pair button.on,#sub .font-chip.on,.seg button.on,.pick button.on,.game .tk button.on,.res-btn.on,.mini button.done{background:var(--accSoft)!important;border-color:var(--acc)!important;color:#fff!important;box-shadow:none!important}
+#p-elite .elite-tabs button.on,#p-elite .member-filter button.on,#p-elite .finance-range button.on,#p-history .rec-range button.on{background:var(--acc)!important;color:var(--onAcc)!important;box-shadow:none!important}
+#p-elite .vip-post-card .memhd strong,#p-elite .vip-post-card .memhd .ch{color:#fff!important}
+/* status pills: neutral, live/lost use the accent */
+.pill,.dpill,.tag,.rchip,.st,.st.up,.st.end,.st.ht,.pill.due,.pill.won,.dpill.won,.tag.ok,.tag.due,.rchip.won{background:var(--card2)!important;border-color:var(--line)!important;color:#fff!important}
+.pill.live,.st.live,.pill.lost,.dpill.lost,.tag.exp,.rchip.lost,.kick.hot{background:var(--accSoft)!important;border-color:var(--accLine)!important;color:var(--acc)!important}
+.todo .tt .nx,.nmimg b{background:var(--acc)!important;color:var(--onAcc)!important}
+.slipc.t10,.slipc.t5,.slipc.vip{border-left-color:var(--acc)!important}
+.slipc .sn b{color:#fff!important}
+.rshot.t10,.rshot.t5,.rshot.vip,.match.cur,.cgrid button.dup{border-color:var(--accLine)!important}
+.bar i{background:var(--acc)!important}
+.dots i.live{background:var(--acc)!important}.dots i.end{background:#fff!important}
+#p-elite .finance-tx .fa,#p-elite .finance-stat .fv{color:#fff!important}
+#p-elite .finance-stat.out .fv,#p-elite .finance-tx.out .fa{color:var(--acc)!important}
+#p-elite .finance-stat.active{border-color:var(--acc)!important;box-shadow:none!important}
+#p-elite .finance-stat.active:before{background:var(--acc)!important}
+input:focus,textarea:focus,select:focus{border-color:var(--acc)!important}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline-color:var(--acc)!important}
+/* emoji icons become calm grey so only the accent stands out */
+.set-row .i:not(:has(img)),.rem>span:first-child,.todo>.ri,.todo .ic,.ni{filter:grayscale(1) brightness(1.15)}
+/* tab bar */
+.bottom-nav{background:var(--navBg)!important;border-top:1px solid var(--line)!important;backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%)}
+.nav-btn,.nav-btn .ni{color:var(--dim)!important}
+.nav-btn.active{color:var(--acc)!important}.nav-btn.active .ni{color:var(--acc)!important}
+.nav-btn .ni{filter:none!important}
+/* STYLE 1: MIDNIGHT RED (brand red, flat, iOS) */
+:root{--acc:#E5243B;--onAcc:#fff;--accSoft:rgba(229,36,59,.14);--accLine:rgba(229,36,59,.45);--bg:#000;--card:#131315;--card2:#1C1C1F;--line:#222226;--r:18px;--rb:14px;--navBg:rgba(14,14,16,.88)}
+</style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v34</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v36</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -486,7 +559,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v34';
+const VERSION='v36';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
