@@ -1,4 +1,4 @@
-const CACHE='sure-stake-707-v39';
+const CACHE='sure-stake-707-v40';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './fonts/inter-latin-400-normal.woff2', './fonts/inter-latin-500-normal.woff2', './fonts/inter-latin-600-normal.woff2', './fonts/inter-latin-700-normal.woff2', './fonts/inter-latin-800-normal.woff2'];
 
 self.addEventListener('install', event => {
