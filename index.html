@@ -451,7 +451,7 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 .upt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.upt>b{font-size:15.5px;font-weight:700}
 .upg{font-size:12.5px;color:var(--mute);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .uptags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}.uptags .pill{font-size:10px!important;padding:3px 8px}
-.vdays{display:flex;gap:8px;overflow-x:auto;margin:0 0 10px;padding-bottom:2px}
+.vdays{display:flex;gap:8px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px}#vDaysWrap{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .vdays button{flex:none;border-radius:12px;padding:8px 12px;background:var(--card2);border:1px solid var(--line);color:var(--dim);font-size:13px;font-weight:600;text-align:center}
 .vdays button small{display:block;font-size:11px;font-weight:400}
 .vdays button.on{color:var(--acc);border-color:var(--acc);background:var(--accSoft)}
@@ -612,7 +612,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v44</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v45</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -624,11 +624,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   </div>
   <div class="card">
     <div class="ct o">Matches</div>
-    <div class="vdays" id="vDays" hidden></div><div class="video-pair" id="videoPair"></div>
+    <div class="video-pair" id="videoPair"></div>
     <p class="video-slot-note" id="videoSlotNote"></p>
     <button class="btn-save orange w100" id="pasteScores" style="margin:6px 0 12px">📋 Paste scorecard</button>
     <div id="rows"></div>
     <div class="btn-row"><button class="btn-half" id="addRow">+ Add match</button><button class="btn-half" id="newDay">New day</button></div>
+    <div id="vDaysWrap" hidden><span class="lbl">Videos for</span><div class="vdays" id="vDays"></div><p class="muted" style="margin:0">Pick a day to load its Video 1 and Video 2 above.</p></div>
   </div>
   <div class="card" id="vhist"></div>
 </main>
@@ -654,7 +655,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v44';
+const VERSION='v45';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1143,7 +1144,7 @@ function savedSheet(k){const d=day(k);const m=daySummary(d);const st=dayStatus(d
    <div class="btn-row"><button class="btn-save" data-a="open">Open it</button><button class="btn-half" data-a="done">Done</button></div>`,
   e=>{const b=e.target.closest('button');if(!b)return;closeSheet();if(b.dataset.a==='open')setTimeout(()=>openDay(k),220);});}
 function askDate(title,def,cb){let pk=def;const t=todayKey(),tm=addDays(t,1);
-  const render=()=>{$('sheetBox').innerHTML=`<div class="modal-title">${esc(title)}</div><div class="chips" style="margin-bottom:10px"><button class="chip ${pk===t?'on':''}" data-dk="${t}">Today</button><button class="chip ${pk===tm?'on':''}" data-dk="${tm}">Tomorrow</button></div>
+  const render=()=>{$('sheetBox').innerHTML=`<div class="modal-title">${esc(title)}</div><div class="chips" style="margin-bottom:10px"><button class="chip ${pk===tm?'on':''}" data-dk="${tm}">Tomorrow</button><button class="chip ${pk===t?'on':''}" data-dk="${t}">Today</button></div>
     <span class="lbl">Or pick a date</span><input type="date" id="adDate" value="${pk}"><p class="muted" style="margin:8px 0 0"><b style="color:#fff">${longDate(pk)}</b>${S.days[pk]&&dayHasContent(S.days[pk])?' · this day already has content. You will be asked before anything is replaced.':''}</p>
     <div class="btn-row"><button class="btn-half" data-a="no">Cancel</button><button class="btn-save" data-a="ok">Continue</button></div>`;
     $('adDate').onchange=e=>{if(e.target.value){pk=e.target.value;render();}};};
@@ -1240,7 +1241,7 @@ function slipImgSheet(dk,s){const d=day(dk);const img=slipOf(dk,s);
 $('p-home').addEventListener('click',async e=>{const b=e.target.closest('button,[data-g]');if(!b)return;const k=todayKey();
   if(b.dataset.view){homeView=b.dataset.view;renderHome();return;}
   const h=b.dataset.home;
-  if(h==='paste'||h==='prep'){askPaste('Paste the HUB block',t=>{const p=parseHub(t);if(!p.isHub){openReview(t,null);return;}askDate('Which day is this HUB for?',p.date||(h==='prep'?addDays(k,1):k),dk=>openReview(t,dk,'new'));},hubCheck);return;}
+  if(h==='paste'||h==='prep'){askPaste('Paste the HUB block',t=>{const p=parseHub(t);if(!p.isHub){openReview(t,null);return;}askDate('Which day is this HUB for?',addDays(k,1),dk=>openReview(t,dk,'new'));},hubCheck);return;}
   if(h==='fill'){openFill(k);return;}if(h==='edit'){openDay(k);return;}
   if(b.dataset.up){openDay(b.dataset.up);return;}if(b.dataset.upmenu){upMenu(b.dataset.upmenu);return;}
   const dk=(b.closest('[data-dk]')||{}).dataset?.dk||k;
@@ -1339,10 +1340,10 @@ async function renderHistory(){await preloadUpcoming();setTimeout(renderRecRes,0
   const cell=(i,f)=>{const v=L[i][f];if(v==null)return '<td>-</td>';const p=i>0?L[i-1][f]:null;const dl=p==null?'':v-p;return `<td>${v}${dl!==''?`<small class="${dl>=0?'up':'down'}">${dl>=0?'+':''}${dl}</small>`:''}</td>`;};
   $('p-history').innerHTML=`<div id="recRes"></div><div class="sechd rec-head"><span class="sect" style="margin:0">Win rate</span><div class="seg2 rec-range"><button data-rr="week" class="${recRange==='week'?'on':''}">This week</button><button data-rr="month" class="${recRange==='month'?'on':''}">Month</button><button data-rr="all" class="${recRange==='all'?'on':''}">All time</button></div></div><div class="summary-grid">${box('t10','p',0)}${box('t5','o',1)}${box('vip','y',2)}</div>
   <div class="pltotal"><span>Total profit ${recRange==='week'?'this week':recRange==='month'?'this month':'all time'}<small>${stakeOf()===1?'1 unit per slip':`GH₵ ${stakeOf()} per slip`} · Won and Lost slips only</small></span><b class="${plN?plClass(plTot):'flat'}">${plN?fmtPL(plTot):'-'}</b></div>
-  <div class="card"><div class="streakrow"><span><span class="stt">Posting streak</span><span class="muted" style="display:block">Days in a row with posts sent</span></span><b>${streak()}</b></div></div>
-  <div class="card"><div class="ct">Open any date</div><div class="cs" style="margin:0">See everything saved for a day: codes, odds, slips, games, picks, posts and pictures.</div><div class="datepick"><input type="date" id="recDate" value="${t}"><button class="btn-save" id="recOpen">Open</button></div></div>
+  <div class="card" id="recapCard"><div class="ct">${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap post</div>${(()=>{const r=recapReport(recRange);return r?`<div class="post" style="margin:0"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div>`:'<p class="muted" style="margin:0">Mark slips Won or Lost and the recap builds itself here.</p>';})()}</div>
+  <div class="card"><div class="ct">Open any date</div><div class="cs" style="margin:0">See everything saved for a day: codes, odds, slips, games, picks, posts and pictures.</div><div class="datepick"><input type="date" id="recDate" value="${addDays(t,1)}"><button class="btn-save" id="recOpen">Open</button></div></div>
   ${upcomingKeys().length?`<div class="wk"><span>Coming up</span></div>${upList()}<div style="height:14px"></div>`:''}
-  <button class="btn-half w100" data-rec="recap" style="margin-bottom:16px">Build ${recRange==='week'?'weekly':recRange==='month'?'monthly':'all time'} recap post</button>
+
   ${groups.length?groups.map(g=>{const name=g.w===tw?'This week':g.w===addDays(tw,-7)?'Last week':`Week of ${shortDate(g.w).slice(4)}`;
     return `<div class="wk"><span>${name}</span></div><div class="card" style="padding:4px 16px">${g.ks.map(k=>{const d=S.days[k];const ids=itemIds(d);const n=ids.filter(id=>isDone(d,id)).length;
       const pills=SLOTS.filter(s=>d.codes[s]&&d.codes[s].code).map(s=>hpill(s==='t10'?'10':s==='t5'?'5':'VIP',d.codes[s].result)).join('');
@@ -1352,7 +1353,7 @@ async function renderHistory(){await preloadUpcoming();setTimeout(renderRecRes,0
   <div class="sect">Followers</div><div class="card">${L.length?`<div style="overflow-x:auto"><table class="fol"><thead><tr><th>Date</th><th>Telegram</th><th>WhatsApp</th><th>X</th><th>TikTok</th></tr></thead><tbody>${L.map((r,i)=>`<tr><td>${shortDate(r.date)}</td>${['tg','wa','x','tt'].map(f=>cell(i,f)).join('')}</tr>`).reverse().slice(0,12).join('')}</tbody></table></div>`:'<div class="cs">Log your numbers once a week to see growth.</div>'}
     <button class="btn-half blue w100" id="rFol" style="margin-top:10px">+ Log numbers</button></div>`;}
 $('p-history').addEventListener('input',e=>{});
-$('p-history').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='recOpen'){const v=$('recDate').value;if(v)openDay(v);return;}if(b.dataset.upmenu){upMenu(b.dataset.upmenu);return;}if(b.dataset.rr){recRange=b.dataset.rr;renderHistory();return;}if(b.dataset.k){openDay(b.dataset.k);return;}
+$('p-history').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.p&&b.closest('#recapCard')){const r=recapReport(recRange);if(r){const ok=await shareTo(b.dataset.p,r,[]);if(ok&&b.dataset.p!=='copy')b.classList.add('done');}return;}if(b.id==='recOpen'){const v=$('recDate').value;if(v)openDay(v);return;}if(b.dataset.upmenu){upMenu(b.dataset.upmenu);return;}if(b.dataset.rr){recRange=b.dataset.rr;renderHistory();return;}if(b.dataset.k){openDay(b.dataset.k);return;}
   if(b.dataset.rec==='recap'){const r=recapReport(recRange);if(!r){toast('Mark some slips Won or Lost first.');return;}
     openSheet(`<div class="modal-title">${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap</div><div class="post"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div><div class="btn-row"><button class="btn-half" data-close="1">Close</button></div>`,
       async ev=>{const bb=ev.target.closest('button');if(!bb)return;if(bb.dataset.close){closeSheet();return;}const ok=await shareTo(bb.dataset.p,r,[]);if(ok&&bb.dataset.p!=='copy')bb.classList.add('done');});return;}
@@ -1747,7 +1748,7 @@ function chooseVideoFont(key,value){
 
 let videoDateKey=todayKey(),videoSlot='v1',videoPick=null;
 function videoDayKeys(){const t=todayKey();const ks=new Set([t]);for(const k of upcomingKeys())ks.add(k);for(const k of Object.keys(S.videoDays||{}))if(k>t){const v=S.videoDays[k];if((v.v1||[]).length+(v.v2||[]).length)ks.add(k);}if(videoDateKey>t)ks.add(videoDateKey);return [...ks].sort();}
-function renderVideoDays(){const el=$('vDays');if(!el)return;const ks=videoDayKeys();if(ks.length<2){el.innerHTML='';el.hidden=true;return;}el.hidden=false;
+function renderVideoDays(){const el=$('vDays'),w=$('vDaysWrap');if(!el)return;const ks=videoDayKeys();if(ks.length<2){el.innerHTML='';if(w)w.hidden=true;return;}if(w)w.hidden=false;
   el.innerHTML=ks.map(k=>{const v=S.videoDays&&S.videoDays[k];const n=v?(v.v1||[]).length+(v.v2||[]).length:gamesLine(S.days[k]||{}).length;return `<button data-vday="${k}" class="${k===videoDateKey?'on':''}">${k===todayKey()?'Today':shortDate(k)}<small>${n} game${n===1?'':'s'}</small></button>`;}).join('');}
 function videoState(k){if(!S.videoDays)S.videoDays={};if(!S.videoDays[k])S.videoDays[k]={v1:[],v2:[],active:'v1',seeded:false};const v=S.videoDays[k];v.v1=Array.isArray(v.v1)?v.v1:[];v.v2=Array.isArray(v.v2)?v.v2:[];v.active=v.active==='v2'?'v2':'v1';v.seeded=!!v.seeded;return v;}
 const cloneRows=a=>JSON.parse(JSON.stringify(a||[]));
@@ -1803,7 +1804,7 @@ async function pickFromLibrary(){const L=[...S.crestList].sort((a,b)=>a.name.loc
   openSheet(`<div class="modal-title">Pick a crest</div><input id="plq" placeholder="🔍 Search" style="margin-bottom:10px"><div class="cgrid" id="plg">${L.map(c=>`<button data-cid="${c.id}" data-n="${esc(c.name.toLowerCase())}"><div class="cb"><img src="${srcs[c.id]}" alt=""></div><span>${esc(titleCase(c.name))}</span></button>`).join('')}</div>`,
   e=>{const b=e.target.closest('[data-cid]');if(!b||!crestTarget)return;const {r,side}=crestTarget;r[side==='h'?'hc':'ac']=srcs[b.dataset.cid];r[(side==='h'?'hc':'ac')+'Orig']=null;syncCurrentVideo();saveVideoState();closeSheet();renderRows();redraw();});
   $('sheetBox').oninput=e=>{if(e.target.id==='plq'){const q=e.target.value.toLowerCase();$('plg').querySelectorAll('button').forEach(b=>b.hidden=!b.dataset.n.includes(q));}};}
-$('vDays').onclick=e=>{const b=e.target.closest('[data-vday]');if(!b||playing)return;videoPick=b.dataset.vday;activateVideoDay(videoPick);redraw();};
+$('vDays').onclick=e=>{const b=e.target.closest('[data-vday]');if(!b||playing)return;videoPick=b.dataset.vday;activateVideoDay(videoPick);redraw();toast(`${videoPick===todayKey()?'Today':longDate(videoPick)} loaded in Video 1 and Video 2`,2200);};
 $('videoPair').onclick=e=>{const b=e.target.closest('[data-vslot]');if(!b)return;saveVideoState();loadVideoSlot(b.dataset.vslot);};
 $('addRow').onclick=()=>{const r=newRow();S.vrows.push(r);curId=r.id;syncCurrentVideo();saveVideoState();renderRows();renderVideoTabs();redraw();rowsEl.querySelector(`[data-id="${r.id}"] input`)?.focus();};
 $('newDay').onclick=()=>{if(!confirm(`Clear both videos for ${videoDateKey}? Saved crests stay.`))return;const st=videoState(videoDateKey);st.v1=[];st.v2=[];st.active='v1';st.seeded=true;videoSlot='v1';S.vrows=[];curId=null;syncCurrentVideo();saveVideoState();renderVideoTabs();renderRows();redraw();};
