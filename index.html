@@ -612,7 +612,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v45</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v46</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -655,7 +655,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v45';
+const VERSION='v46';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1340,7 +1340,7 @@ async function renderHistory(){await preloadUpcoming();setTimeout(renderRecRes,0
   const cell=(i,f)=>{const v=L[i][f];if(v==null)return '<td>-</td>';const p=i>0?L[i-1][f]:null;const dl=p==null?'':v-p;return `<td>${v}${dl!==''?`<small class="${dl>=0?'up':'down'}">${dl>=0?'+':''}${dl}</small>`:''}</td>`;};
   $('p-history').innerHTML=`<div id="recRes"></div><div class="sechd rec-head"><span class="sect" style="margin:0">Win rate</span><div class="seg2 rec-range"><button data-rr="week" class="${recRange==='week'?'on':''}">This week</button><button data-rr="month" class="${recRange==='month'?'on':''}">Month</button><button data-rr="all" class="${recRange==='all'?'on':''}">All time</button></div></div><div class="summary-grid">${box('t10','p',0)}${box('t5','o',1)}${box('vip','y',2)}</div>
   <div class="pltotal"><span>Total profit ${recRange==='week'?'this week':recRange==='month'?'this month':'all time'}<small>${stakeOf()===1?'1 unit per slip':`GH₵ ${stakeOf()} per slip`} · Won and Lost slips only</small></span><b class="${plN?plClass(plTot):'flat'}">${plN?fmtPL(plTot):'-'}</b></div>
-  <div class="card" id="recapCard"><div class="ct">${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap post</div>${(()=>{const r=recapReport(recRange);return r?`<div class="post" style="margin:0"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div>`:'<p class="muted" style="margin:0">Mark slips Won or Lost and the recap builds itself here.</p>';})()}</div>
+  <div class="card" style="padding:4px 16px"><button class="trow" id="recapOpen"><span class="tn"><b>${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap post</b><small>Tap to see it and send it</small></span><span class="ch">›</span></button></div>
   <div class="card"><div class="ct">Open any date</div><div class="cs" style="margin:0">See everything saved for a day: codes, odds, slips, games, picks, posts and pictures.</div><div class="datepick"><input type="date" id="recDate" value="${addDays(t,1)}"><button class="btn-save" id="recOpen">Open</button></div></div>
   ${upcomingKeys().length?`<div class="wk"><span>Coming up</span></div>${upList()}<div style="height:14px"></div>`:''}
 
@@ -1353,7 +1353,9 @@ async function renderHistory(){await preloadUpcoming();setTimeout(renderRecRes,0
   <div class="sect">Followers</div><div class="card">${L.length?`<div style="overflow-x:auto"><table class="fol"><thead><tr><th>Date</th><th>Telegram</th><th>WhatsApp</th><th>X</th><th>TikTok</th></tr></thead><tbody>${L.map((r,i)=>`<tr><td>${shortDate(r.date)}</td>${['tg','wa','x','tt'].map(f=>cell(i,f)).join('')}</tr>`).reverse().slice(0,12).join('')}</tbody></table></div>`:'<div class="cs">Log your numbers once a week to see growth.</div>'}
     <button class="btn-half blue w100" id="rFol" style="margin-top:10px">+ Log numbers</button></div>`;}
 $('p-history').addEventListener('input',e=>{});
-$('p-history').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.p&&b.closest('#recapCard')){const r=recapReport(recRange);if(r){const ok=await shareTo(b.dataset.p,r,[]);if(ok&&b.dataset.p!=='copy')b.classList.add('done');}return;}if(b.id==='recOpen'){const v=$('recDate').value;if(v)openDay(v);return;}if(b.dataset.upmenu){upMenu(b.dataset.upmenu);return;}if(b.dataset.rr){recRange=b.dataset.rr;renderHistory();return;}if(b.dataset.k){openDay(b.dataset.k);return;}
+$('p-history').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='recapOpen'){const r=recapReport(recRange);if(!r){toast('Mark some slips Won or Lost first.');return;}const title=recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time';
+    openSheet(`<div class="modal-title">${title} recap post</div><div class="post"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div><div class="btn-row"><button class="btn-half" data-close="1">Close</button></div>`,
+      async ev=>{const bb=ev.target.closest('button');if(!bb)return;if(bb.dataset.close){closeSheet();return;}if(!bb.dataset.p)return;const ok=await shareTo(bb.dataset.p,r,[]);if(ok&&bb.dataset.p!=='copy')bb.classList.add('done');});return;}if(b.id==='recOpen'){const v=$('recDate').value;if(v)openDay(v);return;}if(b.dataset.upmenu){upMenu(b.dataset.upmenu);return;}if(b.dataset.rr){recRange=b.dataset.rr;renderHistory();return;}if(b.dataset.k){openDay(b.dataset.k);return;}
   if(b.dataset.rec==='recap'){const r=recapReport(recRange);if(!r){toast('Mark some slips Won or Lost first.');return;}
     openSheet(`<div class="modal-title">${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap</div><div class="post"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div><div class="btn-row"><button class="btn-half" data-close="1">Close</button></div>`,
       async ev=>{const bb=ev.target.closest('button');if(!bb)return;if(bb.dataset.close){closeSheet();return;}const ok=await shareTo(bb.dataset.p,r,[]);if(ok&&bb.dataset.p!=='copy')bb.classList.add('done');});return;}
