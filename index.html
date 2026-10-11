@@ -569,7 +569,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v41</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v42</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -611,7 +611,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v41';
+const VERSION='v42';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1454,7 +1454,7 @@ async function saveBackup(){try{await flushSaves();const data=await kall();Objec
   const name=`SS707Hub_Backup_${todayKey()}.json`;const blob=new Blob([json],{type:'application/json'});const f=new File([blob],name,{type:'application/json'});
   if(canShareFiles([f])&&confirm('Share the backup (OK) or save it to Downloads (Cancel)?')){try{await navigator.share({files:[f]});S.prefs.lastBackup=Date.now();save('prefs');refresh();return;}catch(e){if(e.name==='AbortError')return;}}
   const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);S.prefs.lastBackup=Date.now();save('prefs');refresh();toast('Backup saved to Downloads ✓');}catch(e){toast('Backup failed: '+e.message);}}
-function loadBackup(){pickFile('application/json,.json',false,async fs=>{const f=fs[0];if(!f)return;try{const o=JSON.parse(await f.text());if(o.app!=='SS707Hub'||!o.data)throw new Error('This is not a Sure Stake 707 Hub backup');
+function loadBackup(){pickFile('',false,async fs=>{const f=fs[0];if(!f)return;try{let o;try{o=JSON.parse(await f.text());}catch(_){throw new Error('That file is not a backup. Pick the file that starts with SS707Hub_Backup_');}if(o.app!=='SS707Hub'||!o.data)throw new Error('This is not a Sure Stake 707 Hub backup');
   if(!confirm(`Restore the backup from ${o.saved?o.saved.slice(0,10):'unknown date'}? It replaces what is in the app now.`))return;
   const d=await db();await new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');const s=t.objectStore(ST);s.clear();for(const [k,v] of Object.entries(o.data))s.put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error||new Error('Restore failed'));t.onabort=()=>rej(t.error||new Error('Restore failed'));});
   Object.keys(blobCache).forEach(k=>delete blobCache[k]);await loadAll();refresh();renderVideoUI();redraw();toast('Backup restored ✓');}catch(e){toast(e.message==='Restore failed'?'Restore failed':e.message,3500);}});}
