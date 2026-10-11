@@ -442,8 +442,39 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 #p-history .rec-head>.sect{display:block;margin:0 0 10px}
 #p-history .rec-head .rec-range{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
 #p-history .rec-head .rec-range button{min-width:0;width:100%;padding:8px 6px}
-</style>
 
+/* v43: saving, Coming up, post pictures, statuses */
+.sbox .pl,.hrow .pl{font-size:13px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+.pl.up,.pltotal b.up{color:#30D158}.pl.down,.pltotal b.down{color:#FF453A}.pl.flat,.pltotal b.flat{color:var(--dim)}
+.pltotal{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:-4px 0 14px}
+.pltotal span{font-size:14px;font-weight:600;color:#fff}.pltotal small{display:block;font-size:11.5px;font-weight:400;color:var(--dim);margin-top:2px}.pltotal b{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hrow .hr-r{display:flex;align-items:center;gap:8px}.hrow .a .hr-r .pl{margin:0;font-size:13px}.hrow .a .pl.up{color:#30D158}.hrow .a .pl.down{color:#FF453A}
+.set-row[data-s=stake] .i{--sic:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27black%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M3 17l6-6 4 4 8-8M15 7h6v6%27/%3E%3C/svg%3E")}
+.savestate{font-size:12px;font-weight:600;color:var(--dim);white-space:nowrap;flex:none}
+.savestate.error{color:var(--acc)}
+.savebanner{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:3000;background:var(--card);border:1px solid var(--accLine);color:var(--acc);border-radius:14px;padding:12px 14px;font-size:13.5px;font-weight:600}
+.warnbox{border:1px solid var(--accLine);background:var(--accSoft);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.4;margin:10px 0;color:#fff}
+.pill.st-draft{border-style:dashed!important;color:var(--mute)!important}
+.pill.st-notsent{background:var(--accSoft)!important;border-color:var(--accLine)!important;color:var(--acc)!important}
+.pimgs{margin-top:8px}
+.pimgl{font-size:12px;color:var(--dim);margin-bottom:6px}
+.pimgrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pim{position:relative;display:inline-block}
+.pim>button:first-child{width:56px;height:56px;padding:0;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--card2)}
+.pim img{width:100%;height:100%;object-fit:cover;display:block}
+.pimx{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;padding:0;font-size:11px;background:var(--card2);border:1px solid var(--line);color:#fff}
+.pimadd{height:56px;padding:0 12px;border-radius:10px;border:1px dashed var(--line);background:var(--card2);color:#fff;font-size:13px}
+.pstat{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--dim)}
+.upday{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:6px}
+.upday:last-of-type{border-bottom:0}
+.upday .trow{border:0;padding-bottom:4px}
+.upday .tn b{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.upday .upcodes{display:block;margin-top:4px;color:var(--mute)}
+.upact{margin-top:8px}.upact .btn-half{padding:9px 6px;font-size:13px}
+.datepick{display:flex;gap:8px;margin-top:8px}.datepick input{flex:1;min-width:0}.datepick .btn-save{flex:none;padding:12px 18px}
+.daystat{margin-bottom:12px}
+.savedline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:16px;margin-bottom:8px}
+</style>
 <style id="design-midnight-red">
 /* v36 DESIGN: Midnight Red. One accent colour (#E5243B) on deep black. Visual layer only: no features, data or markup changed. Keep this block last in <head>. */
 @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(./fonts/inter-latin-400-normal.woff2) format('woff2')}
@@ -569,7 +600,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v42</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v43</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -600,7 +631,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
   <button class="nav-btn" data-tab="settings" style="--tab:#30D158"><span class="ni">⚙️</span>Settings</button>
 </nav>
 
-<div class="sub" id="sub"><div class="subhead"><button id="subBack" aria-label="Back">‹</button><h2 id="subTitle"></h2></div><div class="subbody" id="subBody"></div></div>
+<div class="sub" id="sub"><div class="subhead"><button id="subBack" aria-label="Back">‹</button><h2 id="subTitle"></h2><span id="saveState" class="savestate" hidden></span></div><div class="subbody" id="subBody"></div></div>
 <div class="modal-overlay" id="sheet"><div class="modal-box" id="sheetBox"></div></div>
 <div class="toast" id="toast" role="status"></div>
 <input type="file" id="filePick" hidden>
@@ -611,7 +642,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v42';
+const VERSION='v43';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -653,9 +684,45 @@ const DEF_PREFS={channel:'t.me/SureStake707',handle:'@RogerRich707',price:50,cap
 const DEF_VIDEO={tpl:'navy',res:'1080',q:'high',secs:5,crestAnim:'pop',scoreAnim:'pop',between:'soft',scoreColor:'#FFFFFF',end:true,endSecs:3,end1:'FOLLOW FOR MORE',end2:'Daily Football Scores',fontTeam:'Bebas Neue',fontScore:'Archivo Black',fontEnd:'Montserrat'};
 const blankState=()=>({days:{},crestList:[],vrows:[],videoDays:{},vset:{...DEF_VIDEO},vtpls:[{id:'navy',name:'Blue'},{id:'black',name:'Black'}],logo:null,members:[],followers:[],prefs:JSON.parse(JSON.stringify(DEF_PREFS)),imgIndex:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},vhist:[],finance:{saved:[],withdrawn:[],otherIncome:[],hide:false}});
 let S=blankState();
-const saveT={};function save(key){clearTimeout(saveT[key]);saveT[key]=setTimeout(()=>{delete saveT[key];kset(key,S[key]).catch(e=>toast('Could not save: '+e.message));},300);}
-async function flushSaves(){await Promise.all(Object.keys(saveT).map(k=>{clearTimeout(saveT[k]);delete saveT[k];return kset(k,S[k]);}));}
-function day(k){if(!S.days[k])S.days[k]={key:k,codes:{},vipPicks:[],vipLine:'',posts:{},posted:{},slips:{},layout:null,morningImg:null};const d=S.days[k];d.posted=d.posted||{};d.posts=d.posts||{};d.codes=d.codes||{};d.slips=d.slips||{};d.vipPicks=d.vipPicks||[];d.games=d.games||[];return d;}
+// ---------- Safe saving (v43) ----------
+// Days and video days are written per date and merged with what is stored, so a second open copy of the app
+// can never wipe days it did not change. Every write bumps _rev so other copies know to reload.
+const TAB_ID=uid();const MERGE_KEYS=['days','videoDays'];const snap={days:{},videoDays:{}};
+let lastRev=0,storageReady=false,storageBroken=false,readyRes,readyRej;const readyP=new Promise((a,b)=>{readyRes=a;readyRej=b;});readyP.catch(()=>{});
+const bc=(()=>{try{return new BroadcastChannel('SS707Hub');}catch(e){return null;}})();
+function bcPost(m){try{if(bc)bc.postMessage({...m,from:TAB_ID});}catch(e){}}
+function dayHasContent(d){if(!d)return false;return ['t10','t5','vip'].some(s=>d.codes&&d.codes[s]&&d.codes[s].code)||Object.values(d.posts||{}).some(t=>String(t||'').trim())||(d.games||[]).length>0||Object.values(d.slips||{}).some(Boolean)||Object.values(d.postImgs||{}).some(a=>a&&a.length)||Object.keys(d.keep||{}).length>0;}
+function isEmptyDay(d){return !dayHasContent(d)&&!d.status&&!d.layout&&!d.morningImg&&!String(d.vipLine||'').trim()&&!Object.values(d.posted||{}).some(o=>o&&Object.values(o).some(Boolean))&&!Object.keys(d.skip||{}).length;}
+function takeSnap(key,from){snap[key]={};const o=from||S[key]||{};for(const k in o)snap[key][k]=JSON.stringify(o[k]);}
+function replaceInPlace(t,src){for(const k of Object.keys(t))delete t[k];Object.assign(t,src);}
+function adoptMerged(key,stored){const mine=S[key]=S[key]||{};const sn=snap[key]||{};
+  for(const k in stored){if(mine[k]&&typeof mine[k]==='object'){if(JSON.stringify(mine[k])!==JSON.stringify(stored[k]))replaceInPlace(mine[k],stored[k]);}else mine[k]=stored[k];}
+  for(const k of Object.keys(mine))if(!(k in stored)&&sn[k]!==undefined)delete mine[k];
+  takeSnap(key,stored);}
+const inflight=new Set();
+function writeKey(key){const p=(async()=>{await readyP;if(storageBroken)throw new Error('Storage is not open');const d=await db();
+  await new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');const s=t.objectStore(ST);let merged=null,rev=0;
+    const bump=()=>{const r=s.get('_rev');r.onsuccess=()=>{rev=(Number(r.result)||0)+1;s.put(rev,'_rev');};};
+    if(MERGE_KEYS.includes(key)){const q=s.get(key);q.onsuccess=()=>{const stored=(q.result&&typeof q.result==='object')?q.result:{};const mine=S[key]||{};const sn=snap[key]||{};
+        for(const k of new Set([...Object.keys(mine),...Object.keys(sn)])){const cur=mine[k];const j=cur===undefined?undefined:JSON.stringify(cur);if(j===sn[k])continue;
+          const empty=cur===undefined||(key==='days'&&isEmptyDay(cur));
+          if(sn[k]===undefined){if(empty||(k in stored))continue;stored[k]=cur;}
+          else if(empty)delete stored[k];else stored[k]=cur;}
+        s.put(stored,key);merged=stored;bump();};}
+    else{s.put(S[key],key);bump();}
+    t.oncomplete=()=>{lastRev=rev;if(merged)adoptMerged(key,merged);res();};t.onerror=()=>rej(t.error||new Error('Save failed'));t.onabort=()=>rej(t.error||new Error('Save failed'));});
+  bcPost({type:'saved',key});})();
+  inflight.add(p);p.then(()=>inflight.delete(p),()=>inflight.delete(p));return p;}
+let saveState='saved',saveAt=null;
+function setSaveState(st){saveState=st;if(st==='saved')saveAt=new Date();const el=$('saveState');if(!el)return;el.className='savestate '+st;el.textContent=st==='saving'?'Saving…':st==='error'?'Not saved':saveAt?`Saved ✓ ${pad(saveAt.getHours())}:${pad(saveAt.getMinutes())}`:'Saved ✓';}
+function showBanner(msg){let b=$('saveBanner');if(!b){b=document.createElement('div');b.id='saveBanner';b.className='savebanner';b.setAttribute('role','alert');document.body.appendChild(b);b.onclick=()=>b.remove();}b.textContent=msg+' (Tap to hide)';}
+function saveFailed(e){setSaveState('error');const full=e&&(e.name==='QuotaExceededError'||/quota/i.test(String(e.message||'')));
+  const msg=full?'Not saved: the phone storage is full. Free some space, then try again.':storageBroken?'Not saved: storage did not open. Close Sure Stake fully and open it again.':'Not saved: '+String((e&&e.message)||'storage error')+'. Try again.';
+  showBanner(msg);toast(msg,5000);}
+const saveT={};function save(key){clearTimeout(saveT[key]);setSaveState('saving');saveT[key]=setTimeout(()=>{delete saveT[key];writeKey(key).then(()=>{if(!Object.keys(saveT).length&&!inflight.size)setSaveState('saved');}).catch(saveFailed);},300);}
+async function flushSaves(){const ks=Object.keys(saveT);ks.forEach(k=>{clearTimeout(saveT[k]);delete saveT[k];});await Promise.all([...inflight].map(p=>p.catch(()=>{})));for(const k of ks)await writeKey(k);if(ks.length)setSaveState('saved');}
+function cancelSaves(){Object.keys(saveT).forEach(k=>{clearTimeout(saveT[k]);delete saveT[k];});}
+function day(k){if(!S.days[k])S.days[k]={key:k,codes:{},vipPicks:[],vipLine:'',posts:{},posted:{},slips:{},layout:null,morningImg:null};const d=S.days[k];d.posted=d.posted||{};d.posts=d.posts||{};d.codes=d.codes||{};d.slips=d.slips||{};d.vipPicks=d.vipPicks||[];d.games=d.games||[];d.postImgs=d.postImgs||{};return d;}
 const blobCache={};async function cget(key){if(!(key in blobCache))blobCache[key]=await kget(key)||null;return blobCache[key];}
 function cset(key,val){blobCache[key]=val;return kset(key,val);}
 function cdel(key){delete blobCache[key];return kdel(key);}
@@ -689,7 +756,7 @@ function openSub(title,render,nested=false){
     });
     return;
   }
-  $('subTitle').textContent=title;subRender=render;subPages=[{title,render}];$('sub').classList.add('open');$('sub').scrollTop=0;render();
+  $('subTitle').textContent=title;subRender=render;subPages=[{title,render}];$('saveState').hidden=true;$('sub').classList.add('open');$('sub').scrollTop=0;render();
   pushLayer(closeSubOverlay);
 }
 function rerenderSub(){if(subRender)subRender();}
@@ -767,7 +834,7 @@ const TPL_INFO=[
  ['win_one','Win post - one code','✅ **CODE WON** ✅\n\n**{odds} ODDS** - **WON** ✅\n\n**Who Cashed Out Today?** 🏆\n**Drop Your Ticket** 👉 {handle}'],
  ['win_x','Win post - X','✅ {odds} ODDS WON ✅\n\nFollowers Are Eating Tonight 💰\n\nJoin The Channel Now - Don\'t Miss The Next One 👇\n{channel}'],
  ['vip_results','707 Elite results','👑 **707 ELITE - RESULTS** 👑\n{date}\n\n{picks}\n\n{line}'],
- ['recap','Weekly recap','📊 **THIS WEEK AT SURE STAKE 707**\n\n{week}\n\nWon {won} Of {total} Codes This Week 🎯\nEvery Result Posted - Wins And Losses 💯\n\n_New Week, Same Hunger 🔥_'],
+ ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 707**\n{range}\n\n**FREE CODES (10 Odds + 5 Odds)**\n{free}\n**Win Rate {freerate}**\n\n👑 **707 ELITE VIP**\n{vip}\n**Win Rate {viprate}**\n\n**ALL CODES**\n**Win Rate {allrate}**\n\nEvery Result Posted - Wins And Losses 💯\n\n_New Week, Same Hunger 🔥_'],
  ['elite_welcome','707 Elite welcome message','👑 **WELCOME TO 707 ELITE** 👑\n\nHi {name}, You\'re In 🔥\nYour Membership Runs Until {until}.\n\nJoin The Private Room Here 👇\n{elitelink}\n\nTurn On Notifications So You Never Miss A Drop 🔔'],
  ['elite_renew','707 Elite renewal reminder','Hi {name} 👋\n\nYour 707 Elite Membership Ends On {until}.\nTo Stay In The Room, Renew With GHS {price} For Next Month 👑\n\nThanks For Being Part Of Elite 🙏'],
  ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 👑\n\nFewer Picks. Deeper Research. Honest Results.\n\n✅ 2 To 3 Picks Daily With Full Reasoning\n✅ Results Posted Every Night, Win Or Lose\n✅ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 Only {spots} Spots Left\n\n**How To Join** 👇\n1. Send GHS {price} To {momo} ({network}, {momoname})\n2. Send Your Payment Screenshot To {handle}\n3. You Get Added To The Private Room\n\nRefund Terms Are Pinned In The Group.'],
@@ -785,10 +852,12 @@ function winPosts(d){const won=[];if(d.codes.t5&&d.codes.t5.result==='won')won.p
   const tg=won.length>1?fill('win_both',V):fill('win_one',{...V,odds:won[0].o});const x=fill('win_x',{...V,odds:top.o});return {tg,x,slipsTg:won.map(w=>w.s),slipsX:[top.s]};}
 function vipResults(d){const c=d.codes.vip;if(!c||!['won','lost'].includes(c.result))return null;const L=(d.games||[]).filter(g=>g.slot==='vip');if(!L.length)return null;const tagged=L.some(g=>g.res==='lost');
   const picks=L.map((g,i)=>`${i+1}. ${g.match} - ${g.pick}${c.result==='won'?' ✅':g.res==='lost'?' ❌':tagged?' ✅':''}`).join('\n');return fill('vip_results',{...varsFor(d),picks,line:(d.vipLine||'').trim()});}
-function weeklyRecap(endKey){const lines=[];let won=0,tot=0;for(let i=6;i>=0;i--){const k=addDays(endKey,-i);const d=S.days[k];if(!d)continue;const parts=[];
-    for(const s of ['t10','t5']){const c=d.codes[s];if(c&&c.code&&(c.result==='won'||c.result==='lost')){parts.push(`${rnd(c.odds)} Odds ${c.result==='won'?'✅':'❌'}`);tot++;if(c.result==='won')won++;}}
-    if(parts.length)lines.push(`${shortDate(k)} - ${parts.join(' | ')}`);}
-  if(!tot)return null;return fill('recap',{week:lines.join('\n'),won,total:tot});}
+function recapReport(range){const t=todayKey();const from=range==='week'?addDays(t,-6):range==='month'?t.slice(0,8)+'01':null;
+  const ks=Object.keys(S.days).filter(k=>k<=t&&(!from||k>=from)).sort();const free=[],vip=[];let fw=0,ft=0,vw=0,vt=0;const mark=r=>r==='won'?'✅':'❌';const done=c=>c&&c.code&&(c.result==='won'||c.result==='lost');
+  for(const k of ks){const d=S.days[k];const parts=[];for(const s of ['t10','t5']){const c=(d.codes||{})[s];if(done(c)){parts.push(`${rnd(c.odds)} Odds ${mark(c.result)}`);ft++;if(c.result==='won')fw++;}}
+    if(parts.length)free.push(`${shortDate(k)} - ${parts.join(' | ')}`);const v=(d.codes||{}).vip;if(done(v)){vip.push(`${shortDate(k)} - VIP ${mark(v.result)}`);vt++;if(v.result==='won')vw++;}}
+  if(!ft&&!vt)return null;const rate=(w,n)=>n?Math.round(w/n*100)+'%':'-';const first=ks.find(k=>SLOTS.some(s=>done((S.days[k].codes||{})[s])))||t;
+  return fill('report',{title:range==='week'?'THIS WEEK':range==='month'?'THIS MONTH':'ALL TIME',range:`${shortDate(range==='all'?first:from)} - ${shortDate(t)}`,free:free.join('\n')||'No Results Yet',freerate:rate(fw,ft),vip:vip.join('\n')||'No Results Yet',viprate:rate(vw,vt),allrate:rate(fw+vw,ft+vt)});}
 
 // ---------- HUB parser ----------
 function trimBlank(a){while(a.length&&!a[0].trim())a.shift();while(a.length&&!a[a.length-1].trim())a.pop();return a;}
@@ -1002,6 +1071,11 @@ async function openPostSheet(k,id){const d=day(k);await loadSlips(k);if(d.mornin
 // ---------- HOME ----------
 function streak(){const posted=k=>{const d=S.days[k];return d&&Object.values(d.posted||{}).some(o=>Object.values(o).some(Boolean));};let k=todayKey();if(!posted(k))k=addDays(k,-1);let n=0;while(posted(k)&&n<3650){n++;k=addDays(k,-1);}return n;}
 function memberExpiry(m){let exp=null;[...m.payments].sort((a,b)=>a.date<b.date?-1:1).forEach(p=>{const start=exp&&exp>p.date?exp:p.date;exp=addMonths(start,p.months);});return exp;}
+const stakeOf=()=>{const n=Number(S.prefs.stake);return n>0?n:1;};
+function slotProfit(slot,from){let p=0,n=0;const st=stakeOf();for(const k in S.days){if(from&&k<from)continue;const c=(S.days[k].codes||{})[slot];if(!c||!c.code)continue;if(c.result==='won'){p+=(Number(c.odds||0)-1)*st;n++;}else if(c.result==='lost'){p-=st;n++;}}return {p:Math.round(p*100)/100,n};}
+function fmtPL(v){const cedi=stakeOf()!==1;const a=Math.abs(v).toFixed(2);return (v>0?'+':v<0?'-':'')+(cedi?'GH₵ ':'')+a;}
+function dayProfit(d){let p=0,n=0;const st=stakeOf();for(const s of SLOTS){const c=(d.codes||{})[s];if(!c||!c.code)continue;if(c.result==='won'){p+=(Number(c.odds||0)-1)*st;n++;}else if(c.result==='lost'){p-=st;n++;}}return {p:Math.round(p*100)/100,n};}
+function plClass(v){return v>0?'up':v<0?'down':'flat';}
 function slotStats(slot,from){let w=0,t=0;for(const k in S.days){if(from&&k<from)continue;const c=(S.days[k].codes||{})[slot];if(c&&(c.result==='won'||c.result==='lost')){t++;if(c.result==='won')w++;}}return {w,t};}
 let homeView='posts';const openSlips=new Set();
 function statusPill(D,s){const st=slipState(D,s);if(st.live)return '<span class="pill live">LIVE</span>';if(st.ended)return '<span class="pill wait">ENDED</span>';if(st.c==='up')return `<span class="pill wait">${esc(st.t).toUpperCase()}</span>`;return '';}
@@ -1135,7 +1209,7 @@ function openDay(k0){let k=k0;
         ${past&&gamesOf(d,'vip').length&&['won','lost'].includes((d.codes.vip||{}).result)?`<span class="lbl">One honest line for the VIP results post</span><input id="vipLine" value="${esc(d.vipLine||'')}" placeholder="What went right or wrong">`:''}</div>
       <div class="card"><div class="ct p">Posts</div>${ids.length?ids.map(id=>postCard(d,id)).join(''):'<p class="empty">No posts for this day yet.</p>'}</div>
       ${k===todayKey()?`<div style="padding:4px 0 18px"><button class="btn-danger w100" id="dDeleteToday">🗑️ Delete All Today</button><p class="muted" style="text-align:center;margin-top:8px">Deletes today's codes, games, slips and posts only. Crests, settings and other days stay safe.</p></div>`:''}`;};
-  openSub(longDate(k),render);const body=$('subBody');
+  openSub(longDate(k),render);$('saveState').hidden=false;setSaveState(saveState);const body=$('subBody');
   body.onclick=async e=>{const b=e.target.closest('button');if(!b)return;const d=day(k);
     if(b.dataset.nav){k=addDays(k,Number(b.dataset.nav));render();return;}
     if(b.id==='dPaste'){popLayer();setTimeout(()=>askPaste('Paste the HUB block',t=>openReview(t,k),hubCheck),200);return;}
@@ -1143,7 +1217,7 @@ function openDay(k0){let k=k0;
     if(b.id==='dDeleteToday'){if(k!==todayKey()){toast('This button only clears today.');return;}if(!confirm("Delete Everything For Today?\n\nThis will remove today's codes, games, slips and posts.\n\nYour crests, settings and other days will not be affected."))return;
       clearTimeout(saveT.days);delete saveT.days;
       for(const s of ['t10','t5','vip']){await cdel(`slip:${k}:${s}`);}
-      delete S.days[k];await kset('days',S.days);if(S.videoDays&&S.videoDays[k]){delete S.videoDays[k];await kset('videoDays',S.videoDays);}videoDateKey=todayKey();videoSlot='v1';S.vrows=[];curId=null;await kset('vrows',S.vrows);k=todayKey();popLayer();setTimeout(()=>{toast('Today cleared ✓');refresh();},180);return;}
+      try{delete S.days[k];await writeKey('days');if(S.videoDays&&S.videoDays[k]){delete S.videoDays[k];await writeKey('videoDays');}videoDateKey=todayKey();videoSlot='v1';S.vrows=[];curId=null;await writeKey('vrows');}catch(err){saveFailed(err);return;}k=todayKey();popLayer();setTimeout(()=>{toast('Today cleared ✓');refresh();},180);return;}
     if(b.dataset.slip){pickFile('image/*',false,async fs=>{if(!fs[0])return;const u=await shrink(await fileToDataURL(fs[0]),1400,'image/jpeg',0.9);await cset(`slip:${k}:${b.dataset.slip}`,u);d.slips[b.dataset.slip]=true;save('days');toast('Slip attached ✓');render();});return;}
     if(b.dataset.rmslip){await cdel(`slip:${k}:${b.dataset.rmslip}`);d.slips[b.dataset.rmslip]=false;save('days');render();return;}
     if(b.dataset.res){const s=b.closest('[data-slot]').dataset.slot;d.codes[s]=d.codes[s]||{code:'',odds:0};d.codes[s].result=b.dataset.res;save('days');render();return;}
@@ -1166,23 +1240,25 @@ function weekStart(k){const d=dateOf(k);const wd=(d.getDay()+6)%7;d.setDate(d.ge
 const hpill=(lab,r)=>`<span class="dpill ${r==='won'?'won':r==='lost'?'lost':''}">${lab} ${r==='won'?'WON':r==='lost'?'LOST':'NO RESULT'}</span>`;
 function renderHistory(){setTimeout(renderRecRes,0);const t=todayKey(),wk=addDays(t,-6);const ks=Object.keys(S.days).filter(k=>k<t).filter(k=>{const d=S.days[k];return Object.keys(d.posts||{}).length||Object.values(d.codes||{}).some(c=>c&&c.code);}).sort().reverse();
   const L=S.followers;const tw=weekStart(t);const groups=[];ks.forEach(k=>{const w=weekStart(k);let g=groups.find(x=>x.w===w);if(!g){g={w,ks:[]};groups.push(g);}g.ks.push(k);});
-  const box=(s,cls,i)=>{const a=recRange==='week'?slotStats(s,wk):recRange==='month'?slotStats(s,t.slice(0,8)+'01'):slotStats(s);return `<div class="sbox ${cls}" style="animation-delay:${i*.04}s"><div class="bl">${SLOTNAME[s]}</div><div class="big">${pct(a)}</div></div>`;};
+  const from=recRange==='week'?wk:recRange==='month'?t.slice(0,8)+'01':null;const pls=SLOTS.map(s=>slotProfit(s,from));const plTot=Math.round(pls.reduce((a,x)=>a+x.p,0)*100)/100;const plN=pls.reduce((a,x)=>a+x.n,0);
+  const box=(s,cls,i)=>{const a=slotStats(s,from);const pl=pls[SLOTS.indexOf(s)];return `<div class="sbox ${cls}" style="animation-delay:${i*.04}s"><div class="bl">${SLOTNAME[s]}</div><div class="big">${pct(a)}</div><div class="pl ${pl.n?plClass(pl.p):'flat'}">${pl.n?fmtPL(pl.p):'-'}</div></div>`;};
   const cell=(i,f)=>{const v=L[i][f];if(v==null)return '<td>-</td>';const p=i>0?L[i-1][f]:null;const dl=p==null?'':v-p;return `<td>${v}${dl!==''?`<small class="${dl>=0?'up':'down'}">${dl>=0?'+':''}${dl}</small>`:''}</td>`;};
   $('p-history').innerHTML=`<div id="recRes"></div><div class="sechd rec-head"><span class="sect" style="margin:0">Win rate</span><div class="seg2 rec-range"><button data-rr="week" class="${recRange==='week'?'on':''}">This week</button><button data-rr="month" class="${recRange==='month'?'on':''}">Month</button><button data-rr="all" class="${recRange==='all'?'on':''}">All time</button></div></div><div class="summary-grid">${box('t10','p',0)}${box('t5','o',1)}${box('vip','y',2)}</div>
+  <div class="pltotal"><span>Total profit ${recRange==='week'?'this week':recRange==='month'?'this month':'all time'}<small>${stakeOf()===1?'1 unit per slip':`GH₵ ${stakeOf()} per slip`} · Won and Lost slips only</small></span><b class="${plN?plClass(plTot):'flat'}">${plN?fmtPL(plTot):'-'}</b></div>
   <div class="card"><div class="streakrow"><span><span class="stt">Posting streak</span><span class="muted" style="display:block">Days in a row with posts sent</span></span><b>${streak()}</b></div></div>
-  <button class="btn-half w100" data-rec="recap" style="margin-bottom:16px">Build weekly recap post</button>
+  <button class="btn-half w100" data-rec="recap" style="margin-bottom:16px">Build ${recRange==='week'?'weekly':recRange==='month'?'monthly':'all time'} recap post</button>
   ${groups.length?groups.map(g=>{const name=g.w===tw?'This week':g.w===addDays(tw,-7)?'Last week':`Week of ${shortDate(g.w).slice(4)}`;
     return `<div class="wk"><span>${name}</span></div><div class="card" style="padding:4px 16px">${g.ks.map(k=>{const d=S.days[k];const ids=itemIds(d);const n=ids.filter(id=>isDone(d,id)).length;
       const pills=SLOTS.filter(s=>d.codes[s]&&d.codes[s].code).map(s=>hpill(s==='t10'?'10':s==='t5'?'5':'VIP',d.codes[s].result)).join('');
-      return `<button class="hrow" data-k="${k}"><div class="a">${longDate(k)}<span class="ch">›</span></div><div class="dpills">${pills||'<span class="muted">No codes</span>'}</div>
+      const dpl=dayProfit(d);return `<button class="hrow" data-k="${k}"><div class="a">${longDate(k)}<span class="hr-r">${dpl.n?`<span class="pl ${plClass(dpl.p)}">${fmtPL(dpl.p)}</span>`:''}<span class="ch">›</span></span></div><div class="dpills">${pills||'<span class="muted">No codes</span>'}</div>
         ${ids.length?`<div class="bar"><i style="width:${Math.round(n/ids.length*100)}%"></i></div><div class="b">${n} of ${ids.length} posts sent</div>`:''}</button>`;}).join('')}</div>`;}).join('')
     :'<div class="card"><p class="empty">Past days show here from tomorrow. Today lives on Home.</p></div>'}
   <div class="sect">Followers</div><div class="card">${L.length?`<div style="overflow-x:auto"><table class="fol"><thead><tr><th>Date</th><th>Telegram</th><th>WhatsApp</th><th>X</th><th>TikTok</th></tr></thead><tbody>${L.map((r,i)=>`<tr><td>${shortDate(r.date)}</td>${['tg','wa','x','tt'].map(f=>cell(i,f)).join('')}</tr>`).reverse().slice(0,12).join('')}</tbody></table></div>`:'<div class="cs">Log your numbers once a week to see growth.</div>'}
     <button class="btn-half blue w100" id="rFol" style="margin-top:10px">+ Log numbers</button></div>`;}
 $('p-history').addEventListener('input',e=>{});
 $('p-history').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.rr){recRange=b.dataset.rr;renderHistory();return;}if(b.dataset.k){openDay(b.dataset.k);return;}
-  if(b.dataset.rec==='recap'){const r=weeklyRecap(todayKey());if(!r){toast('Mark some slips Won or Lost first.');return;}
-    openSheet(`<div class="modal-title">Weekly recap</div><div class="post"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div><div class="btn-row"><button class="btn-half" data-close="1">Close</button></div>`,
+  if(b.dataset.rec==='recap'){const r=recapReport(recRange);if(!r){toast('Mark some slips Won or Lost first.');return;}
+    openSheet(`<div class="modal-title">${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap</div><div class="post"><pre>${esc(r)}</pre><div class="mini">${['tg','wa','x','copy'].map(p=>btnHTML(p,false)).join('')}</div></div><div class="btn-row"><button class="btn-half" data-close="1">Close</button></div>`,
       async ev=>{const bb=ev.target.closest('button');if(!bb)return;if(bb.dataset.close){closeSheet();return;}const ok=await shareTo(bb.dataset.p,r,[]);if(ok&&bb.dataset.p!=='copy')bb.classList.add('done');});return;}
   if(b.id==='rFol'){openSheet(`<div class="modal-title">Log followers</div><span class="lbl">Telegram</span><input id="fTg" type="number" inputmode="numeric"><span class="lbl">WhatsApp</span><input id="fWa" type="number" inputmode="numeric"><span class="lbl">X</span><input id="fX" type="number" inputmode="numeric"><span class="lbl">TikTok</span><input id="fTt" type="number" inputmode="numeric"><div class="btn-row"><button class="btn-half" data-a="no">Cancel</button><button class="btn-save" data-a="ok">Save numbers</button></div>`,
     ev=>{const bb=ev.target.closest('button');if(!bb)return;if(bb.dataset.a==='ok'){const g=i=>{const v=$(i).value.trim();return v===''?null:Number(v);};const en={date:todayKey(),tg:g('fTg'),wa:g('fWa'),x:g('fX'),tt:g('fTt')};
@@ -1432,6 +1508,8 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
     ${row('morning','🌅','Morning images',`${imgs} image${imgs===1?'':'s'} in Monday to Sunday folders`)}
     ${row('crests','🛡️','Crests',`${S.crestList.length} team${S.crestList.length===1?'':'s'}`)}
     ${row('tpls','📝','Post templates',edited?`${edited} edited`:'Hot Codes, statuses, win posts, recap')}</div></div>
+  <div class="set-group"><div class="set-title">Records</div><div class="set-list">
+    ${row('stake','📈','Profit tracker',stakeOf()===1?'1 unit per slip (Records shows units)':`GH₵ ${stakeOf()} per slip (Records shows GH₵)`)}</div></div>
   <div class="set-group"><div class="set-title">Video</div><div class="set-list">
     ${row('video','🎬','Video settings',`${esc((S.vtpls.find(t=>t.id===V.tpl)||{name:'Navy'}).name)} · ${AN[V.crestAnim]||'Pop'} · ${V.secs} sec per match`)}</div></div>
   
@@ -1441,7 +1519,7 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
   <button class="btn-danger" id="clearAll">Clear everything in this app</button><p class="muted" style="text-align:center;margin-top:8px">Only deletes Sure Stake 707 Hub data. Your other apps are not touched.</p>`;}
 $('p-settings').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const s=b.dataset.s;
   if(b.id==='clearAll'){if(!confirm('Delete everything in Sure Stake 707 Hub: days, slips, crests, images, members, followers? Save a backup first if unsure.'))return;
-    await wipe();Object.keys(blobCache).forEach(k=>delete blobCache[k]);S=blankState();await kset('migrated',true);await kset('migrated2',true);S.vrows=[];curId=null;LY=null;tplLoaded=null;refresh();renderVideoUI();toast('Hub cleared');return;}
+    cancelSaves();await wipe();Object.keys(blobCache).forEach(k=>delete blobCache[k]);S=blankState();takeSnap('days',{});takeSnap('videoDays',{});await kset('migrated',true);await kset('migrated2',true);S.vrows=[];curId=null;LY=null;tplLoaded=null;refresh();renderVideoUI();toast('Hub cleared');return;}
   if(s==='logo'){pickFile('image/*',false,async fs=>{if(!fs[0])return;S.logo=await shrink(await fileToDataURL(fs[0]),1200,'image/png');save('logo');refresh();toast('Logo saved ✓');});}
   else if(s==='channel')editField('Telegram link',S.prefs.channel,v=>{if(v&&v.trim()){S.prefs.channel=v.trim();save('prefs');refresh();toast('Saved ✓');}});
   else if(s==='handle')editField('Ticket handle',S.prefs.handle,v=>{if(v&&v.trim()){S.prefs.handle=v.trim();save('prefs');refresh();toast('Saved ✓');}});
@@ -1449,6 +1527,7 @@ $('p-settings').addEventListener('click',async e=>{const b=e.target.closest('but
   else if(s==='elink')editField('707 Elite group link',S.prefs.eliteLink||'',v=>{if(v!==null){S.prefs.eliteLink=v.trim();save('prefs');refresh();toast('Saved ✓');}});
   else if(s==='cap')editField('Room size',S.prefs.cap,v=>{const n=Number(v);if(n>0){S.prefs.cap=n;save('prefs');refresh();toast('Saved ✓');}},{type:'number'});
   else if(s==='eliteSettings')openEliteSettings();else if(s==='morning')openMorning();else if(s==='crests')openCrests();else if(s==='tpls')openTemplates();else if(s==='video')openVideoSettings();
+  else if(s==='stake')editField('Stake per slip',stakeOf(),v=>{if(v===null){delete S.prefs.stake;save('prefs');refresh();toast('Back to 1 unit ✓');return;}const n=Number(v);if(n>0){S.prefs.stake=n;save('prefs');refresh();toast('Saved ✓');}else toast('Type a number above 0.');},{type:'number',reset:true,note:'1 = profit in units (a win at 9.71 odds is +8.71, a loss is -1). Any other number shows profit in GH₵ using that stake.'});
   else if(s==='bkSave')saveBackup();else if(s==='bkLoad')loadBackup();});
 async function saveBackup(){try{await flushSaves();const data=await kall();Object.keys(data).forEach(k=>{if(k.startsWith('vid:'))delete data[k];});const json=JSON.stringify({app:'SS707Hub',version:VERSION,saved:new Date().toISOString(),data});
   const name=`SS707Hub_Backup_${todayKey()}.json`;const blob=new Blob([json],{type:'application/json'});const f=new File([blob],name,{type:'application/json'});
@@ -1456,8 +1535,8 @@ async function saveBackup(){try{await flushSaves();const data=await kall();Objec
   const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);S.prefs.lastBackup=Date.now();save('prefs');refresh();toast('Backup saved to Downloads ✓');}catch(e){toast('Backup failed: '+e.message);}}
 function loadBackup(){pickFile('',false,async fs=>{const f=fs[0];if(!f)return;try{let o;try{o=JSON.parse(await f.text());}catch(_){throw new Error('That file is not a backup. Pick the file that starts with SS707Hub_Backup_');}if(o.app!=='SS707Hub'||!o.data)throw new Error('This is not a Sure Stake 707 Hub backup');
   if(!confirm(`Restore the backup from ${o.saved?o.saved.slice(0,10):'unknown date'}? It replaces what is in the app now.`))return;
-  const d=await db();await new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');const s=t.objectStore(ST);s.clear();for(const [k,v] of Object.entries(o.data))s.put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error||new Error('Restore failed'));t.onabort=()=>rej(t.error||new Error('Restore failed'));});
-  Object.keys(blobCache).forEach(k=>delete blobCache[k]);await loadAll();refresh();renderVideoUI();redraw();toast('Backup restored ✓');}catch(e){toast(e.message==='Restore failed'?'Restore failed':e.message,3500);}});}
+  cancelSaves();await Promise.all([...inflight].map(p=>p.catch(()=>{})));const d=await db();await new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');const s=t.objectStore(ST);s.clear();for(const [k,v] of Object.entries(o.data))s.put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error||new Error('Restore failed'));t.onabort=()=>rej(t.error||new Error('Restore failed'));});
+  Object.keys(blobCache).forEach(k=>delete blobCache[k]);await loadAll();try{const nr=Date.now();await kset('_rev',nr);lastRev=nr;bcPost({type:'saved',key:'all'});}catch(_){}refresh();renderVideoUI();redraw();toast('Backup restored ✓');}catch(e){toast(e.message==='Restore failed'?'Restore failed':e.message,3500);}});}
 
 // ---------- VIDEO ENGINE ----------
 const W=1080,H=1920;const cv=$('cv'),ctx=cv.getContext('2d');
@@ -1508,15 +1587,16 @@ function drawEnd(lt){drawBase();ctx.fillStyle=bgColor;ctx.fillRect(62,LY.endTop,
   ctx.fillStyle=S.vset.scoreColor==='#FFFFFF'?'#FFD400':'#FFFFFF';fit(t2,endFont,700,60,880);ctx.fillText(t2,540,mid+80);ctx.restore();}
 let curId=null;
 function drawStill(){if(!LY)return;const r=S.vrows.find(x=>x.id===curId)||S.vrows.find(x=>x.home||x.away)||S.vrows[0];if(r)drawMatch(r,3.2,S.vset.secs);else drawBase();}
-function timeline(){const segs=[];let t=0;const d=S.vset.secs;S.vrows.filter(r=>r.home.trim()||r.away.trim()).forEach(r=>{segs.push({k:'m',r,s:t,d});t+=d;});if(segs.length&&S.vset.end){segs.push({k:'e',s:t,d:S.vset.endSecs});t+=S.vset.endSecs;}return {segs,total:t};}
+function endCardOn(){return !!S.vset.end&&!!(String(S.vset.end1||'').trim()||String(S.vset.end2||'').trim());}
+function timeline(){const segs=[];let t=0;const d=S.vset.secs;S.vrows.filter(r=>r.home.trim()||r.away.trim()).forEach(r=>{segs.push({k:'m',r,s:t,d});t+=d;});if(segs.length&&endCardOn()){segs.push({k:'e',s:t,d:S.vset.endSecs});t+=S.vset.endSecs;}return {segs,total:t};}
 function drawSeg(g,lt,soft){g.k==='m'?drawMatch(g.r,lt,g.d,soft):drawEnd(lt);}
 function drawAt(tl,t){const i=tl.segs.findIndex(s=>t>=s.s&&t<s.s+s.d);const idx=i<0?tl.segs.length-1:i;const g=tl.segs[idx];if(!g)return drawBase();const lt=Math.min(t-g.s,g.d-0.001);
   const ba=S.vset.between;const B=0.32;const toEnd=g.s+g.d-t,next=tl.segs[idx+1],first=idx===0;
   if(ba==='slide'&&next&&toEnd<B){const p=eOut(1-toEnd/B);ctx.save();ctx.translate(-W*p,0);drawSeg(g,lt,false);ctx.restore();ctx.save();ctx.translate(W*(1-p),0);drawSeg(next,0.001,false);ctx.restore();return;}
-  drawSeg(g,lt,ba==='soft');if(ba==='fade'||ba==='flash'){let k=0;if(next&&toEnd<B)k=1-toEnd/B;else if(!first&&lt<B)k=1-lt/B;if(k>0){ctx.fillStyle=ba==='fade'?`rgba(0,0,0,${k})`:`rgba(255,255,255,${k*0.9})`;ctx.fillRect(0,0,W,H);}}}
+  drawSeg(g,lt,ba==='soft'&&!!next);if(ba==='fade'||ba==='flash'){let k=0;if(next&&toEnd<B)k=1-toEnd/B;else if(!first&&lt<B)k=1-lt/B;if(k>0){ctx.fillStyle=ba==='fade'?`rgba(0,0,0,${k})`:`rgba(255,255,255,${k*0.9})`;ctx.fillRect(0,0,W,H);}}}
 async function preloadAll(){await setTemplate();await Promise.all(S.vrows.flatMap(r=>[prep(r.hc),prep(r.ac)]));try{const fs=[S.vset.fontTeam||'Bebas Neue',S.vset.fontScore||'Archivo Black',S.vset.fontEnd||'Montserrat','Outfit',...FONT_OPTIONS.map(([f])=>f)];for(const f of [...new Set(fs)])await document.fonts.load(`800 100px "${f}"`);}catch(e){}try{HW=document.fonts.check('800 100px Anton')?400:800;}catch(e){HW=800;}}
 async function redraw(){await preloadAll();if(!playing)drawStill();mirror();}
-let playing=false,raf=0;function run(tl,onDone){playing=true;const t0=performance.now();const step=now=>{const t=(now-t0)/1000;if(t>=tl.total+0.15){playing=false;drawAt(tl,tl.total-0.01);onDone&&onDone();return;}drawAt(tl,Math.min(t,tl.total-0.001));mirror();raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);}
+let playing=false,raf=0;function run(tl,onDone){playing=true;const t0=performance.now();const step=now=>{const t=(now-t0)/1000;if(t>=tl.total){playing=false;drawAt(tl,tl.total-0.01);onDone&&onDone();return;}drawAt(tl,Math.min(t,tl.total-0.001));mirror();raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);}
 function stopRun(){cancelAnimationFrame(raf);playing=false;}const vsay=t=>$('vstatus').textContent=t||'';
 $('btnPlay').onclick=async()=>{if(playing){stopRun();$('btnPlay').textContent='▶ Preview';drawStill();vsay('');return;}const tl=timeline();if(!tl.segs.length){vsay('Add at least one match first.');return;}await preloadAll();$('btnPlay').textContent='■ Stop';vsay(`Playing ${Math.round(tl.total)} seconds`);run(tl,()=>{$('btnPlay').textContent='▶ Preview';vsay('');});};
 function pickMime(){const list=['video/mp4;codecs=avc1.42E01E','video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];if(!window.MediaRecorder)return null;return list.find(m=>MediaRecorder.isTypeSupported(m))||'';}
@@ -1525,7 +1605,7 @@ $('btnRec').onclick=async()=>{if(playing)return;const dupes=duplicateVideoTeams(
   await preloadAll();const btn=$('btnRec');btn.disabled=true;btn.classList.add('on');btn.textContent='● Recording...';$('btnPlay').disabled=true;vsay('Recording. Keep this screen open until it finishes.');try{wake=await navigator.wakeLock?.request('screen');}catch(e){}
   drawAt(tl,0);let vthumb=null;try{drawAt(tl,Math.min(3,tl.total-0.1));const tc=document.createElement('canvas');tc.width=90;tc.height=160;tc.getContext('2d').drawImage(cv,0,0,90,160);vthumb=tc.toDataURL('image/jpeg',0.7);drawAt(tl,0);}catch(e){}const r720=S.vset.res==='720';const vbr=r720?(S.vset.q==='std'?4e6:6e6):(S.vset.q==='std'?8e6:12e6);let srcCv=cv;if(r720){recTarget=document.createElement('canvas');recTarget.width=720;recTarget.height=1280;recTarget.getContext('2d').drawImage(cv,0,0,720,1280);srcCv=recTarget;}else recTarget=null;const stream=srcCv.captureStream(30);const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:vbr}:{videoBitsPerSecond:vbr});const chunks=[];rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
   rec.onstop=async()=>{try{wake&&wake.release();}catch(e){}wake=null;const type=rec.mimeType||mime||'video/webm';lastBlob=await fixVideoDuration(new Blob(chunks,{type}),Math.max(500,Math.round((recT1||performance.now())-recT0)));recTarget=null;const ext=type.includes('mp4')?'mp4':'webm';lastName=`SureStake707_Scores_${todayKey()}.${ext}`;
-    btn.disabled=false;btn.classList.remove('on');btn.textContent='● Record video';$('btnPlay').disabled=false;vsay('');showResult(ext);saveVideo(lastBlob,ext,tl,vthumb);};rec.start();recT0=performance.now();recT1=0;setTimeout(()=>run(tl,()=>setTimeout(()=>{recT1=performance.now();if(rec.state!=='inactive')rec.stop();},250)),150);};
+    btn.disabled=false;btn.classList.remove('on');btn.textContent='● Record video';$('btnPlay').disabled=false;vsay('');showResult(ext);saveVideo(lastBlob,ext,tl,vthumb);};rec.start();recT0=performance.now();recT1=0;setTimeout(()=>run(tl,()=>setTimeout(()=>{recT1=performance.now();if(rec.state!=='inactive')rec.stop();},120)),150);};
 async function shareVideoFile(blob,name){try{if(!blob)return false;const type=blob.type&&blob.type.startsWith('video/')?blob.type:'video/mp4';const file=new File([blob],name,{type,lastModified:Date.now()});
   if(!navigator.share){toast('Video sharing is not available here. Save the video, then share it from Gallery.',4500);return false;}
   let supported=true;try{if(navigator.canShare)supported=navigator.canShare({files:[file]});}catch(e){}
@@ -1639,7 +1719,7 @@ function tplsClick(e){const b=e.target.closest('button');if(!b)return;const id=b
         else if(bb.dataset.a==='del'){if(!confirm(`Delete ${t.name}?`))return;S.vtpls=S.vtpls.filter(x=>x!==t);await cdel('tpl:'+id);S.vset.tpl='navy';LY=null;save('vtpls');save('vset');closeSheet();renderTpls();redraw();toast('Template deleted');}else closeSheet();});return;}
   S.vset.tpl=id;LY=null;save('vset');renderTpls();redraw();}
 function chips(el,list,key,color='var(--orange)'){if(!el)return;el.innerHTML=list.map(([v,l])=>`<button class="chip ${String(S.vset[key])===String(v)?'on':''}" style="--c:${color}" data-v="${v}">${l}</button>`).join('');
-  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;let v=b.dataset.v;if(v==='true')v=true;else if(v==='false')v=false;else if(!isNaN(v)&&v!=='')v=Number(v);S.vset[key]=v;save('vset');chips(el,list,key,color);redraw();};}
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;let v=b.dataset.v;if(v==='true')v=true;else if(v==='false')v=false;else if(!isNaN(v)&&v!=='')v=Number(v);S.vset[key]=v;save('vset');chips(el,list,key,color);if(key==='end')syncEndFields();redraw();};}
 let recTarget=null,recT0=0,recT1=0;
 function mirror(){const m=$('miniCv');if(m)m.getContext('2d').drawImage(cv,0,0,m.width,m.height);if(recTarget)recTarget.getContext('2d').drawImage(cv,0,0,recTarget.width,recTarget.height);}
 function openVideoSettings(){const render=()=>{$('subBody').innerHTML=`<canvas class="mini-cv" id="miniCv" width="270" height="480"></canvas><button class="btn-half orange w100" id="vsTest" style="margin-bottom:12px">▶ Test animations</button>
@@ -1647,7 +1727,7 @@ function openVideoSettings(){const render=()=>{$('subBody').innerHTML=`<canvas c
     <div class="card"><div class="ct o">Animations</div><span class="lbl">Crests come in</span><div class="chips" id="aCrest"></div><span class="lbl">Score appears</span><div class="chips" id="aScore"></div><span class="lbl">Between matches</span><div class="chips" id="aBetween"></div></div>
     <div class="card"><div class="ct o">Fonts</div><p class="muted" style="margin:0 0 6px">The app interface stays in Outfit. Choose separate fonts for video text. Tap More Fonts to see the full list.</p><span class="lbl">Team names</span><div id="fontTeam"></div><span class="lbl">Scores</span><div id="fontScore"></div><span class="lbl">End card text</span><div id="fontEnd"></div></div>
     <div class="card"><div class="ct o">Timing and text</div><span class="lbl">Seconds per match</span><div class="chips" id="secs"></div><span class="lbl">Score colour</span><div class="chips" id="scol"></div><span class="lbl">Video size</span><div class="chips" id="vres"></div><span class="lbl">Sharpness</span><div class="chips" id="vq"></div>
-      <span class="lbl">End card</span><div class="chips" id="endOn"></div><span class="lbl">End card big line</span><input type="text" id="end1" maxlength="40"><span class="lbl">End card small line</span><input type="text" id="end2" maxlength="60"></div>`;renderVideoControls();redraw().then(mirror);};
+      <span class="lbl">End card</span><div class="chips" id="endOn"></div><p class="muted" id="endNote" style="margin:6px 0 0"></p><span class="lbl">End card big line</span><input type="text" id="end1" maxlength="40"><span class="lbl">End card small line</span><input type="text" id="end2" maxlength="60"></div>`;renderVideoControls();redraw().then(mirror);};
   openSub('Video settings',render);$('subBody').onclick=async e=>{
     const fb=e.target.closest('[data-font]');
     if(fb){chooseVideoFont(fb.dataset.fontKey,fb.dataset.font);return;}
@@ -1658,7 +1738,7 @@ function openVideoSettings(){const render=()=>{$('subBody').innerHTML=`<canvas c
     const tl=timeline();if(!tl.segs.length){toast('Add a match on the Video tab first.');return;}
     await preloadAll();b.textContent='■ Stop';run(tl,()=>{const x=$('vsTest');if(x)x.textContent='▶ Test animations';});
   };
-  $('subBody').oninput=e=>{if(e.target.id==='end1'){S.vset.end1=e.target.value;save('vset');}if(e.target.id==='end2'){S.vset.end2=e.target.value;save('vset');}};
+  $('subBody').oninput=e=>{if(e.target.id==='end1'){S.vset.end1=e.target.value;save('vset');syncEndFields();}if(e.target.id==='end2'){S.vset.end2=e.target.value;save('vset');syncEndFields();}};
 }
 
 function renderVideoControls(){if(!$('tpls'))return;renderTpls();
@@ -1666,7 +1746,9 @@ function renderVideoControls(){if(!$('tpls'))return;renderTpls();
   chips($('aBetween'),[['soft','Soft'],['fade','Fade to black'],['flash','Flash'],['slide','Slide']],'between');
   renderFontPicker('fontTeam','fontTeam');renderFontPicker('fontScore','fontScore');renderFontPicker('fontEnd','fontEnd');
   chips($('secs'),[[4,'4 sec'],[5,'5 sec'],[6,'6 sec'],[7,'7 sec']],'secs');chips($('scol'),[['#FFFFFF','White'],['#FFD400','Yellow']],'scoreColor');chips($('vres'),[['1080','1080p'],['720','720p']],'res');chips($('vq'),[['high','High'],['std','Standard']],'q');chips($('endOn'),[[true,'On'],[false,'Off']],'end');
-  if($('end1'))$('end1').value=S.vset.end1;if($('end2'))$('end2').value=S.vset.end2;}
+  if($('end1'))$('end1').value=S.vset.end1;if($('end2'))$('end2').value=S.vset.end2;syncEndFields();}
+function syncEndFields(){const off=!S.vset.end;['end1','end2'].forEach(id=>{const x=$(id);if(x){x.disabled=off;x.style.opacity=off?'.45':'';}});const n=$('endNote');if(!n)return;
+  n.textContent=off?'Off: the video ends right after the last match.':endCardOn()?`On: your end card shows for ${S.vset.endSecs} seconds after the last match.`:'On, but both lines are empty, so no end card is recorded. Type a line to show it.';}
 function renderVideoUI(){activateVideoDay(todayKey());renderVideoControls();renderVHist();}
 // ---------- Video file length fix ----------
 async function fixVideoDuration(blob,ms){try{
@@ -1722,7 +1804,7 @@ function showTab(t){tab=t;document.querySelectorAll('.page').forEach(p=>p.classL
 document.querySelector('.bottom-nav').onclick=e=>{const b=e.target.closest('.nav-btn');if(b)showTab(b.dataset.tab);};
 
 // ---------- Start ----------
-async function loadAll(){const all=await kallState();const B=blankState();
+async function loadAll(){const all=await kallState();const B=blankState();takeSnap('days',all.days||{});takeSnap('videoDays',all.videoDays||{});lastRev=Number(all._rev)||0;
   S.days=all.days||{};S.crestList=all.crestList||[];S.vrows=Array.isArray(all.vrows)&&all.vrows.length?all.vrows.map(r=>({...newRow(),...r})):[];S.videoDays=all.videoDays||{};
   S.vset={...DEF_VIDEO,...(all.vset||{})};if(S.vset.trans&&!(all.vset||{}).crestAnim)S.vset.crestAnim=S.vset.trans;delete S.vset.trans;
   S.vtpls=all.vtpls||B.vtpls;S.vtpls.forEach(t=>{if(t.id==='navy'&&t.name==='Navy')t.name='Blue';});S.vhist=all.vhist||[];S.logo=all.logo||null;S.members=all.members||[];S.followers=all.followers||[];S.prefs={...B.prefs,...(all.prefs||{})};S.imgIndex={...B.imgIndex,...(all.imgIndex||{})};S.finance={...B.finance,...(all.finance||{}),saved:Array.isArray(all.finance?.saved)?all.finance.saved:[],withdrawn:Array.isArray(all.finance?.withdrawn)?all.finance.withdrawn:[],otherIncome:Array.isArray(all.finance?.otherIncome)?all.finance.otherIncome:[],hide:!!(all.finance?.hide)};
@@ -1735,7 +1817,25 @@ async function loadAll(){const all=await kallState();const B=blankState();
   for(const d of Object.values(S.days)){if((d.vipPicks||[]).length&&!(d.games||[]).some(g=>g.slot==='vip')){d.games=d.games||[];d.vipPicks.forEach(p=>{const i=p.text.lastIndexOf(' - ');d.games.push({id:uid(),slot:'vip',time:'',match:i>0?p.text.slice(0,i):p.text,pick:i>0?p.text.slice(i+3):'',res:p.res||null});});d.vipPicks=[];save('days');}}
   if(!Object.keys(S.videoDays).length&&S.vrows.length){const built=buildVideoRowsForDay(todayKey());S.videoDays[todayKey()]={v1:built.v1,v2:built.v2,active:'v1',seeded:true};await kset('videoDays',S.videoDays);}
   if(!S.vtpls.some(t=>t.id===S.vset.tpl))S.vset.tpl='navy';if(!S.vrows.length)S.vrows=[];curId=S.vrows[0]?.id||null;LY=null;tplLoaded=null;}
-(async()=>{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});let loaded=false;const loadPromise=loadAll();const busyTimer=setTimeout(()=>{if(!loaded){renderHeader();showTab('home');toast('Storage is busy. Close other copies of Sure Stake and reopen.',5000);}},6000);try{await loadPromise;loaded=true;clearTimeout(busyTimer);}catch(e){loaded=true;clearTimeout(busyTimer);toast('Storage is not available. Nothing will be kept.',4000);if(!S.vrows.length)S.vrows=[newRow()];}
+// Keep every open copy in step: save on leaving, reload on return if another copy saved.
+let syncing=false;
+async function syncFromStorage(){if(!storageReady||storageBroken||syncing)return;syncing=true;try{const rev=Number(await kget('_rev'))||0;if(rev===lastRev)return;
+  try{await flushSaves();}catch(e){saveFailed(e);}
+  const all=await kallState();const B=blankState();for(const key of MERGE_KEYS)adoptMerged(key,all[key]||{});
+  const norm={prefs:v=>({...B.prefs,...v}),imgIndex:v=>({...B.imgIndex,...v}),vset:v=>({...DEF_VIDEO,...v}),finance:v=>({...B.finance,...v,saved:Array.isArray(v.saved)?v.saved:[],withdrawn:Array.isArray(v.withdrawn)?v.withdrawn:[],otherIncome:Array.isArray(v.otherIncome)?v.otherIncome:[],hide:!!v.hide})};
+  let vid=false;for(const key of ['crestList','vtpls','vhist','logo','members','followers','prefs','imgIndex','finance','vset']){if(!(key in all))continue;const v=norm[key]?norm[key](all[key]||{}):all[key];if(JSON.stringify(v)!==JSON.stringify(S[key])){S[key]=v;if(['crestList','vtpls','vset','vhist'].includes(key))vid=true;}}
+  lastRev=Number(all._rev)||rev;refresh();if(vid&&tab==='video'){renderVideoUI();redraw();}
+  const a=document.activeElement;if(subRender&&!(a&&/INPUT|TEXTAREA/.test(a.tagName)))rerenderSub();}catch(e){}finally{syncing=false;}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSaves().catch(saveFailed);else syncFromStorage();});
+window.addEventListener('pagehide',()=>{flushSaves().catch(()=>{});});
+window.addEventListener('pageshow',e=>{if(e.persisted)syncFromStorage();});
+let warnedOther=false;function otherWindow(){if(warnedOther)return;warnedOther=true;toast('Sure Stake 707 is also open in another window. Both stay in step, but it is safest to use one.',5000);}
+if(bc)bc.onmessage=e=>{const m=e.data||{};if(m.from===TAB_ID)return;if(m.type==='hello'){bcPost({type:'here'});otherWindow();}else if(m.type==='here')otherWindow();else if(m.type==='saved'&&!document.hidden)syncFromStorage();};
+(async()=>{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});let loaded=false;const busyTimer=setTimeout(()=>{if(!loaded){renderHeader();showTab('home');toast('Storage is busy. Close other copies of Sure Stake and reopen.',5000);}},6000);
+  let err=null;for(let i=0;i<3;i++){try{await loadAll();err=null;break;}catch(e){err=e;dbp=null;await new Promise(r=>setTimeout(r,600*(i+1)));}}
+  loaded=true;clearTimeout(busyTimer);
+  if(err){storageBroken=true;readyRej(err);showBanner('Storage did not open, so nothing new can be saved and nothing old was touched. Close Sure Stake fully (and any other copy), then open it again.');if(!S.vrows.length)S.vrows=[newRow()];}
+  else{storageReady=true;readyRes();bcPost({type:'hello'});}
   renderHeader();showTab('home');
   try{await cget('eliteFlyer');}catch(e){}renderVideoUI();await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
 })();
