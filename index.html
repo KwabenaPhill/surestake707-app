@@ -13,6 +13,9 @@
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <title>Sure Stake 707 Hub</title>
+<meta name="description" content="Sports staking hub, match tracker, slips manager, and video creator.">
+<meta property="og:title" content="Sure Stake 707 Hub">
+<meta property="og:description" content="Sports staking hub, match tracker, slips manager, and video creator.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -443,7 +446,7 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 #p-history .rec-head .rec-range{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
 #p-history .rec-head .rec-range button{min-width:0;width:100%;padding:8px 6px}
 
-/* v48: auto tag, live scores, leagues, pictures */
+/* v47: auto tag, live scores, leagues, pictures */
 .autotag,.sliphd .autotag,.slipc .autotag{display:block;font-size:10.5px!important;font-weight:600!important;color:var(--acc)!important;letter-spacing:.3px;margin-top:3px}
 .lvs{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;white-space:nowrap;display:inline-block;background:var(--card2);border:1px solid var(--line);color:#fff}
 .lvs.live{background:var(--accSoft);border-color:var(--accLine);color:var(--acc)}
@@ -704,7 +707,7 @@ async function kset(k,v){const d=await db();return new Promise((res,rej)=>{const
 async function kdel(k){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
 async function kall(){const d=await db();return new Promise((res,rej)=>{const out={};const c=d.transaction(ST).objectStore(ST).openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue();}else res(out);};c.onerror=()=>rej(c.error);});}
 async function kallState(){const d=await db();return new Promise((res,rej)=>{const out={};const t=d.transaction(ST,'readonly');const s=t.objectStore(ST);const q=s.getAllKeys();q.onsuccess=()=>{for(const k of q.result){if(String(k).includes(':')||k==='eliteFlyer')continue;const r=s.get(k);r.onsuccess=()=>{out[k]=r.result;};r.onerror=()=>rej(r.error);}};q.onerror=()=>rej(q.error);t.oncomplete=()=>res(out);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Storage read failed'));});}
-async function kgetPrefix(prefix){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST);const s=t.objectStore(ST);const r=IDBKeyRange.bound(prefix,prefix+'￿');const qk=s.getAllKeys(r),qv=s.getAll(r);t.oncomplete=()=>{const out={};(qk.result||[]).forEach((k,i)=>out[k]=qv.result[i]);res(out);};t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Read failed'));});}
+async function kgetPrefix(prefix){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST);const s=t.objectStore(ST);const r=IDBKeyRange.bound(prefix,prefix+'\uffff');const qk=s.getAllKeys(r),qv=s.getAll(r);t.oncomplete=()=>{const out={};(qk.result||[]).forEach((k,i)=>out[k]=qv.result[i]);res(out);};t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Read failed'));});}
 async function wipe(){const d=await db();return new Promise((res,rej)=>{const t=d.transaction(ST,'readwrite');t.objectStore(ST).clear();t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Storage clear failed'));});}
 function readOld(){return new Promise(res=>{let r;try{r=indexedDB.open('SS707_ScoreCardMaker',1);}catch(e){return res(null);}
   r.onupgradeneeded=e=>{e.target.transaction.abort();};r.onerror=()=>res(null);r.onblocked=()=>res(null);
@@ -712,7 +715,7 @@ function readOld(){return new Promise(res=>{let r;try{r=indexedDB.open('SS707_Sc
 
 // ---------- State ----------
 const OLD_CLOSERS=["Another Day, Another Chance. Let's Go💰","New Day, Same Hunger 🔥","Another Day To Prove It 🎯","Fresh Day. Fresh Codes. Let's Move 🔥","Another Day In The Office. Let's Work 🏆","Back Again, Back Stronger 💰"];
-const DEF_CLOSERS=["Keep Your Head Clear. Play With Discipline 🎯🧠","Load Them Before Kickoff ⚽🔥","Another Day, Another Chance. Let's Go 💲🔥","Another Day To Prove It 🎯💪","Back Again, Back Stronger 💪🏆","Locked In. Let's Work 🔒🔥","Discipline Pays. Stick To Your Stake 💲✨","We Move Together 🤝🔥","Built Different. Let's Ride 🚀✨","Eyes On The Prize 🏆⚽","Calm Mind, Sharp Picks 🧠👌","Patience Pays. Trust The Process ✨🙌","Same Team, Same Mission 💪🙌","Let The Games Talk ⚽🔥"];
+const DEF_CLOSERS=["Load Them Before Kickoff ⚽🔥","Another Day To Prove It 🎯💪","Back Again, Back Stronger 💪🏆","Locked In. Let's Work 🔒🔥","Discipline Pays. Stick To Your Stake 💲✨","We Move Together 🤝🔥","Built Different. Let's Ride 🚀✨","Eyes On The Prize 🏆⚽","Calm Mind, Sharp Picks 🧠👌","Patience Pays. Trust The Process ✨🙌","Same Team, Same Mission 💪🙌","Let The Games Talk ⚽🔥","Smart Money Moves With Strategy 💲🎯","Stay Sharp, Stay Composed 🧠✨","Consistency Is The Real Game 💪🏆","One Goal, Total Focus 🔒⚽","Discipline Over Emotion Always 💲👌","Execute The Plan. Trust The Picks 🎯🔥","Cold Heads, High Standards 🧠🔒","Quality Over Quantity Every Single Day 🏆✨","Process Over Noise. Lock In 🔒⚽","We Don't Gamble, We Execute 🎯💲"];
 const DEF_PREFS={channel:'t.me/SureStake707',handle:'@RogerRich707',price:50,cap:50,closers:DEF_CLOSERS.slice(),tpls:{}};
 const DEF_VIDEO={tpl:'navy',res:'1080',q:'high',secs:5,crestAnim:'pop',scoreAnim:'pop',between:'soft',scoreColor:'#FFFFFF',end:true,endSecs:3,end1:'FOLLOW FOR MORE',end2:'Daily Football Scores',fontTeam:'Bebas Neue',fontScore:'Archivo Black',fontEnd:'Montserrat'};
 const blankState=()=>({days:{},crestList:[],vrows:[],videoDays:{},vset:{...DEF_VIDEO},vtpls:[{id:'navy',name:'Blue'},{id:'black',name:'Black'}],logo:null,members:[],followers:[],prefs:JSON.parse(JSON.stringify(DEF_PREFS)),imgIndex:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},vhist:[],finance:{saved:[],withdrawn:[],otherIncome:[],hide:false}});
@@ -812,7 +815,10 @@ function editField(title,value,cb,opts={}){
 // ---------- Files / sharing ----------
 function dataURLtoFile(url,name){const [h,b]=url.split(',');const type=(h.match(/data:([^;]+)/)||[])[1]||'image/png';const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);const ext=type.split('/')[1].replace('jpeg','jpg');return new File([a],`${name}.${ext}`,{type});}
 function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(f);});}
-function copyText(t){const text=String(t??'').replace(/\r\n?/g,'\n');let ok=false;try{const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:-1000px;opacity:0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);ok=document.execCommand('copy');ta.remove();}catch(e){}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(()=>{});ok=true;}return ok;}
+function copyText(t){if(!t)return false;const text=String(t).replace(/\r\n/g,'\n').replace(/\r/g,'\n');let ok=false;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(()=>{});}
+  try{const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.top='0';ta.style.left='-9999px';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,text.length);ok=document.execCommand('copy');ta.remove();}catch(e){}
+  return ok||(navigator.clipboard!=null);}
 const enc=encodeURIComponent;
 function canShareFiles(files){try{return !!(files.length&&navigator.canShare&&navigator.canShare({files}));}catch(e){return false;}}
 const PNAME={tg:'Telegram',wa:'WhatsApp',x:'X',gpt:'ChatGPT',gemini:'Gemini',copy:'Copy'};
@@ -821,17 +827,25 @@ async function joinImages(files){try{const imgs=await Promise.all(files.map(f=>n
   const sc=Math.min(1,3200/W);const c=document.createElement('canvas');c.width=Math.round(W*sc);c.height=Math.round(H*sc);const x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,c.width,c.height);let px=0;imgs.forEach((im,i)=>{x.drawImage(im,Math.round(px*sc),0,Math.round(ws[i]*sc),Math.round(H*sc));px+=ws[i]+gap;});
   const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.9));return blob?new File([blob],'slips.jpg',{type:'image/jpeg'}):null;}catch(e){return null;}}
 async function shareTo(kind,text,files=[]){
-  text=String(text??'').replace(/\r\n?/g,'\n');
+  const clean=String(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const sendText=kind==='x'?clean.replace(/https?:\/\/t\.me\/\S+/gi,'').replace(/t\.me\/\S+/gi,'').replace(/\n{4,}/g,'\n\n\n').trim():clean;
   if((kind==='tg'||kind==='x')&&files.length>1){const one=await joinImages(files);if(one)files=[one];}
-  if(kind==='copy'){toast(copyText(text)?'Copied':'Copy failed. Long-press the text instead.');return false;}
-  if(text)copyText(text);
+  if(kind==='copy'){const ok=copyText(sendText);toast(ok?'Copied ✓':'Copy failed. Long-press the text instead.');return ok;}
+  if(sendText)copyText(sendText);
   if(kind==='gpt'||kind==='gemini'){const logo=S.logo?[dataURLtoFile(S.logo,'SureStake707_logo')]:[];
-    if(logo.length&&canShareFiles(logo)){try{await navigator.share({files:logo,text});toast(kind==='gpt'?'Pick ChatGPT':'Pick Gemini');return true;}catch(e){if(e.name==='AbortError')return false;}}
-    toast(S.logo?'Prompt copied. Attach your logo in the app.':'Add your logo in Settings. Prompt copied.');location.href=kind==='gpt'?'https://chatgpt.com/?q='+enc(text):'https://gemini.google.com/app';return true;}
+    if(logo.length&&canShareFiles(logo)){try{await navigator.share({files:logo,text:sendText});toast(kind==='gpt'?'Pick ChatGPT':'Pick Gemini');return true;}catch(e){if(e.name==='AbortError')return false;}}
+    toast(S.logo?'Prompt copied. Attach your logo in the app.':'Add your logo in Settings. Prompt copied.');location.href=kind==='gpt'?'https://chatgpt.com/?q='+enc(sendText):'https://gemini.google.com/app';return true;}
   const withFiles=canShareFiles(files);
-  if(navigator.share&&(withFiles||kind==='wa')){try{await navigator.share(withFiles?(text?{files,text}:{files}):{text});if(kind==='wa')toast('Tap My status or your channel');else if(text&&withFiles)toast('Message copied too. If it is not under the picture, long-press the caption box and tap Paste.',4500);return true;}catch(e){if(e.name==='AbortError')return false;}}
+  if(navigator.share&&(withFiles||kind==='wa')){try{await navigator.share(withFiles?(sendText?{files,text:sendText}:{files}):{text:sendText});if(kind==='wa')toast('Tap My status or your channel');else if(sendText&&withFiles)toast('Message copied too. If it is not under the picture, long-press the caption box and tap Paste.',4500);return true;}catch(e){if(e.name==='AbortError')return false;}}
   if(files.length&&!withFiles)toast('Text copied. Attach the picture yourself.');
-  location.href=kind==='tg'?'tg://msg?text='+enc(text):kind==='wa'?'https://wa.me/?text='+enc(text):'https://x.com/intent/post?text='+enc(text);return true;}
+  try{
+    if(kind==='tg')location.href='tg://msg?text='+enc(sendText);
+    else if(kind==='wa')location.href='whatsapp://send?text='+enc(sendText);
+    else if(kind==='x')location.href='https://x.com/intent/post?text='+enc(sendText);
+  }catch(e){
+    if(kind==='wa')location.href='https://wa.me/?text='+enc(sendText);
+  }
+  return true;}
 let pickCb=null;function pickFile(accept,multiple,cb){const p=$('filePick');p.accept=accept;p.multiple=!!multiple;p.value='';pickCb=cb;p.click();}
 $('filePick').onchange=e=>{const fs=[...e.target.files];e.target.value='';if(pickCb)pickCb(fs);};
 function askPaste(title,cb,check){
@@ -870,22 +884,27 @@ const TPL_INFO=[
  ['status_link','Status - channel link','🔥 **TODAY\'S CODES ARE LIVE** 🔥\n\n✅ {big} Odds\n✅ {bank} Odds Banker\n\nFree On The Channel 👇\n{channel}'],
  ['status_1','Status - bigger odds','🔥 **{big} ODDS TODAY**\nCode 👉 {bigcode}\n\n{closer}'],
  ['status_2','Status - banker','🔥 **{bank} ODDS BANKER**\nCode 👉 {bankcode}\n\n{closer}'],
- ['vip_post','707 Elite picks','👑 **707 ELITE PICKS**\n{date}\n\n**{vip} Odds** 👉 {vipcode}\n\n{closer}'],
- ['win_both','Win post - both codes','✅ **BOTH CODES WON** 🏆🔥\n\n**{big} Odds** ✅\n**{bank} Odds** ✅\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👉 {handle}'],
- ['win_one','Win post - one code','✅ **{odds} ODDS WON** 🏆🔥\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👉 {handle}'],
- ['win_x','Win post - X','✅ **{odds} ODDS WON** 🏆🔥\n\n{closer}'],
+ ['vip_post','707 Elite picks','👑 **707 ELITE PICKS**\n{date}\n\n**{vip} Odds** 👉 {vipcode}\n\n{picks}\n\n{closer}'],
+ ['win_both','Win post - both codes','✅ **BOTH CODES WON**\n\n**{big} Odds** ✅\n**{bank} Odds** ✅\n\nDid You Win With Us? Drop Your Ticket Here 👇\n{handle}'],
+ ['win_one','Win post - one code','✅ **{odds} ODDS WON**\n\nDid You Win With Us? Drop Your Ticket Here 👇\n{handle}'],
+ ['win_x','Win post - X','✅ **{odds} ODDS WON**\n\n{closer}'],
  ['vip_results','707 Elite results','👑 **707 ELITE RESULTS**\n{date}\n\n**{vip} Odds** {mark}\n\n{picks}\n\n{line}'],
- ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 707** 🏆\n{range}\n\n**Free Codes** 🔥\n{free}\n\n👑 **707 Elite**\n{vip}\n\n_Every Result Posted. No Hiding 💯_'],
+ ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 707**\n{range}\n\n**{freeTitle}**\n{free}\n\n👑 **{vipTitle}**\n{vip}\n\n{closer}'],
  ['elite_welcome','707 Elite welcome message','👑 **WELCOME TO 707 ELITE**\n\nHi {name}, You\'re In. Welcome To The Inner Circle 🙌\nYour Membership Runs Until {until}.\n\n**Join The Private Room** 👇\n{elitelink}\n\nTurn On Notifications So You Catch Every Pick 🔔'],
- ['elite_renew','707 Elite renewal reminder','Hi {name} 👋\n\nYour 707 Elite Membership Ends On {until}.\n\nRenew With GHS {price} To Keep Your Seat In The Room 👑✨'],
- ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 🔥\n\n**The Private Room For Serious Punters.**\n\n✔️ One Hand-Picked Code Daily, Researched Before It Drops\n✔️ Lower Odds, Built For Consistency\n✔️ Every Result Posted, Full Transparency\n✔️ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 **Only {spots} Seats Left**\n\n💳 **Payment Details**\nMoMo: {momo}\nName: {momoname}\nNetwork: {network}\n\n**How To Join** 👇\n1. Send GHS {price} To The MoMo Above\n2. Send Your Screenshot To {handle}\n3. Get Added To The Private Room\n\n📌 Refund Terms Available'],
+ ['elite_renew','707 Elite renewal reminder','Hi {name} 👋\n\nYour 707 Elite Membership Ends On {until}.\n\nRenew With GHS {price} To Keep Your Seat In The Room 👑✨\n\n💳 **PAYMENT DETAILS**\n\n📱 Network: {network}\n👤 MoMo Name: {momoname}\n💰 MoMo Number: {momo}\n\n📩 Send payment proof to {handle}'],
+ ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 🔥\n\n**The Private Room For Serious Punters.**\n\n✔️ One Hand-Picked Code Daily, Researched Before It Drops\n✔️ Lower Odds, Built For Consistency\n✔️ Every Result Posted, Full Transparency\n✔️ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 **Only {spots} Seats Left**\n\n💳 **PAYMENT DETAILS**\n\n📱 Network: {network}\n👤 MoMo Name: {momoname}\n💰 MoMo Number: {momo}\n\n📩 Send payment proof to {handle}\n📌 Refund Terms Available'],
  ['elite_refund','Refund terms','📌 **707 ELITE REFUND TERMS**\n\n1. Membership Is GHS {price} Per Month, Paid By MoMo.\n2. If You Leave, Unused Full Months Are Refunded.\n3. The Current Month Is Not Refunded Once It Starts.\n4. Every Payment Is Recorded With Its MoMo Reference.\n5. Betting Carries Risk. No Pick Is Guaranteed.\n\nQuestions? Message {handle}']];
 const DEF_TPL=Object.fromEntries(TPL_INFO.map(x=>[x[0],x[2]]));
-const tplText=k=>{let t=S.prefs.tpls[k]??DEF_TPL[k];if(k==='report'&&( /\{(?:freerate|viprate|allrate)\}/i.test(t)||/win\s*rate|overall\s*rate/i.test(t)))t=DEF_TPL[k];if(/^win_(?:both|one|x)$/.test(k)&&/\bCASHED\b/i.test(t))t=DEF_TPL[k];if(k==='elite_promo'&&/refund terms are pinned/i.test(t))t=DEF_TPL[k];return t;};
-function fill(k,v){if(v&&v.key&&tplText(k).includes('{closer}'))v={...v,closer:closerFor(v.key,k)};const t=tplText(k).replace(/\{(\w+)\}/g,(m,n)=>n in v?String(v[n]):m);return styleText(t).replace(/\n{3,}/g,'\n\n').trim();}
-const CSALT={hot_tg:0,hot_x:4,status_1:8,status_2:11,vip_post:2,win_x:6};
-function closerFor(k,t){let L=(S.prefs.closers||[]).filter(x=>String(x||'').trim()&&!/stay\s*hungry|same\s*hunger/i.test(x));if(!L.length)L=DEF_CLOSERS.filter(x=>!/stay\s*hungry|same\s*hunger/i.test(x));if(!L.length)return '';const n=Math.floor(dateOf(k).getTime()/864e5);return ital(L[((n*5+(CSALT[t]||0))%L.length+L.length)%L.length]);}
-function varsFor(d){const a=d.codes.t10||{},b=d.codes.t5||{},v=d.codes.vip||{};return {big:rnd(a.odds),bigcode:a.code||'',bank:rnd(b.odds),bankcode:b.code||'',vip:rnd(v.odds),vipcode:v.code||'',key:d.key,channel:S.prefs.channel,handle:S.prefs.handle,date:longDate(d.key)};}
+const tplText=k=>S.prefs.tpls[k]??DEF_TPL[k];
+function fill(k,v){if(v&&v.key&&tplText(k).includes('{closer}'))v={...v,closer:closerFor(v.key,k)};
+  const t=tplText(k).replace(/\{(\w+)\}/g,(m,n)=>n in v?String(v[n]):(n==='picks'?'':m));
+  return styleText(t).replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{4,}/g,'\n\n\n').trim();}
+const CSALT={hot_tg:0,hot_x:3,status_1:6,status_2:9,vip_post:12,win_x:15,report:18};
+function closerFor(k,t){const L=S.prefs.closers.filter(x=>x.trim()&&!/hunger/i.test(x));if(!L.length)return '';const n=Math.floor(dateOf(k).getTime()/864e5);const s=CSALT[t]!==undefined?CSALT[t]:1;return ital(L[((n*7+s)%L.length+L.length)%L.length]);}
+function varsFor(d){const a=d.codes.t10||{},b=d.codes.t5||{},v=d.codes.vip||{};
+  const vipGames=gamesOf(d,'vip');
+  const picks=vipGames.length?vipGames.map((g,i)=>`${i+1}. ${g.match} - ${g.pick}`).join('\n'):'';
+  return {big:rnd(a.odds),bigcode:a.code||'',bank:rnd(b.odds),bankcode:b.code||'',vip:rnd(v.odds),vipcode:v.code||'',vipCombined:rnd(v.odds)?`${rnd(v.odds)} Combined Odds`:'VIP Odds',picks,key:d.key,channel:S.prefs.channel,handle:S.prefs.handle,date:longDate(d.key)};}
 function buildFromCodes(d){const a=d.codes.t10,b=d.codes.t5,V=varsFor(d),o={};
   if(a&&b&&a.code&&b.code){o.hot_tg=fill('hot_tg',V);o.hot_x=fill('hot_x',V);o.status_link=fill('status_link',V);}
   if(a&&a.code)o.status_1=fill('status_1',V);if(b&&b.code)o.status_2=fill('status_2',V);const vc=d.codes.vip;if(vc&&vc.code)o.vip=fill('vip_post',V);return o;}
@@ -895,11 +914,15 @@ function winPosts(d){const won=[];if(d.codes.t5&&d.codes.t5.result==='won')won.p
 function vipResults(d){const c=d.codes.vip;if(!c||!['won','lost'].includes(c.result))return null;const L=(d.games||[]).filter(g=>g.slot==='vip');if(!L.length)return null;const tagged=L.some(g=>legState(g)==='lost');
   const picks=L.map((g,i)=>{const r=legState(g);return `${i+1}. ${g.match} - ${g.pick}${c.result==='won'||r==='won'||r==='void'?' ✔️':r==='lost'?' ❌':tagged?' ✔️':''}`;}).join('\n');return fill('vip_results',{...varsFor(d),picks,mark:c.result==='won'?'✔️ Won':'❌ Lost',line:(d.vipLine||'').trim()});}
 function recapReport(range){const t=todayKey();const from=range==='week'?addDays(t,-6):range==='month'?t.slice(0,8)+'01':null;
-  const ks=Object.keys(S.days).filter(k=>k<=t&&(!from||k>=from)).sort();const free=[],vip=[];let fw=0,ft=0,vw=0,vt=0;const mark=r=>r==='won'?'✅':'❌';const done=c=>c&&c.code&&(c.result==='won'||c.result==='lost');
-  for(const k of ks){const d=S.days[k];const parts=[];for(const s of ['t10','t5']){const c=(d.codes||{})[s];if(done(c)){parts.push(`${rnd(c.odds)} Odds ${mark(c.result)}`);ft++;if(c.result==='won')fw++;}}
-    if(parts.length)free.push(`${shortDate(k)} - ${parts.join(' | ')}`);const v=(d.codes||{}).vip;if(done(v)){vip.push(`${shortDate(k)} - VIP ${v.result==='won'?'✔️':'❌'}`);vt++;if(v.result==='won')vw++;}}
-  if(!ft&&!vt)return null;const rate=(w,n)=>n?Math.round(w/n*100)+'%':'-';const first=ks.find(k=>SLOTS.some(s=>done((S.days[k].codes||{})[s])))||t;
-  return fill('report',{title:range==='week'?'THIS WEEK':range==='month'?'THIS MONTH':'ALL TIME',range:`${shortDate(range==='all'?first:from)} - ${shortDate(t)}`,free:free.join('\n')||'No Results Yet',freerate:rate(fw,ft),vip:vip.join('\n')||'No Results Yet',viprate:rate(vw,vt),allrate:rate(fw+vw,ft+vt)});}
+  const ks=Object.keys(S.days).filter(k=>k<=t&&(!from||k>=from)).sort();const free=[],vip=[];const mark=r=>r==='won'?'✅':'❌';const done=c=>c&&c.code&&(c.result==='won'||c.result==='lost');
+  let freeWon=0,freeTot=0,vipWon=0,vipTot=0;
+  for(const k of ks){const d=S.days[k];const parts=[];for(const s of ['t10','t5']){const c=(d.codes||{})[s];if(done(c)){parts.push(`${rnd(c.odds)} Odds ${mark(c.result)}`);freeTot++;if(c.result==='won')freeWon++;}}
+    if(parts.length)free.push(`${shortDate(k)} — ${parts.join(' | ')}`);const v=(d.codes||{}).vip;if(done(v)){vip.push(`${shortDate(k)} — VIP ${rnd(v.odds)?rnd(v.odds)+' Odds ':''}${v.result==='won'?'✔️':'❌'}`);vipTot++;if(v.result==='won')vipWon++;}}
+  if(!free.length&&!vip.length)return null;const first=ks.find(k=>SLOTS.some(s=>done((S.days[k].codes||{})[s])))||t;
+  const closer=ital('Every Result Posted. No Hiding 💯');
+  const freeTitle=freeTot?`Free Codes (${freeWon}/${freeTot} Won)`:'Free Codes';
+  const vipTitle=vipTot?`707 Elite (${vipWon}/${vipTot} Won)`:'707 Elite';
+  return fill('report',{title:range==='week'?'THIS WEEK':range==='month'?'THIS MONTH':'ALL TIME',range:`${shortDate(range==='all'?first:from)} - ${shortDate(t)}`,freeTitle,vipTitle,free:free.join('\n')||'No Results Yet',vip:vip.join('\n')||'No Results Yet',closer});}
 
 // ---------- HUB parser ----------
 function trimBlank(a){while(a.length&&!a[0].trim())a.shift();while(a.length&&!a[a.length-1].trim())a.pop();return a;}
@@ -1069,13 +1092,110 @@ async function postClick(e,d,after){const b=e.target.closest('button');if(!b)ret
   if(p==='swap'){const wd=dateOf(d.key).getDay();const nid=await pickMorning(wd,d.morningImg);if(nid){d.morningImg=nid;await cget('img:'+nid);save('days');toast('Image swapped');after();}return;}
   await send(d,id,p);after();}
 function postInput(e,d){const t=e.target;if(t.dataset.edit){d.posts[t.dataset.edit]=t.value;save('days');}}
+const MORNING_OPENERS=[
+  "🌅 GOOD MORNING CHAMPIONS 🏆",
+  "💪 RISE AND GRIND, FAMILY 🔥",
+  "🦁 MORNING, KINGS 👑",
+  "🔥 WAKE UP, WINNERS 🙌",
+  "☕ COFFEE UP, LOCK IN ✨",
+  "🚀 NEW DAY, NEW MISSION 💪",
+  "👑 GOOD MORNING, BOSSES 💲",
+  "⚽ MATCHDAY MORNING, FAMILY 🔥",
+  "🌟 RISE UP, IT'S TIME TO WIN 🏆",
+  "⚡ ENERGY UP, HEAD IN THE GAME 🧠",
+  "🎯 MORNING SQUAD, TARGETS LOCKED 🔒",
+  "🔥 ANOTHER DAY, ANOTHER OPPORTUNITY 💰",
+  "🛡️ MORNING WARRIORS, STAY DISCIPLINED 💲",
+  "🌅 BLESSINGS UP, EYES ON THE GOAL ⚽",
+  "🚀 FRESH START, MAXIMUM FOCUS 🔥",
+  "👑 WAKE UP AND SECURE THE BAG 💰"
+];
+const DAY_MOTIVATION={
+  0:[
+    "**Sunday Matchday - Let's Finish The Week Strong** ⚽🔥",
+    "**Super Sunday - Big Clashes, Maximum Discipline** 🏆✨",
+    "**Sunday Focus - Closing The Week On Our Terms** 🎯💪",
+    "**Sunday Session - Patient Staking, Great Results** 🧠💲"
+  ],
+  1:[
+    "**Monday Is Here - New Week, Fresh Start** 💪✨",
+    "**Monday Motivation - Laying The Foundation** 🎯🚀",
+    "**New Week, Clean Slate - We Move With Strategy** 🔒⚽",
+    "**Monday Discipline - Steady Hands Build The Bankroll** 🧠💰"
+  ],
+  2:[
+    "**Tuesday Focus - Building The Momentum** 🎯🚀",
+    "**Midweek Build-Up - Staying Sharp And Composed** 🧠✨",
+    "**Tuesday Action - Quality Over Everything** ⚽🔥",
+    "**Keep Moving Forward - Tuesday Strategy Locked** 🔒💪"
+  ],
+  3:[
+    "**Midweek Action - Staying Locked And Ready** 🔒⚽",
+    "**Champions Midweek - European Nights & Sharp Eyes** 🏆🔥",
+    "**Wednesday Mission - Execution Is Everything** 🎯✨",
+    "**Midweek Flow - Patience And Smart Picks** 🧠💲"
+  ],
+  4:[
+    "**Thursday Mission - Consistency Is Key** 🧠💲",
+    "**Thursday Kickoffs - Setting Up The Weekend Run** ⚽🚀",
+    "**Stay Disciplined - Thursday Work In Progress** 💪✨",
+    "**Thursday Focus - Trust The Process, Keep The Stake** 🔒🎯"
+  ],
+  5:[
+    "**Friday Kickoffs - The Weekend Starts Now** 🏆🔥",
+    "**Friday Excitement - Big Weekend Loading Up** ⚽✨",
+    "**Friday Evening - The Board Is Set, Stay Composed** 🧠💲",
+    "**Friday Launch - Strategy First, Emotions Second** 🎯💪"
+  ],
+  6:[
+    "**Super Saturday - Big Games, Sharp Picks** ⚽👑",
+    "**Saturday Matchday Madness - Lock In The Discipline** 🔒🔥",
+    "**Saturday Showtime - Peak Action, Calm Execution** 🎯🏆",
+    "**The Main Event - Saturday Punters Moving Smart** 🧠💲"
+  ]
+};
+const DISCIPLINE_LINES=[
+  "Discipline over emotion. Stick to your stake and trust the strategy.",
+  "Focus on the long game. Great results come from patient execution.",
+  "Calm minds make sharp decisions. Lock in and stay disciplined.",
+  "Patience pays. Manage your bankroll and respect the process.",
+  "Smart stakes, clear vision. We move with strategy and discipline.",
+  "Stay composed, trust the analysis, and let the games play out.",
+  "One step at a time, one ticket at a time. Quality over quantity.",
+  "Bankroll management is your superpower. Never gamble on impulse.",
+  "Winners execute with a plan; the crowd relies on hope. We execute.",
+  "No rush, no panic. The board comes to those who wait for value.",
+  "The goal isn't every ticket; the goal is consistent growth over time.",
+  "Protect your profits like you protect your capital. Respect the game.",
+  "Emotion costs money. Strategy and cold calculation make money.",
+  "Stick to unit stakes. Good runs happen when you don't chase.",
+  "Focus on process, not panic. Tomorrow always brings another board.",
+  "Discipline is choosing what you want most over what you want right now."
+];
+function defaultGreeting(k,forceNew=false){
+  const d=dateOf(k);
+  const wd=d.getDay();
+  const dayNum=Math.floor(d.getTime()/864e5);
+  const offset=forceNew?Math.floor(Math.random()*25)+1:0;
+  const opIdx=((dayNum+offset)%MORNING_OPENERS.length+MORNING_OPENERS.length)%MORNING_OPENERS.length;
+  const opener=styleText(`**${MORNING_OPENERS[opIdx]}**`);
+  const dayOpts=DAY_MOTIVATION[wd]||DAY_MOTIVATION[1];
+  const dayMotiv=styleText(dayOpts[((Math.floor(dayNum/7)+offset)%dayOpts.length+dayOpts.length)%dayOpts.length]);
+  const discIdx=((dayNum*3+offset)%DISCIPLINE_LINES.length+DISCIPLINE_LINES.length)%DISCIPLINE_LINES.length;
+  const discLine=DISCIPLINE_LINES[discIdx];
+  return `${opener}\n\n${dayMotiv}\n\n${discLine}\n\nCodes Drop Soon. Stay Locked In 🔔`;
+}
 async function openMorningPostPicker(startKey){
   let mk=startKey||todayKey();
   const getGreeting=async d=>{
-    if((d.posts.greeting||'').trim())return d.posts.greeting.trim();
-    const candidates=Object.keys(S.days).filter(k=>k<=d.key&&S.days[k]&&S.days[k].posts&&S.days[k].posts.greeting).sort();
-    if(candidates.length)return S.days[candidates[candidates.length-1]].posts.greeting.trim();
-    return '';
+    const custom=(d.posts.greeting||'').trim();
+    if(custom){
+      const wd=DAYS[dateOf(d.key).getDay()].toLowerCase();
+      const otherDays=DAYS.map(x=>x.toLowerCase()).filter(x=>x!==wd);
+      const staleOtherDay=otherDays.some(od=>custom.toLowerCase().includes(od));
+      if(!staleOtherDay)return custom;
+    }
+    return defaultGreeting(d.key);
   };
   const render=async()=>{
     const d=day(mk);await ensureMorning(d);if(d.morningImg)await cget('img:'+d.morningImg);
@@ -1088,7 +1208,7 @@ async function openMorningPostPicker(startKey){
       <input id="mpDate" type="date" value="${mk}" aria-label="Choose morning post date" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px">
       <div class="card" style="margin:12px 0 0;padding:12px">
         ${img?`<img class="mimg" src="${img}" alt="Morning image">`:'<p class="empty">No image added for this weekday yet.</p>'}${man.length>1?`<div class="thumbs">${man.slice(1).map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}<p class="muted" style="margin:6px 0 0">${man.length?`Your ${man.length} picture${man.length>1?'s':''}`:img?'Automatic picture from the morning bank':''}</p>
-        <span class="lbl" style="margin-top:12px">Message</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><span class="lbl" style="margin:0">Message</span><button type="button" class="btn-half purple" data-mp="newmsg" style="padding:6px 12px;font-size:11px">🎲 Fresh greeting</button></div>
         <textarea id="mpGreeting" rows="7" placeholder="Morning greeting">${esc(greeting)}</textarea>
       </div>
       <div class="btn-row" style="margin-top:12px">
@@ -1115,6 +1235,15 @@ async function openMorningPostPicker(startKey){
     const b=e.target.closest('button');
     if(e.target.id==='mpGreeting'){const d=day(mk);d.posts.greeting=e.target.value;save('days');return;}
     if(!b)return;
+    if(b.dataset.mp==='newmsg'){
+      const d=day(mk);
+      const fresh=defaultGreeting(d.key,true);
+      d.posts.greeting=fresh;
+      save('days');
+      if($('mpGreeting'))$('mpGreeting').value=fresh;
+      toast('Fresh greeting generated ✨',2000);
+      return;
+    }
     if(b.dataset.mp==='mine'){const d=day(mk);pickFile('image/*',true,async fs=>{if(!fs.length)return;try{await addPics(d,'morning',fs);toast('Pictures added ✓');}catch(err){saveFailed(err);}render();});return;}
     if(b.dataset.mp==='auto'){const d=day(mk);for(const x of postImgIds(d,'morning')){try{await cdel('pimg:'+x);}catch(err){}}if(d.postImgs)delete d.postImgs.morning;save('days');render();return;}
     if(b.dataset.mp==='swap'){
@@ -1139,7 +1268,7 @@ async function openPostSheet(k,id){const d=day(k);await loadSlips(k);await loadP
   const render=()=>{const any=Object.values(d.posted[id]||{}).some(Boolean);$('sheetBox').innerHTML=postCard(d,id)+`<div class="btn-row">${any?'<button class="btn-half red" data-undo="1">↩ Mark as not sent</button>':''}<button class="btn-half" data-close="1">Close</button></div>`;};
   openSheet('',e=>{if(e.target.closest('[data-close]')){closeSheet();return;}if(e.target.closest('[data-undo]')){delete d.posted[id];save('days');toast('Marked as not sent. It is back in To do');render();refresh();return;}postClick(e,d,render);});render();$('sheetBox').oninput=e=>postInput(e,d);}
 
-// ---------- Live scores and automatic results (v48) ----------
+// ---------- Live scores and automatic results (v47) ----------
 // Sources: API-Football (with the key saved in Settings) first, ESPN's public scores as backup.
 const AF_URL='https://v3.football.api-sports.io';
 const LV={busy:false,last:0,dayAt:{},err:'',lastOk:0};
@@ -1499,9 +1628,9 @@ const hpill=(lab,r)=>`<span class="dpill ${r==='won'?'won':r==='lost'?'lost':''}
 async function renderHistory(){await preloadUpcoming();setTimeout(renderRecRes,0);const t=todayKey(),wk=addDays(t,-6);const ks=Object.keys(S.days).filter(k=>k<=t&&dayHasContent(S.days[k])).sort().reverse();
   const L=S.followers;const tw=weekStart(t);const groups=[];ks.forEach(k=>{const w=weekStart(k);let g=groups.find(x=>x.w===w);if(!g){g={w,ks:[]};groups.push(g);}g.ks.push(k);});
   const from=recRange==='week'?wk:recRange==='month'?t.slice(0,8)+'01':null;const pls=SLOTS.map(s=>slotProfit(s,from));const plTot=Math.round(pls.reduce((a,x)=>a+x.p,0)*100)/100;const plN=pls.reduce((a,x)=>a+x.n,0);
-  const box=(s,cls,i)=>{const a=slotStats(s,from);const pl=pls[SLOTS.indexOf(s)];return `<div class="sbox ${cls}" style="animation-delay:${i*.04}s"><div class="bl">${SLOTNAME[s]}</div><div class="big">${pct(a)}</div><div class="pl ${pl.n?plClass(pl.p):'flat'}">${pl.n?fmtPL(pl.p):'-'}</div></div>`;};
+  const box=(s,cls,i)=>{const a=slotStats(s,from);const pl=pls[SLOTS.indexOf(s)];return `<div class="sbox ${cls}" style="animation-delay:${i*.04}s"><div class="bl">${SLOTNAME[s]}</div><div class="big">${a.t?`${a.w}/${a.t} WON`:'-'}</div><div class="pl ${pl.n?plClass(pl.p):'flat'}">${pl.n?fmtPL(pl.p):(a.t?`${a.w} Won · ${a.t-a.w} Lost`:'-')}</div></div>`;};
   const cell=(i,f)=>{const v=L[i][f];if(v==null)return '<td>-</td>';const p=i>0?L[i-1][f]:null;const dl=p==null?'':v-p;return `<td>${v}${dl!==''?`<small class="${dl>=0?'up':'down'}">${dl>=0?'+':''}${dl}</small>`:''}</td>`;};
-  $('p-history').innerHTML=`<div id="recRes"></div><div class="sechd rec-head"><span class="sect" style="margin:0">Win rate</span><div class="seg2 rec-range"><button data-rr="week" class="${recRange==='week'?'on':''}">This week</button><button data-rr="month" class="${recRange==='month'?'on':''}">Month</button><button data-rr="all" class="${recRange==='all'?'on':''}">All time</button></div></div><div class="summary-grid">${box('t10','p',0)}${box('t5','o',1)}${box('vip','y',2)}</div>
+  $('p-history').innerHTML=`<div id="recRes"></div><div class="sechd rec-head"><span class="sect" style="margin:0">Results</span><div class="seg2 rec-range"><button data-rr="week" class="${recRange==='week'?'on':''}">This week</button><button data-rr="month" class="${recRange==='month'?'on':''}">Month</button><button data-rr="all" class="${recRange==='all'?'on':''}">All time</button></div></div><div class="summary-grid">${box('t10','p',0)}${box('t5','o',1)}${box('vip','y',2)}</div>
   <div class="pltotal"><span>Total profit ${recRange==='week'?'this week':recRange==='month'?'this month':'all time'}<small>${stakeOf()===1?'1 unit per slip':`GH₵ ${stakeOf()} per slip`} · Won and Lost slips only</small></span><b class="${plN?plClass(plTot):'flat'}">${plN?fmtPL(plTot):'-'}</b></div>
   <div class="card" style="padding:4px 16px"><button class="trow" id="recapOpen"><span class="tn"><b>${recRange==='week'?'Weekly':recRange==='month'?'Monthly':'All time'} recap post</b><small>Tap to see it and send it</small></span><span class="ch">›</span></button></div>
   <div class="card"><div class="ct">Open any date</div><div class="cs" style="margin:0">See everything saved for a day: codes, odds, slips, games, picks, posts and pictures.</div><div class="datepick"><input type="date" id="recDate" value="${addDays(t,1)}"><button class="btn-save" id="recOpen">Open</button></div></div>
@@ -1623,7 +1752,7 @@ async function crestSrc(id){return id?await cget('crest:'+id):null;}
 async function findCrest(name){return crestSrc(findCrestId(name));}
 const titleCase=s=>String(s).replace(/(^|[\s(\-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 async function addCrest(src,name,league){const id=uid();S.crestList.push({id,name:name.trim(),aliases:[],league:(league||'').trim()});await cset('crest:'+id,src);save('crestList');return id;}
-// ---------- Leagues (v48) ----------
+// ---------- Leagues (v47) ----------
 const LEAGUES=[
  {n:'Premier League',c:'England',w:'Premier League',a:['english premier league','epl','england premier league']},
  {n:'La Liga',c:'Spain',w:'La Liga',a:['laliga','primera division','spain la liga','laliga ea sports','spanish la liga']},
@@ -1658,28 +1787,109 @@ const LEAGUES=[
  {n:'Liga MX',c:'Mexico',w:'Liga MX'},{n:'Botola Pro',c:'Morocco',w:'Botola'},{n:'Nigeria Premier Football League',c:'Nigeria',w:'Nigeria Premier Football League',a:['npfl']},
  {n:'Tunisian Ligue 1',c:'Tunisia',w:'Tunisian Ligue Professionnelle 1'},{n:'Algerian Ligue 1',c:'Algeria',w:'Algerian Ligue Professionnelle 1'},{n:'Scottish Championship',c:'Scotland',w:'Scottish Championship'}];
 const TOP_LEAGUES=20;
-const lgClean=s=>cleanName(String(s||'').replace(/^.*?\s+[—–-]\s+/,''));
-function lgEntry(name){const raw=String(name||'');if(!raw.trim())return null;const k=lgClean(raw),k2=cleanName(raw);return LEAGUES.find(L=>[L.n,...(L.a||[])].some(x=>{const c=cleanName(x);return c===k||c===k2;}))||null;}
-function lgGroup(c){if(!c.league||!c.league.trim())return 'No league';const raw=c.league.trim();const e=lgEntry(raw);if(e)return e.n;const key=cleanName(raw);const prior=S.crestList.find(x=>x!==c&&String(x.league||'').trim()&&cleanName(x.league)===key);return prior?String(prior.league).trim():raw;}
+function lgNorm(s){
+  return String(s||'')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase()
+    .replace(/[\u2010-\u2015\u2212\uFF0D—–-]/g,' ')
+    .replace(/[^a-z0-9]+/g,' ')
+    .trim();
+}
+const lgClean=s=>lgNorm(String(s||'').replace(/^.*?\s+[—–-]\s+/,''));
+function lgEntry(name){
+  const raw=String(name||'').trim();
+  if(!raw)return null;
+  const normRaw=lgNorm(raw);
+  let hit=LEAGUES.find(L=>L.n.toLowerCase()===raw.toLowerCase()||lgNorm(L.n)===normRaw);
+  if(hit)return hit;
+  hit=LEAGUES.find(L=>[L.w,...(L.a||[]),`${L.c} ${L.n}`].some(x=>lgNorm(x)===normRaw));
+  if(hit)return hit;
+  const m=raw.match(/^(.*?)\s+[—–-]\s+(.*)$/);
+  if(m){
+    const country=m[1].trim(), lg=m[2].trim();
+    const normLg=lgNorm(lg);
+    hit=LEAGUES.find(L=>L.c.toLowerCase()===country.toLowerCase()&&(lgNorm(L.n)===normLg||(L.a||[]).some(a=>lgNorm(a)===normLg)));
+    if(hit)return hit;
+    const cands=LEAGUES.filter(L=>[L.n,...(L.a||[])].some(x=>lgNorm(x)===normLg));
+    if(cands.length===1)return cands[0];
+  }
+  return null;}
+function lgGroup(c){
+  const raw=String(c.league||'').trim();
+  if(!raw)return 'No league';
+  const e=lgEntry(raw);
+  return e?e.n:raw.replace(/\s*[\u2010-\u2015\u2212\uFF0D—–-]+\s*/g,' — ').trim();}
 function lgShort(name){return String(name).split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ0-9]/.test(w)).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
-const lgFail=new Set();let lgBusy=0;const lgLogoPending=new Map();
+const lgFail=new Set();let lgBusy=0;const lgPending=new Map();
 function lgLogo(name){return blobCache['lgl:'+name]||null;}
-function fetchLeagueLogo(name){if(lgLogoPending.has(name))return lgLogoPending.get(name);const task=fetchLeagueLogoOnce(name).finally(()=>lgLogoPending.delete(name));lgLogoPending.set(name,task);return task;}
-async function fetchLeagueLogoOnce(name){if(!name||name==='No league'||name==='Duplicates')return null;const key='lgl:'+name;if(blobCache[key])return blobCache[key];
-  if(!(key in blobCache)){const v=await kget(key).catch(()=>null);blobCache[key]=v||null;if(v)return v;}
-  if(!navigator.onLine||lgFail.has(name))return null;const e=lgEntry(name);
-  try{const title=e?(e.intl?'FIFA':e.w):name;const q=e?`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&titles=${enc(title)}&prop=pageimages&piprop=thumbnail&pithumbsize=200&pilicense=any`:`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${enc(lgClean(name)+' football league')}&gsrlimit=3&prop=pageimages&piprop=thumbnail&pithumbsize=200&pilicense=any`;
-    const r=await fetch(q);const j=await r.json();const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));const pg=pages.find(p=>p.thumbnail&&p.thumbnail.source);if(!pg){lgFail.add(name);return null;}
-    const ir=await fetch(pg.thumbnail.source);const b=await ir.blob();if(!/image/.test(b.type)){lgFail.add(name);return null;}
-    const du=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});const src=await normaliseCrest(du,160);await cset(key,src);return src;}catch(err){lgFail.add(name);return null;}}
-async function loadLeagueLogos(names,after){const need=[...new Set(names)].filter(n=>n&&!blobCache['lgl:'+n]&&!lgFail.has(n));if(!need.length)return;let got=0,next=0;const workers=Array.from({length:Math.min(6,need.length)},async()=>{while(next<need.length){const n=need[next++];try{const v=await fetchLeagueLogo(n);if(v)got++;}catch(e){}}});await Promise.all(workers);if(got&&after)after();}
+async function fetchLeagueLogo(name){
+  if(!name||name==='No league'||name==='Duplicates')return null;
+  const key='lgl:'+name;
+  if(blobCache[key])return blobCache[key];
+  if(lgPending.has(name))return lgPending.get(name);
+  const p=(async()=>{
+    if(!(key in blobCache)){
+      const v=await kget(key).catch(()=>null);
+      if(v){blobCache[key]=v;return v;}
+    }
+    if(!navigator.onLine||lgFail.has(name))return null;
+    const e=lgEntry(name);
+    try{
+      const title=e?(e.intl?'FIFA':e.w):name;
+      const q=e?`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&titles=${enc(title)}&prop=pageimages&piprop=thumbnail&pithumbsize=200&pilicense=any`:`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${enc(name+' football league')}&gsrlimit=3&prop=pageimages&piprop=thumbnail&pithumbsize=200&pilicense=any`;
+      const r=await fetch(q);const j=await r.json();
+      const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));
+      const pg=pages.find(p=>p.thumbnail&&p.thumbnail.source);
+      if(!pg){lgFail.add(name);return null;}
+      const ir=await fetch(pg.thumbnail.source);const b=await ir.blob();
+      if(!/image/.test(b.type)){lgFail.add(name);return null;}
+      const du=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});
+      const src=await normaliseCrest(du,160);
+      await cset(key,src);
+      return src;
+    }catch(err){
+      lgFail.add(name);
+      return null;
+    }finally{
+      lgPending.delete(name);
+    }
+  })();
+  lgPending.set(name,p);
+  return p;
+}
+async function loadLeagueLogos(names,after){
+  const need=names.filter(n=>n&&n!=='No league'&&n!=='Duplicates'&&!blobCache['lgl:'+n]&&!lgFail.has(n));
+  if(!need.length)return;
+  const pool=4;let idx=0;
+  async function worker(){
+    while(idx<need.length){
+      const n=need[idx++];
+      const v=await fetchLeagueLogo(n);
+      if(v){
+        const rows=document.querySelectorAll('.set-row[data-lgo]');
+        rows.forEach(r=>{if(r.dataset.lgo===n){const i=r.querySelector('.i');if(i)i.innerHTML=`<img src="${v}" alt="">`;}});
+        const chips=document.querySelectorAll('.chip[data-lgc]');
+        chips.forEach(c=>{if(c.dataset.lgc===n){const img=c.querySelector('.lgchip img');if(img)img.src=v;else{const span=c.querySelector('.lgchip');if(span)span.insertAdjacentHTML('afterbegin',`<img src="${v}" alt="">`);}}});
+        const lghead=document.querySelector('.lghead .lgl');
+        if(lghead&&cFilter.league===n)lghead.innerHTML=`<img src="${v}" alt="">`;
+        if(after)after();
+      }
+    }
+  }
+  await Promise.all(Array.from({length:Math.min(pool,need.length)},worker));}
 const lgImg=(n,cls='')=>{const u=lgLogo(n);return u?`<img src="${u}" alt="" class="${cls}">`:`<span class="lgini">${esc(lgShort(n)||'?')}</span>`;};
-// Same team already saved? Exact name, nickname, or same name with one extra word in the same league.
-function sameTeamId(name,league){const n=cleanName(name);if(!n)return null;const cands=[n,...(ALIAS[n]||[]).map(cleanName)];const targetRaw=String(league||'').trim();const target=targetRaw?(lgEntry(targetRaw)||{n:targetRaw}).n:'';const exact=[];for(const c of cands)for(const x of S.crestList)if(crestNames(x).includes(c)&&!exact.some(y=>y.id===x.id))exact.push(x);if(target){const same=exact.find(x=>lgGroup(x)===target);if(same)return same.id;const unassigned=exact.find(x=>!String(x.league||'').trim());if(unassigned)return unassigned.id;}else if(exact.length===1)return exact[0].id;let best=null,bs=1e9;for(const c of cands){const ct=c.split(' ');for(const x of S.crestList){const xg=x.league?lgGroup(x):'';if(target&&xg&&xg!==target)continue;if(!target&&exact.length>1)continue;for(const k of crestNames(x)){const kt=k.split(' ');const [a,b]=ct.length<=kt.length?[ct,kt]:[kt,ct];if(a.length&&a.every(t=>b.includes(t))&&b.length-a.length<=1&&a.join('').length>=4){const sc=Math.abs(kt.length-ct.length)*10+Math.abs(k.length-c.length);if(sc<bs){bs=sc;best=x.id;}}}}}return best;}
+function sameTeamId(name,league){const n=cleanName(name);if(!n)return null;const cands=[n,...(ALIAS[n]||[]).map(cleanName)];
+  for(const c of cands){const hit=S.crestList.find(x=>crestNames(x).includes(c));if(hit)return hit.id;}
+  const g=league?(lgEntry(league)||{n:league.trim()}).n:'';
+  for(const c of cands){const ct=c.split(' ');for(const x of S.crestList){const xg=x.league?lgGroup(x):'';if(g&&xg&&g!==xg)continue;for(const k of crestNames(x)){const kt=k.split(' ');const [a,b]=ct.length<=kt.length?[ct,kt]:[kt,ct];if(a.length&&a.every(t=>b.includes(t))&&b.length-a.length<=1&&a.join('').length>=4)return x.id;}}}
+  return null;}
 function strSig(str){let h=0x811c9dc5;const s2=String(str||'');for(let i=0;i<s2.length;i+=3){h^=s2.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return s2.length+':'+h;}
 const sigCache=new Map();async function crestSigs(){await warmCrests();for(const c of S.crestList){if(!sigCache.has(c.id)){const v=blobCache['crest:'+c.id];if(v)sigCache.set(c.id,strSig(v));}}return sigCache;}
 function addAlias(c,name){const nm=String(name||'').trim();if(!nm)return;if(crestNames(c).includes(cleanName(nm)))return;c.aliases=[...(c.aliases||[]),nm];}
-async function addCrestSafe(src,name,league){const nm=String(name||'').trim();const hit=sameTeamId(nm,league);if(hit){const c=S.crestList.find(x=>x.id===hit);if(c){addAlias(c,nm);if(!c.league&&league)c.league=league;save('crestList');return {id:hit,existed:true,name:c.name};}}const sig=strSig(src);const sigs=await crestSigs();const target=String(league||'').trim();const targetGroup=target?(lgEntry(target)||{n:target}).n:'';for(const [id,sg] of sigs){if(sg!==sig)continue;const c=S.crestList.find(x=>x.id===id);if(!c)continue;if(targetGroup&&c.league&&lgGroup(c)!==targetGroup)continue;addAlias(c,nm);if(!c.league&&league)c.league=league;save('crestList');return {id,existed:true,name:c.name};}const id=await addCrest(src,nm,league);sigCache.set(id,sig);return {id,existed:false};}
+async function addCrestSafe(src,name,league){const nm=String(name||'').trim();const hit=sameTeamId(nm,league);
+  if(hit){const c=S.crestList.find(x=>x.id===hit);addAlias(c,nm);if(league)c.league=league;save('crestList');return {id:hit,existed:true,name:c.name};}
+  const sig=strSig(src);const sigs=await crestSigs();for(const [id,sg] of sigs){if(sg===sig){const c=S.crestList.find(x=>x.id===id);if(c){addAlias(c,nm);if(league)c.league=league;save('crestList');return {id,existed:true,name:c.name};}}}
+  const id=await addCrest(src,nm,league);sigCache.set(id,sig);return {id,existed:false};}
 function seasonLabel(cal){const d=new Date();const y=d.getFullYear(),m=d.getMonth()+1;if(cal)return String(y);const a=m>=7?y:y-1;return `${a}–${String((a+1)%100).padStart(2,'0')}`;}
 async function wikiParseClubs(title){try{const r=await fetch(`https://en.wikipedia.org/w/api.php?action=parse&format=json&origin=*&redirects=1&prop=text&page=${enc(title)}`);const j=await r.json();if(!j.parse||!j.parse.text)return null;
   const doc=new DOMParser().parseFromString(j.parse.text['*'],'text/html');
@@ -1697,16 +1907,44 @@ async function getLeague(e,after){if(!navigator.onLine){toast('You are offline. 
   if(!L){toast(`Couldn't read the ${e.n} club list. Type the club names in Get crests online.`,4500);return;}
   await fetchMany(L,e.n,after,'club',e);}
 let cFilter={q:'',league:'All'};
-function crestGroups(){const map=new Map();for(const c of S.crestList){const g=lgGroup(c);if(!map.has(g))map.set(g,[]);map.get(g).push(c);}
+function crestGroups(){const map=new Map();
+  for(const c of S.crestList){
+    const g=lgGroup(c);
+    let foundKey=null;
+    const gNorm=lgNorm(g);
+    for(const k of map.keys()){if(k===g||(k!=='No league'&&g!=='No league'&&lgNorm(k)===gNorm)){foundKey=k;break;}}
+    const finalKey=foundKey||g;
+    if(!map.has(finalKey))map.set(finalKey,[]);
+    map.get(finalKey).push(c);
+  }
   const order=[];LEAGUES.slice(0,TOP_LEAGUES).forEach(L=>order.push(L.n));LEAGUES.slice(TOP_LEAGUES).forEach(L=>{if(map.has(L.n))order.push(L.n);});
   [...map.keys()].filter(k=>!order.includes(k)&&k!=='No league').sort((a,b)=>a.localeCompare(b)).forEach(k=>order.push(k));if(map.has('No league'))order.push('No league');
   return order.map(n=>({n,list:(map.get(n)||[]).sort((a,b)=>a.name.localeCompare(b.name))}));}
 function crestDups(){const L=S.crestList;const bySig={},byName={};L.forEach(c=>{const sg=sigCache.get(c.id);if(sg)(bySig[sg]=bySig[sg]||[]).push(c.id);const n=cleanName(c.name);(byName[n]=byName[n]||[]).push(c.id);});
   const dups=new Set();Object.values(bySig).concat(Object.values(byName)).forEach(a=>{if(a.length>1)a.forEach(i=>dups.add(i));});return dups;}
 function openCrests(){let lgView=null;
-  const cell=c=>{const u=blobCache['crest:'+c.id];return `<button data-cid="${c.id}"><div class="cb">${u?`<img src="${u}" alt="" loading="lazy">`:''}</div><span>${esc(titleCase(c.name))}</span></button>`;};
+  const cell=c=>{const u=blobCache['crest:'+c.id];return `<button data-cid="${c.id}"><div class="cb" data-cid="${c.id}">${u?`<img src="${u}" alt="" loading="lazy">`:''}</div><span>${esc(titleCase(c.name))}</span></button>`;};
+  const loadCrestsProgressive=(items)=>{
+    const need=items.filter(c=>!blobCache['crest:'+c.id]);
+    if(!need.length)return;
+    let idx=0;const batchSize=28;
+    const runBatch=()=>{
+      if(idx>=need.length)return;
+      const batch=need.slice(idx,idx+batchSize);
+      idx+=batchSize;
+      Promise.all(batch.map(c=>cget('crest:'+c.id))).then(()=>{
+        batch.forEach(c=>{
+          const u=blobCache['crest:'+c.id];
+          if(u){const els=document.querySelectorAll(`.cb[data-cid="${c.id}"]`);els.forEach(el=>{if(!el.querySelector('img'))el.innerHTML=`<img src="${u}" alt="" loading="lazy">`;});}
+        });
+        if(idx<need.length)setTimeout(runBatch,25);
+      });
+    };
+    runBatch();
+  };
   const renderList=()=>{const G=crestGroups();const dups=crestDups();const q=cFilter.q.trim();$('subTitle').textContent=`Crests (${S.crestList.length})`;
     let body;if(q){const qc=cleanName(q);const hits=S.crestList.filter(c=>crestNames(c).some(n=>n.includes(qc))||c.name.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>a.name.localeCompare(b.name));
+      loadCrestsProgressive(hits);
       body=hits.length?`<div class="cgrid">${hits.slice(0,90).map(cell).join('')}</div>${hits.length>90?`<p class="muted">${hits.length-90} more. Type more of the name.</p>`:''}`:'<p class="empty">No team matches that name.</p>';}
     else body=`<div class="set-list">${G.map(g=>`<button class="set-row lgrow" data-lgo="${esc(g.n)}"><span class="i">${g.n==='No league'?'<span class="lgini">?</span>':lgImg(g.n)}</span><span class="t">${esc(g.n)}<small>${g.list.length?`${g.list.length} team${g.list.length>1?'s':''} · ${esc(g.list.slice(0,3).map(c=>titleCase(c.name)).join(', '))}${g.list.length>3?'…':''}`:'0 teams · tap to add'}</small></span><span class="ch">›</span></button>`).join('')}
       ${dups.size?`<button class="set-row" data-lgo="Duplicates"><span class="i">⚠️</span><span class="t">Duplicates<small>${dups.size} crests look like the same team</small></span><span class="ch">›</span></button>`:''}</div>`;
@@ -1714,24 +1952,29 @@ function openCrests(){let lgView=null;
       <button class="btn-save green w100" id="cLeague" style="margin-bottom:8px">🌐 Get crests online</button><div class="btn-row" style="margin:0 0 12px"><button class="btn-half" id="cOne">+ Add one team</button><button class="btn-half" id="cMany">Add many from phone</button></div>${body}`;
     const q2=$('cq');q2.oninput=()=>{cFilter.q=q2.value;clearTimeout(q2._t);q2._t=setTimeout(()=>{const pos=q2.selectionStart;renderList();const n=$('cq');n.focus();n.setSelectionRange(pos,pos);},250);};
     if(!q)loadLeagueLogos(G.map(g=>g.n).filter(n=>n!=='No league'),()=>{if(!lgView&&!cFilter.q)renderList();});};
-  const renderLeague=()=>{const g=lgView;const G=crestGroups();const dups=crestDups();const isDup=g==='Duplicates';const list=isDup?S.crestList.filter(c=>dups.has(c.id)).sort((a,b)=>a.name.localeCompare(b.name)):((G.find(x=>x.n===g)||{list:[]}).list);
-    const e=lgEntry(g);cFilter.league=isDup?'Duplicates':g;$('subTitle').textContent=g;
+  const renderLeague=()=>{const g=lgView;const G=crestGroups();const dups=crestDups();const isDup=g==='Duplicates';
+    const gNorm=lgNorm(g);
+    const matchedGroup=G.find(x=>x.n===g||(x.n!=='No league'&&g!=='No league'&&lgNorm(x.n)===gNorm));
+    const list=isDup?S.crestList.filter(c=>dups.has(c.id)).sort((a,b)=>a.name.localeCompare(b.name)):(matchedGroup?matchedGroup.list:[]);
+    const canonicalName=isDup?'Duplicates':(matchedGroup?matchedGroup.n:g);
+    const e=lgEntry(canonicalName);cFilter.league=canonicalName;$('subTitle').textContent=canonicalName;
     const chips=[...G.map(x=>x.n),...(dups.size?['Duplicates']:[])];
-    $('subBody').innerHTML=`<div class="chips scroll" style="margin-bottom:12px">${chips.map(n=>`<button class="chip ${n===g?'on':''}" data-lgc="${esc(n)}"><span class="lgchip">${n==='Duplicates'||n==='No league'?'':lgLogo(n)?`<img src="${lgLogo(n)}" alt="">`:''}${esc(n)}</span></button>`).join('')}</div>
-      ${isDup?'':`<div class="lghead"><span class="lgl">${g==='No league'?'<span class="lgini">?</span>':lgImg(g)}</span><span><b>${esc(g)}</b><small>${list.length} team${list.length===1?'':'s'}${e?' · '+esc(e.c):''}</small></span></div>`}
+    $('subBody').innerHTML=`<div class="chips scroll" style="margin-bottom:12px">${chips.map(n=>`<button class="chip ${n===canonicalName?'on':''}" data-lgc="${esc(n)}"><span class="lgchip">${n==='Duplicates'||n==='No league'?'':lgLogo(n)?`<img src="${lgLogo(n)}" alt="">`:''}${esc(n)}</span></button>`).join('')}</div>
+      ${isDup?'':`<div class="lghead"><span class="lgl">${canonicalName==='No league'?'<span class="lgini">?</span>':lgImg(canonicalName)}</span><span><b>${esc(canonicalName)}</b><small>${list.length} team${list.length===1?'':'s'}${e?' · '+esc(e.c):''}</small></span></div>`}
       ${isDup?`${list.length?`<button class="btn-save w100" id="cDupAll" style="margin-bottom:12px">🗑️ Delete all duplicates</button><p class="muted" style="margin:-4px 0 12px">Keeps one crest of each team. The other names are kept on it, so every name still finds the crest.</p>`:'<p class="empty">No duplicates left ✓</p>'}`
-        :`${e?`<button class="btn-save green w100" id="cGetLg" style="margin-bottom:8px">🌐 Get this league's crests</button>`:''}<div class="btn-row" style="margin:0 0 8px"><button class="btn-half" id="cOne">+ Add one team</button><button class="btn-half" id="cMany">Add many from phone</button></div>${g!=='No league'&&list.length?'<button class="btn-half w100" id="cRename" style="margin-bottom:12px">Rename league</button>':''}`}
+        :`${e?`<button class="btn-save green w100" id="cGetLg" style="margin-bottom:8px">🌐 Get this league's crests</button>`:''}<div class="btn-row" style="margin:0 0 8px"><button class="btn-half" id="cOne">+ Add one team</button><button class="btn-half" id="cMany">Add many from phone</button></div>${canonicalName!=='No league'&&list.length?'<button class="btn-half w100" id="cRename" style="margin-bottom:12px">Rename league</button>':''}`}
       ${list.length?`<div class="cgrid">${list.map(cell).join('')}</div>`:'<p class="empty">No crests in this league yet.</p>'}
-      ${isDup?'':'<button class="btn-half w100" id="cClean" style="margin-top:14px">Clean all backgrounds</button>'}`;};
+      ${isDup?'':'<button class="btn-half w100" id="cClean" style="margin-top:14px">Clean all backgrounds</button>'}`;
+    loadCrestsProgressive(list);};
   const render=async()=>{if(lgView)renderLeague();else renderList();};
-  openSub('Crests',async()=>{lgView=null;cFilter.league='All';renderList();await warmCrests();await crestSigs();if(!lgView&&$('cq'))renderList();});
+  openSub('Crests',async()=>{lgView=null;cFilter.league='All';await Promise.all([warmPrefix('lgl:'),warmCrests()]);renderList();crestSigs();});
   $('subBody').onclick=async e=>{const b=e.target.closest('button');if(!b)return;
-    if(b.dataset.lgo){lgView=b.dataset.lgo;openSub(lgView,()=>{if(lgView)renderLeague();},true);const pv=subPages[subPages.length-1];const orig=pv.render;pv.render=()=>{if(lgView)renderLeague();};
+    if(b.dataset.lgo){lgView=b.dataset.lgo;openSub(lgView,()=>{if(lgView)renderLeague();else renderList();},true);const pv=subPages[subPages.length-1];pv.render=()=>{if(lgView)renderLeague();else renderList();};
       const top=subPages[0];top.render=()=>{lgView=null;cFilter.league='All';renderList();};return;}
     if(b.dataset.lgc){lgView=b.dataset.lgc;renderLeague();$('sub').scrollTop=0;return;}
     if(b.id==='cLeague'){leagueSheet(render,lgView&&lgView!=='Duplicates'&&lgView!=='No league'?lgView:'');return;}
-    if(b.id==='cGetLg'){const en=lgEntry(lgView);if(en)getLeague(en,render);return;}
-    if(b.id==='cRename'){const old=lgView;editField('Rename league',old,v=>{const nv=(v||'').trim();if(!nv||nv===old)return;let n=0;S.crestList.forEach(c=>{if(lgGroup(c)===old){c.league=nv;n++;}});save('crestList');lgView=lgGroup({league:nv});toast(`${n} crest${n===1?'':'s'} moved to ${nv} ✓`);renderLeague();});return;}
+    if(b.id==='cGetLg'){const en=lgEntry(lgView);if(en)getLeague(en,render);else toast('Online crests not available for this league. Use Add team instead.');return;}
+    if(b.id==='cRename'){const old=lgView;editField('Rename league',old,v=>{const nv=(v||'').trim();if(!nv||nv===old)return;let n=0;const normOld=lgNorm(old);S.crestList.forEach(c=>{if(lgNorm(c.league)===normOld||lgGroup(c)===old){c.league=nv;n++;}});save('crestList');lgView=lgGroup({league:nv});toast(`${n} crest${n===1?'':'s'} moved to ${nv} ✓`);renderLeague();});return;}
     if(b.id==='cOne'){pickFile('image/*',false,async fs=>{if(!fs[0])return;const raw=await normaliseCrest(await fileToDataURL(fs[0]));const r=await cutBackground(raw,true);const guess=titleCase(cleanName(fs[0].name));
       crestEdit(null,r.src,guess,render);});return;}
     if(b.id==='cMany'){const lg=['All','No league','Duplicates'].includes(cFilter.league)?'':cFilter.league;pickFile('image/*',true,fs=>{if(!fs.length)return;toast(`Preparing ${fs.length} crest${fs.length>1?'s':''}...`);nameManySheet(fs,lg,render);});return;}
@@ -1749,6 +1992,7 @@ function openCrests(){let lgView=null;
       cFilter.league='All';sigCache.clear();toast(`Deleted ${drop.length} duplicate${drop.length>1?'s':''} ✓`);render();return;}
     if(b.id==='cClean'){toast('Cleaning...');let n=0;for(const c of S.crestList){const s=await cget('crest:'+c.id);const r=await cutBackground(s,true);if(r.changed){await cset('crest:'+c.id,r.src);n++;}}sigCache.clear();toast(n?`Cleaned ${n} crest${n>1?'s':''} ✓`:'All crests already clean');render();return;}
     if(b.dataset.cid){const c=S.crestList.find(x=>x.id===b.dataset.cid);crestEdit(c,await cget('crest:'+c.id),null,render);}};}
+
 function crestEdit(c,src,guess,after){let cur=src;const leagues=[...new Set(S.crestList.map(x=>x.league).filter(Boolean))].sort();
   openSheet(`<div class="modal-title">${c?'Edit crest':'New crest'}</div><div style="display:flex;gap:12px;align-items:center;margin-bottom:6px"><div style="width:84px;height:84px;background:#fff;border-radius:14px;display:grid;place-items:center;padding:6px;flex:none"><img id="ceImg" src="${cur}" style="max-width:100%;max-height:100%" alt=""></div>
       <div class="btn-row" style="flex:1;flex-direction:column;margin:0"><button class="btn-half" data-a="img">Change image</button><button class="btn-half" data-a="cut">Cut background</button></div></div>

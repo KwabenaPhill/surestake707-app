@@ -1,0 +1,8 @@
+{
+  "name": "Sure Stake 707 Hub",
+  "description": "Sports staking hub, match tracker, slips manager, and video creator.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
