@@ -672,7 +672,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v47.1';
+const VERSION='v47.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -712,7 +712,7 @@ function readOld(){return new Promise(res=>{let r;try{r=indexedDB.open('SS707_Sc
 
 // ---------- State ----------
 const OLD_CLOSERS=["Another Day, Another Chance. Let's Go💰","New Day, Same Hunger 🔥","Another Day To Prove It 🎯","Fresh Day. Fresh Codes. Let's Move 🔥","Another Day In The Office. Let's Work 🏆","Back Again, Back Stronger 💰"];
-const DEF_CLOSERS=["New Day, Same Hunger 🔥💪","Load Them Before Kickoff ⚽🔥","Another Day, Another Chance. Let's Go 💲🔥","Another Day To Prove It 🎯💪","Back Again, Back Stronger 💪🏆","Locked In. Let's Work 🔒🔥","Discipline Pays. Stick To Your Stake 💲✨","We Move Together 🤝🔥","Built Different. Let's Ride 🚀✨","Eyes On The Prize 🏆⚽","Calm Mind, Sharp Picks 🧠👌","Patience Pays. Trust The Process ✨🙌","Same Team, Same Mission 💪🙌","Let The Games Talk ⚽🔥"];
+const DEF_CLOSERS=["Discipline First. Let The Games Talk 🎯⚽","Stay Focused. Play Within Your Limits 🧠👌","Keep Your Head Clear. Move With Discipline 💪✨","Patience Pays. Stick To Your Plan 🎯🙌","Every Day Is A New Mission 🏆🔥","Load Them Before Kickoff ⚽🔥","Another Day, Another Chance. Let's Go 💲🔥","Another Day To Prove It 🎯💪","Back Again, Back Stronger 💪🏆","Locked In. Let's Work 🔒🔥","Discipline Pays. Stick To Your Stake 💲✨","We Move Together 🤝🔥","Eyes On The Prize 🏆⚽","Calm Mind, Clear Picks 🧠👌","Patience Pays. Trust The Process ✨🙌","Let The Games Talk ⚽🔥"];
 const DEF_PREFS={channel:'t.me/SureStake707',handle:'@RogerRich707',price:50,cap:50,closers:DEF_CLOSERS.slice(),tpls:{}};
 const DEF_VIDEO={tpl:'navy',res:'1080',q:'high',secs:5,crestAnim:'pop',scoreAnim:'pop',between:'soft',scoreColor:'#FFFFFF',end:true,endSecs:3,end1:'FOLLOW FOR MORE',end2:'Daily Football Scores',fontTeam:'Bebas Neue',fontScore:'Archivo Black',fontEnd:'Montserrat'};
 const blankState=()=>({days:{},crestList:[],vrows:[],videoDays:{},vset:{...DEF_VIDEO},vtpls:[{id:'navy',name:'Blue'},{id:'black',name:'Black'}],logo:null,members:[],followers:[],prefs:JSON.parse(JSON.stringify(DEF_PREFS)),imgIndex:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},vhist:[],finance:{saved:[],withdrawn:[],otherIncome:[],hide:false}});
@@ -882,22 +882,37 @@ const TPL_INFO=[
  ['status_link','Status - channel link','🔥 **TODAY\'S CODES ARE LIVE** 🔥\n\n✅ {big} Odds\n✅ {bank} Odds Banker\n\nFree On The Channel 👇\n{channel}'],
  ['status_1','Status - bigger odds','🔥 **{big} ODDS TODAY**\nCode 👉 {bigcode}\n\n{closer}'],
  ['status_2','Status - banker','🔥 **{bank} ODDS BANKER**\nCode 👉 {bankcode}\n\n{closer}'],
- ['vip_post','707 Elite picks','👑 **707 ELITE PICKS**\n{date}\n\n**{vip} Odds** 👉 {vipcode}\n\n{closer}'],
- ['win_both','Win post - both codes','✅ **BOTH CODES WON** 🏆🔥\n\n**{big} Odds** ✅\n**{bank} Odds** ✅\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👉 {handle}'],
- ['win_one','Win post - one code','✅ **{odds} ODDS WON** 🏆🔥\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👉 {handle}'],
+ ['vip_post','707 Elite picks','👑 𝟳𝟬𝟳 **ELITE PICKS**\n{date}\n\n**{vip} Odds** 👉 {vipcode}\n\n{closer}'],
+ ['win_both','Win post - both codes','✅ **BOTH CODES WON** 🏆🔥\n\n**{big} Odds** ✅\n**{bank} Odds** ✅\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👇\n{handle}'],
+ ['win_one','Win post - one code','✅ **{odds} ODDS WON** 🏆🔥\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👇\n{handle}'],
  ['win_x','Win post - X','✅ **{odds} ODDS WON** 🏆🔥\n\n{closer}'],
- ['vip_results','707 Elite results','👑 **707 ELITE RESULTS**\n{date}\n\n**{vip} Odds** {mark}\n\n{picks}\n\n{line}'],
- ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 707** 🏆\n{range}\n\n**Free Codes** 🔥\n{free}\n\n👑 **707 Elite**\n{vip}\n\n_Every Result Posted. No Hiding 💯_'],
+ ['vip_results','707 Elite results','👑 𝟳𝟬𝟳 **ELITE RESULTS**\n{date}\n\n**{vip} Odds** {mark}\n\n{picks}\n\n{line}'],
+ ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 𝟳𝟬𝟳** 🏆\n{range}\n\n**Free Codes** 🔥\n{free}\n\n👑 **𝟳𝟬𝟳 Elite**\n{vip}\n\n{closer}'],
  ['elite_welcome','707 Elite welcome message','👑 **WELCOME TO 707 ELITE**\n\nHi {name}, You\'re In. Welcome To The Inner Circle 🙌\nYour Membership Runs Until {until}.\n\n**Join The Private Room** 👇\n{elitelink}\n\nTurn On Notifications So You Catch Every Pick 🔔'],
  ['elite_renew','707 Elite renewal reminder','Hi {name} 👋\n\nYour 707 Elite Membership Ends On {until}.\n\nRenew With GHS {price} To Keep Your Seat In The Room 👑✨'],
- ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 🔥\n\n**The Private Room For Serious Punters.**\n\n✔️ One Hand-Picked Code Daily, Researched Before It Drops\n✔️ Lower Odds, Built For Consistency\n✔️ Every Result Posted, Full Transparency\n✔️ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 **Only {spots} Seats Left**\n\n💳 **Payment Details**\nMoMo: {momo}\nName: {momoname}\nNetwork: {network}\n\n**How To Join** 👇\n1. Send GHS {price} To The MoMo Above\n2. Send Your Screenshot To {handle}\n3. Get Added To The Private Room\n\n📌 Refund Terms Available'],
+ ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 🔥\n\n**The Private Room For Serious Punters.**\n\n✔️ One Hand-Picked Code Daily, Researched Before It Drops\n✔️ Lower Odds, Built For Consistency\n✔️ Every Result Posted, Full Transparency\n✔️ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 **Only {spots} Seats Left**\n\n💳 **PAYMENT DETAILS**\n📱 Network: {network}\n👤 MoMo Name: {momoname}\n💰 MoMo Number: {momo}\n\n**How To Join** 👇\n1. Send GHS {price} To The MoMo Above\n2. Send Your Screenshot To {handle}\n3. Get Added To The Private Room\n\n📩 Send payment proof to {handle}.\n📌 Refund Terms Available'],
  ['elite_refund','Refund terms','📌 **707 ELITE REFUND TERMS**\n\n1. Membership Is GHS {price} Per Month, Paid By MoMo.\n2. If You Leave, Unused Full Months Are Refunded.\n3. The Current Month Is Not Refunded Once It Starts.\n4. Every Payment Is Recorded With Its MoMo Reference.\n5. Betting Carries Risk. No Pick Is Guaranteed.\n\nQuestions? Message {handle}']];
 const DEF_TPL=Object.fromEntries(TPL_INFO.map(x=>[x[0],x[2]]));
 const tplText=k=>S.prefs.tpls[k]??DEF_TPL[k];
-function fill(k,v){if(v&&v.key&&tplText(k).includes('{closer}'))v={...v,closer:closerFor(v.key,k)};const t=tplText(k).replace(/\{(\w+)\}/g,(m,n)=>n in v?String(v[n]):m);return styleText(t).replace(/\n{3,}/g,'\n\n').trim();}
-const CSALT={hot_tg:0,hot_x:4,status_1:8,status_2:11,vip_post:2,win_x:6};
-function closerFor(k,t){const L=S.prefs.closers.filter(x=>x.trim());if(!L.length)return '';const n=Math.floor(dateOf(k).getTime()/864e5);return ital(L[((n*5+(CSALT[t]||0))%L.length+L.length)%L.length]);}
-function varsFor(d){const a=d.codes.t10||{},b=d.codes.t5||{},v=d.codes.vip||{};return {big:rnd(a.odds),bigcode:a.code||'',bank:rnd(b.odds),bankcode:b.code||'',vip:rnd(v.odds),vipcode:v.code||'',key:d.key,channel:S.prefs.channel,handle:S.prefs.handle,date:longDate(d.key)};}
+function safePostWording(text,k){
+  let t=String(text||'').replace(/Refund Terms Are Pinned In The Group/gi,'Refund Terms Available').replace(/\bCASHED\b/gi,'WON').replace(/\{(?:freerate|viprate|allrate|winrate|overallrate)\}/gi,'');
+  t=t.split('\n').filter(line=>!/hunger/i.test(line)&&!/win[\s-]*rate|overall rate/i.test(line)).join('\n');
+  if(k==='hot_x'||k==='win_x')t=t.split('\n').filter(line=>!/t\.me\/\S+/i.test(line)&&!/free on the channel|telegram channel/i.test(line)).join('\n');
+  return t.replace(/^[ \t]*[-|•]?[ \t]*$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
+}
+function fill(k,v){v=v||{};if(v.key&&tplText(k).includes('{closer}'))v={...v,closer:closerFor(v.key,k)};const t=tplText(k).replace(/\{(\w+)\}/g,(m,n)=>n in v?String(v[n]):m);return styleText(safePostWording(t,k)).replace(/\n{3,}/g,'\n\n').trim();}
+
+const CLOSE_ORDER=['hot_tg','hot_x','status_1','status_2','vip_post','win_x','report'];
+function closerPool(){const out=[];for(const x of [...(S.prefs.closers||[]),...DEF_CLOSERS]){const line=String(x||'').trim();if(line&&!/hunger/i.test(line)&&!out.includes(line))out.push(line);}return out;}
+function closerFor(k,t){const L=closerPool();if(!L.length)return ital('Discipline First. Let The Games Talk 🎯⚽');const serial=Math.floor(dateOf(k).getTime()/864e5),rank=Math.max(0,CLOSE_ORDER.indexOf(t));return ital(L[((serial%L.length+L.length)%L.length+rank)%L.length]);}
+
+const fullDate=k=>{const d=dateOf(k);return DAYS[d.getDay()]+', '+d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();};
+const MORNING_OPENERS=['🌅 GOOD MORNING CHAMPIONS 🏆','💪 RISE AND GRIND, FAMILY 🔥','🦁 MORNING, KINGS 👑','🔥 WAKE UP, WINNERS 🙌','☕ COFFEE UP, LOCK IN ✨','🚀 NEW DAY, NEW MISSION 💪','👑 GOOD MORNING, BOSSES 💲','⚽ MATCHDAY MORNING, FAMILY 🔥'];
+const MORNING_MOTTO=['Fresh focus. Smart moves. Strong discipline 💪🔥','A new day brings a new chance to move wisely 🏆✨','Make today count with patience and focus 🎯🙌','Keep the plan clear and the mindset steady 🧠👌','Small disciplined steps beat rushed decisions ⚽️💪','Bring positive energy and protect your peace 🔥✨','Let discipline lead every decision today 🏆🎯'];
+const MORNING_DISCIPLINE=['Discipline First. Let The Games Talk 🎯⚽','Stay Focused. Play Within Your Limits 🧠👌','Keep Your Head Clear. Move With Discipline 💪✨','Patience Pays. Stick To Your Plan 🎯🙌','Every Day Is A New Mission 🏆🔥'];
+function buildMorningGreeting(k){const serial=Math.floor(dateOf(k).getTime()/864e5),oi=((serial%MORNING_OPENERS.length)+MORNING_OPENERS.length)%MORNING_OPENERS.length,mi=((serial%MORNING_MOTTO.length)+MORNING_MOTTO.length)%MORNING_MOTTO.length,di=((serial%MORNING_DISCIPLINE.length)+MORNING_DISCIPLINE.length)%MORNING_DISCIPLINE.length;return styleText('**'+MORNING_OPENERS[oi]+'**\n\n**'+fullDate(k)+' — '+MORNING_MOTTO[mi]+'**\n\n'+MORNING_DISCIPLINE[di]+'\n\nCodes Drop Soon. Stay Locked In 🔔');}
+function varsFor(d){const a=d.codes.t10||{},b=d.codes.t5||{},v=d.codes.vip||{};return {big:rnd(a.odds),bigcode:a.code||'',bank:rnd(b.odds),bankcode:b.code||'',vip:rnd(v.odds),vipcode:v.code||'',key:d.key,channel:S.prefs.channel,handle:S.prefs.handle,date:fullDate(d.key)};}
+
 function buildFromCodes(d){const a=d.codes.t10,b=d.codes.t5,V=varsFor(d),o={};
   if(a&&b&&a.code&&b.code){o.hot_tg=fill('hot_tg',V);o.hot_x=fill('hot_x',V);o.status_link=fill('status_link',V);}
   if(a&&a.code)o.status_1=fill('status_1',V);if(b&&b.code)o.status_2=fill('status_2',V);const vc=d.codes.vip;if(vc&&vc.code)o.vip=fill('vip_post',V);return o;}
@@ -906,12 +921,25 @@ function winPosts(d){const won=[];if(d.codes.t5&&d.codes.t5.result==='won')won.p
   const tg=won.length>1?fill('win_both',V):fill('win_one',{...V,odds:won[0].o});const x=fill('win_x',{...V,odds:top.o});return {tg,x,slipsTg:won.map(w=>w.s),slipsX:[top.s]};}
 function vipResults(d){const c=d.codes.vip;if(!c||!['won','lost'].includes(c.result))return null;const L=(d.games||[]).filter(g=>g.slot==='vip');if(!L.length)return null;const tagged=L.some(g=>legState(g)==='lost');
   const picks=L.map((g,i)=>{const r=legState(g);return `${i+1}. ${g.match} - ${g.pick}${c.result==='won'||r==='won'||r==='void'?' ✔️':r==='lost'?' ❌':tagged?' ✔️':''}`;}).join('\n');return fill('vip_results',{...varsFor(d),picks,mark:c.result==='won'?'✔️ Won':'❌ Lost',line:(d.vipLine||'').trim()});}
-function recapReport(range){const t=todayKey();const from=range==='week'?addDays(t,-6):range==='month'?t.slice(0,8)+'01':null;
-  const ks=Object.keys(S.days).filter(k=>k<=t&&(!from||k>=from)).sort();const free=[],vip=[];let fw=0,ft=0,vw=0,vt=0;const mark=r=>r==='won'?'✅':'❌';const done=c=>c&&c.code&&(c.result==='won'||c.result==='lost');
-  for(const k of ks){const d=S.days[k];const parts=[];for(const s of ['t10','t5']){const c=(d.codes||{})[s];if(done(c)){parts.push(`${rnd(c.odds)} Odds ${mark(c.result)}`);ft++;if(c.result==='won')fw++;}}
-    if(parts.length)free.push(`${shortDate(k)} - ${parts.join(' | ')}`);const v=(d.codes||{}).vip;if(done(v)){vip.push(`${shortDate(k)} - VIP ${v.result==='won'?'✔️':'❌'}`);vt++;if(v.result==='won')vw++;}}
-  if(!ft&&!vt)return null;const rate=(w,n)=>n?Math.round(w/n*100)+'%':'-';const first=ks.find(k=>SLOTS.some(s=>done((S.days[k].codes||{})[s])))||t;
-  return fill('report',{title:range==='week'?'THIS WEEK':range==='month'?'THIS MONTH':'ALL TIME',range:`${shortDate(range==='all'?first:from)} - ${shortDate(t)}`,free:free.join('\n')||'No Results Yet',freerate:rate(fw,ft),vip:vip.join('\n')||'No Results Yet',viprate:rate(vw,vt),allrate:rate(fw+vw,ft+vt)});}
+function recapReport(range){
+  const t=todayKey(),from=range==='week'?addDays(t,-6):range==='month'?t.slice(0,8)+'01':null;
+  const ks=Object.keys(S.days).filter(k=>k<=t&&(!from||k>=from)).sort(),free=[],vip=[];
+  const mark=r=>r==='won'?'✅':'❌',done=c=>c&&c.code&&(c.result==='won'||c.result==='lost');
+  const outcomes=(d,slot)=>gamesOf(d,slot).map(g=>{const r=legState(g);return ['won','lost','void'].includes(r)?g.match+' '+(r==='won'?'✔️ Won':r==='lost'?'❌ Lost':'VOID'):null;}).filter(Boolean);
+  for(const k of ks){
+    const d=S.days[k],parts=[];
+    for(const slot of ['t10','t5']){
+      const c=(d.codes||{})[slot];if(!done(c))continue;
+      const games=outcomes(d,slot);parts.push(rnd(c.odds)+' Odds '+mark(c.result)+(games.length?' — '+games.join('; '):''));
+    }
+    if(parts.length)free.push(shortDate(k)+' — '+parts.join(' | '));
+    const v=(d.codes||{}).vip;
+    if(done(v)){const games=outcomes(d,'vip');vip.push(shortDate(k)+' — VIP '+(v.result==='won'?'✔️ Won':'❌ Lost')+(games.length?' — '+games.join('; '):''));}
+  }
+  if(!free.length&&!vip.length)return null;
+  const first=ks.find(k=>SLOTS.some(slot=>done((S.days[k].codes||{})[slot])))||t;
+  return fill('report',{key:t,title:range==='week'?'THIS WEEK':range==='month'?'THIS MONTH':'ALL TIME',range:shortDate(range==='all'?first:from)+' - '+shortDate(t),free:free.join('\n')||'No Recorded Results',vip:vip.join('\n')||'No Recorded Results'});
+}
 
 // ---------- HUB parser ----------
 function trimBlank(a){while(a.length&&!a[0].trim())a.shift();while(a.length&&!a[a.length-1].trim())a.pop();return a;}
@@ -1083,12 +1111,7 @@ async function postClick(e,d,after){const b=e.target.closest('button');if(!b)ret
 function postInput(e,d){const t=e.target;if(t.dataset.edit){d.posts[t.dataset.edit]=t.value;save('days');}}
 async function openMorningPostPicker(startKey){
   let mk=startKey||todayKey();
-  const getGreeting=async d=>{
-    if((d.posts.greeting||'').trim())return d.posts.greeting.trim();
-    const candidates=Object.keys(S.days).filter(k=>k<=d.key&&S.days[k]&&S.days[k].posts&&S.days[k].posts.greeting).sort();
-    if(candidates.length)return S.days[candidates[candidates.length-1]].posts.greeting.trim();
-    return '';
-  };
+  const getGreeting=async d=>{if((d.posts.greeting||'').trim())return d.posts.greeting.trim();return buildMorningGreeting(d.key);};
   const render=async()=>{
     const d=day(mk);await ensureMorning(d);if(d.morningImg)await cget('img:'+d.morningImg);
     await loadPostImgs(d);const man=postImgIds(d,'morning').map(x=>blobCache['pimg:'+x]).filter(Boolean);const img=man[0]||(d.morningImg?blobCache['img:'+d.morningImg]:null);
@@ -1541,7 +1564,7 @@ $('p-history').addEventListener('click',async e=>{const b=e.target.closest('butt
 // ---------- ELITE ----------
 let newMonths=1,eliteView='members',memFilter='all';window.elitePostOpen='';const openMem=new Set();
 function monthsLeft(exp){const t=todayKey();let n=0,k=t;while(addMonths(k,1)<=exp&&n<36){n++;k=addMonths(k,1);}return n;}
-function eliteVars(extra){const t=todayKey();const active=S.members.filter(m=>memberExpiry(m)>=t).length;return {price:S.prefs.price,cap:S.prefs.cap,spots:Math.max(0,S.prefs.cap-active),momo:S.prefs.momo||'(add MoMo number in Elite settings)',momoname:S.prefs.momoName||'',network:S.prefs.momoNet||'MoMo',handle:S.prefs.handle,elitelink:S.prefs.eliteLink||'',...(extra||{})};}
+function eliteVars(extra){const t=todayKey();const active=S.members.filter(m=>memberExpiry(m)>=t).length;return {price:S.prefs.price,cap:S.prefs.cap,spots:Math.max(0,S.prefs.cap-active),momo:String(S.prefs.momo||'').trim()||'Not set in Elite settings',momoname:String(S.prefs.momoName||'').trim()||'Not set in Elite settings',network:String(S.prefs.momoNet||'').trim()||'Not set in Elite settings',handle:S.prefs.handle,elitelink:String(S.prefs.eliteLink||'').trim()||'Not set in Elite settings',...(extra||{})};}
 function allPayments(){const L=[];S.members.forEach(m=>m.payments.forEach(p=>L.push({...p,name:m.name})));return L.sort((a,b)=>a.date<b.date?1:-1);}
 function moneyExact(n){return 'GH₵ '+Number(n||0).toLocaleString('en-GH',{maximumFractionDigits:2});}
 function moneyCompact(n){n=Number(n||0);if(!Number.isFinite(n))n=0;const a=Math.abs(n);if(a>=1000000)return 'GH₵ '+(n/1000000).toFixed(a>=10000000?0:1).replace(/\.0$/,'')+'M';if(a>=1000)return 'GH₵ '+(n/1000).toFixed(a>=10000?0:1).replace(/\.0$/,'')+'K';return moneyExact(n);}
@@ -2270,7 +2293,7 @@ document.querySelector('.bottom-nav').onclick=e=>{const b=e.target.closest('.nav
 async function loadAll(){const all=await kallState();const B=blankState();takeSnap('days',all.days||{});takeSnap('videoDays',all.videoDays||{});lastRev=Number(all._rev)||0;
   S.days=all.days||{};S.crestList=all.crestList||[];S.vrows=Array.isArray(all.vrows)&&all.vrows.length?all.vrows.map(r=>({...newRow(),...r})):[];S.videoDays=all.videoDays||{};
   S.vset={...DEF_VIDEO,...(all.vset||{})};if(S.vset.trans&&!(all.vset||{}).crestAnim)S.vset.crestAnim=S.vset.trans;delete S.vset.trans;
-  S.vtpls=all.vtpls||B.vtpls;S.vtpls.forEach(t=>{if(t.id==='navy'&&t.name==='Navy')t.name='Blue';});S.vhist=all.vhist||[];S.logo=all.logo||null;S.members=all.members||[];S.followers=all.followers||[];S.prefs={...B.prefs,...(all.prefs||{})};if(JSON.stringify(S.prefs.closers)===JSON.stringify(OLD_CLOSERS)){S.prefs.closers=DEF_CLOSERS.slice();save('prefs');}S.imgIndex={...B.imgIndex,...(all.imgIndex||{})};S.finance={...B.finance,...(all.finance||{}),saved:Array.isArray(all.finance?.saved)?all.finance.saved:[],withdrawn:Array.isArray(all.finance?.withdrawn)?all.finance.withdrawn:[],otherIncome:Array.isArray(all.finance?.otherIncome)?all.finance.otherIncome:[],hide:!!(all.finance?.hide)};
+  S.vtpls=all.vtpls||B.vtpls;S.vtpls.forEach(t=>{if(t.id==='navy'&&t.name==='Navy')t.name='Blue';});S.vhist=all.vhist||[];S.logo=all.logo||null;S.members=all.members||[];S.followers=all.followers||[];S.prefs={...B.prefs,...(all.prefs||{})};if(JSON.stringify(S.prefs.closers)===JSON.stringify(OLD_CLOSERS)){S.prefs.closers=DEF_CLOSERS.slice();save('prefs');}const savedCloserText=JSON.stringify(S.prefs.closers||[]);S.prefs.closers=(S.prefs.closers||[]).map(x=>String(x||'').trim()).filter(x=>x&&!/hunger/i.test(x));if(!S.prefs.closers.length)S.prefs.closers=DEF_CLOSERS.slice();if(JSON.stringify(S.prefs.closers)!==savedCloserText)save('prefs');S.imgIndex={...B.imgIndex,...(all.imgIndex||{})};S.finance={...B.finance,...(all.finance||{}),saved:Array.isArray(all.finance?.saved)?all.finance.saved:[],withdrawn:Array.isArray(all.finance?.withdrawn)?all.finance.withdrawn:[],otherIncome:Array.isArray(all.finance?.otherIncome)?all.finance.otherIncome:[],hide:!!(all.finance?.hide)};
   if(!all.migrated){const old=await readOld();if(old){if(old.crests&&!all.crests)all.crests=old.crests;if(!S.vrows.length&&Array.isArray(old.rows))S.vrows=old.rows.map(r=>({...newRow(),...r}));if(old.settings)S.vset={...S.vset,...old.settings};if(old.customTpl&&!all.customTpl)all.customTpl=old.customTpl;}await kset('migrated',true);}
   if(!all.migrated2){ // v1 -> v2 storage
     if(all.crests&&typeof all.crests==='object'){for(const [k,src] of Object.entries(all.crests)){if(!src)continue;const id=uid();S.crestList.push({id,name:titleCase(k),aliases:[],league:''});await kset('crest:'+id,src);}await kdel('crests');}
