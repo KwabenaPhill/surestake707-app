@@ -1651,9 +1651,32 @@ const STOP=new Set(['logo','logos','png','jpg','jpeg','webp','crest','badge','em
 function cleanName(s){s=String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\.(png|jpe?g|webp|svg|gif)$/,'').replace(/[^a-z0-9]+/g,' ').trim();const t=s.split(' ').filter(x=>x&&!STOP.has(x)&&!/^\d+$/.test(x));return t.join(' ')||s;}
 const ALIAS={'man utd':['manchester united'],'man united':['manchester united'],'man u':['manchester united'],'man city':['manchester city'],'psg':['paris saint germain','paris sg','paris'],'spurs':['tottenham hotspur','tottenham'],'tottenham':['tottenham hotspur'],'wolves':['wolverhampton wanderers','wolverhampton'],'brighton':['brighton hove albion','brighton and hove albion'],'newcastle':['newcastle united'],'west ham':['west ham united'],'nottm forest':['nottingham forest'],'forest':['nottingham forest'],'leeds':['leeds united'],'bayern':['bayern munich','bayern munchen'],'atletico':['atletico madrid'],'atleti':['atletico madrid'],'barca':['barcelona'],'inter':['inter milan','internazionale'],'juve':['juventus'],'leverkusen':['bayer leverkusen'],'dortmund':['borussia dortmund'],'bvb':['borussia dortmund'],'gladbach':['borussia monchengladbach'],'leipzig':['rb leipzig'],'sporting':['sporting cp','sporting lisbon'],'psv':['psv eindhoven'],'betis':['real betis'],'celta':['celta vigo'],'marseille':['olympique marseille','olympique de marseille'],'lyon':['olympique lyonnais','olympique lyon'],'kotoko':['asante kotoko'],'hearts':['hearts of oak','accra hearts of oak'],'villa':['aston villa'],'palace':['crystal palace']};
 const crestNames=c=>[c.name,...(c.aliases||[])].map(cleanName).filter(Boolean);
-function findCrestId(name){const n=cleanName(name);if(!n)return null;const cands=[n,...(ALIAS[n]||[]).map(cleanName)];
-  for(const c of cands){const hit=S.crestList.find(x=>crestNames(x).includes(c));if(hit)return hit.id;}
-  let best=null,bs=1e9;for(const c of cands){const ct=c.split(' ');for(const x of S.crestList)for(const k of crestNames(x)){const kt=k.split(' ');const [a,b]=ct.length<=kt.length?[ct,kt]:[kt,ct];if(a.every(t=>b.includes(t))){const sc=Math.abs(kt.length-ct.length)*10+Math.abs(k.length-c.length);if(sc<bs){bs=sc;best=x.id;}}}}return best;}
+function findCrestId(name){
+  const n=cleanName(name);if(!n)return null;
+  const cands=[...new Set([n,...(ALIAS[n]||[]).map(cleanName)].filter(Boolean))];
+  const exact=S.crestList.filter(x=>crestNames(x).some(k=>cands.includes(k)));
+  if(exact.length){
+    const groups=new Set(exact.map(x=>x.league?lgClean(x.league):''));
+    return groups.size===1?exact[0].id:null;
+  }
+  const scores=new Map();
+  for(const q of cands){
+    const words=q.split(' ');
+    if(words.length<2)continue;
+    for(const x of S.crestList){
+      for(const k of crestNames(x)){
+        const other=k.split(' '),short=words.length<=other.length?words:other,long=words.length<=other.length?other:words;
+        if(short.length>1&&short.every(t=>long.includes(t))){
+          const score=Math.abs(long.length-short.length)*10+Math.abs(k.length-q.length);
+          if(!scores.has(x.id)||score<scores.get(x.id))scores.set(x.id,score);
+        }
+      }
+    }
+  }
+  if(!scores.size)return null;
+  const ordered=[...scores.entries()].sort((a,b)=>a[1]-b[1]),best=ordered[0][1],ties=ordered.filter(x=>x[1]===best);
+  return ties.length===1?ties[0][0]:null;
+}
 async function crestSrc(id){return id?await cget('crest:'+id):null;}
 async function findCrest(name){return crestSrc(findCrestId(name));}
 const titleCase=s=>String(s).replace(/(^|[\s(\-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
