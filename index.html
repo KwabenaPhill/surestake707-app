@@ -760,6 +760,17 @@ const blobCache={};async function cget(key){if(!(key in blobCache))blobCache[key
 function cset(key,val){blobCache[key]=val;return kset(key,val);}
 function cdel(key){delete blobCache[key];return kdel(key);}
 let crestsWarm=null;function warmCrests(){if(!crestsWarm)crestsWarm=kgetPrefix('crest:').then(m=>{for(const k in m)if(!(k in blobCache))blobCache[k]=m[k]||null;}).catch(()=>{crestsWarm=null;});return crestsWarm;}
+const crestReadPending=new Map();
+function readCrestCached(id){const key='crest:'+id;if(key in blobCache)return Promise.resolve(blobCache[key]);if(crestReadPending.has(key))return crestReadPending.get(key);const p=cget(key).catch(()=>null).finally(()=>crestReadPending.delete(key));crestReadPending.set(key,p);return p;}
+async function warmCrestIds(ids,limit=4){const list=[...new Set(ids)].filter(id=>id&&!(('crest:'+id) in blobCache));let next=0;await Promise.all(Array.from({length:Math.min(Math.max(1,limit),list.length)},async()=>{while(next<list.length){const id=list[next++];await readCrestCached(id);}}));}
+let crestGridObserver=null;
+function hydrateCrestGrid(root){if(crestGridObserver){crestGridObserver.disconnect();crestGridObserver=null;}const host=root||$('subBody');if(!host)return;const buttons=[...host.querySelectorAll('button[data-cid]')];if(!buttons.length)return;
+  const paint=async btn=>{if(!btn.isConnected)return;const box=btn.querySelector('.cb');if(!box||box.querySelector('img'))return;const src=await readCrestCached(btn.dataset.cid);if(!src||!btn.isConnected)return;const target=btn.querySelector('.cb');if(!target||target.querySelector('img'))return;const img=new Image();img.alt='';img.loading='lazy';img.decoding='async';img.src=src;target.replaceChildren(img);};
+  buttons.forEach(btn=>{const src=blobCache['crest:'+btn.dataset.cid];const box=btn.querySelector('.cb');if(src&&box&&!box.querySelector('img')){const img=new Image();img.alt='';img.loading='lazy';img.decoding='async';img.src=src;box.replaceChildren(img);}});
+  const pending=buttons.filter(btn=>!blobCache['crest:'+btn.dataset.cid]&&!btn.querySelector('.cb img'));if(!pending.length)return;
+  if(typeof IntersectionObserver==='function'){crestGridObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;crestGridObserver.unobserve(entry.target);paint(entry.target);});},{root:null,rootMargin:'280px 0px'});pending.forEach(btn=>crestGridObserver.observe(btn));}
+  else warmCrestIds(pending.slice(0,30).map(btn=>btn.dataset.cid),4).then(()=>pending.slice(0,30).forEach(paint));
+}
 async function warmPrefix(prefix){try{const m=await kgetPrefix(prefix);for(const k in m)if(!(k in blobCache))blobCache[k]=m[k]||null;}catch(e){}}
 async function loadSlips(k){const d=S.days[k];if(!d)return;for(const s of ['t10','t5','vip'])if(d.slips[s])await cget(`slip:${k}:${s}`);}
 const slipOf=(k,s)=>blobCache[`slip:${k}:${s}`]||null;
@@ -1662,17 +1673,23 @@ const lgClean=s=>cleanName(String(s||'').replace(/^.*?\s+[—–-]\s+/,''));
 function lgEntry(name){const raw=String(name||'');if(!raw.trim())return null;const k=lgClean(raw),k2=cleanName(raw);return LEAGUES.find(L=>[L.n,...(L.a||[])].some(x=>{const c=cleanName(x);return c===k||c===k2;}))||null;}
 function lgGroup(c){if(!c.league||!c.league.trim())return 'No league';const e=lgEntry(c.league);return e?e.n:c.league.trim();}
 function lgShort(name){return String(name).split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ0-9]/.test(w)).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
-const lgFail=new Set();let lgBusy=0;
+const lgFail=new Set();let lgBusy=0;const lgLogoPending=new Map();
 function lgLogo(name){return blobCache['lgl:'+name]||null;}
-async function fetchLeagueLogo(name){if(!name||name==='No league'||name==='Duplicates')return null;const key='lgl:'+name;if(blobCache[key])return blobCache[key];
+function fetchLeagueLogo(name){if(!name||name==='No league'||name==='Duplicates')return Promise.resolve(null);if(lgLogoPending.has(name))return lgLogoPending.get(name);const p=fetchLeagueLogoOnce(name).finally(()=>lgLogoPending.delete(name));lgLogoPending.set(name,p);return p;}
+async function fetchLeagueLogoOnce(name){if(!name||name==='No league'||name==='Duplicates')return null;const key='lgl:'+name;if(blobCache[key])return blobCache[key];
   if(!(key in blobCache)){const v=await kget(key).catch(()=>null);blobCache[key]=v||null;if(v)return v;}
   if(!navigator.onLine||lgFail.has(name))return null;const e=lgEntry(name);
   try{const title=e?(e.intl?'FIFA':e.w):name;const q=e?`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&titles=${enc(title)}&prop=pageimages&piprop=thumbnail&pithumbsize=200&pilicense=any`:`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${enc(lgClean(name)+' football league')}&gsrlimit=3&prop=pageimages&piprop=thumbnail&pithumbsize=200&pilicense=any`;
-    const r=await fetch(q);const j=await r.json();const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));const pg=pages.find(p=>p.thumbnail&&p.thumbnail.source);if(!pg){lgFail.add(name);return null;}
-    const ir=await fetch(pg.thumbnail.source);const b=await ir.blob();if(!/image/.test(b.type)){lgFail.add(name);return null;}
-    const du=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});const src=await normaliseCrest(du,160);await cset(key,src);return src;}catch(err){lgFail.add(name);return null;}}
-async function loadLeagueLogos(names,after){const need=names.filter(n=>!blobCache['lgl:'+n]&&!lgFail.has(n));if(!need.length)return;let got=0;
-  for(const n of need){const v=await fetchLeagueLogo(n);if(v)got++;}if(got&&after)after();}
+    const r=await fetch(q);const j=await r.json();const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));const pg=pages.find(p=>p.thumbnail&&p.thumbnail.source);if(!pg){lgFail.add(name);setTimeout(()=>lgFail.delete(name),30000);return null;}
+    const ir=await fetch(pg.thumbnail.source);const b=await ir.blob();if(!/image/.test(b.type)){lgFail.add(name);setTimeout(()=>lgFail.delete(name),30000);return null;}
+    const du=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});const src=await normaliseCrest(du,160);await cset(key,src);return src;}catch(err){lgFail.add(name);setTimeout(()=>lgFail.delete(name),30000);return null;}}
+async function updateLeagueLogoDom(name,src){if(!src)return;const els=document.querySelectorAll('[data-lgo],[data-lgc],[data-gl],[data-bl]');els.forEach(el=>{const d=el.dataset||{};if(d.lgo!==name&&d.lgc!==name&&d.gl!==name&&d.bl!==name)return;if(d.lgc===name){const chip=el.querySelector('.lgchip');if(chip){const img=document.createElement('img');img.alt='';img.src=src;chip.replaceChildren(img,document.createTextNode(name));}return;}const box=el.querySelector('.i');if(box){const img=document.createElement('img');img.alt='';img.src=src;box.replaceChildren(img);}});const title=$('subTitle');if(title&&title.textContent===name){const box=$('subBody')&&$('subBody').querySelector('.lghead .lgl');if(box){const img=document.createElement('img');img.alt='';img.src=src;box.replaceChildren(img);}}}
+let leagueLogoObserver=null;
+function observeLeagueLogos(root){if(leagueLogoObserver){leagueLogoObserver.disconnect();leagueLogoObserver=null;}const host=root||document;const els=[...host.querySelectorAll('[data-lgo],[data-lgc],[data-gl],[data-bl]')];if(!els.length)return;const nameOf=el=>{const d=el.dataset||{};return d.lgo||d.lgc||d.gl||d.bl||'';};const pending=[];els.forEach(el=>{const name=nameOf(el);if(!name||name==='No league'||name==='Duplicates')return;const src=lgLogo(name);if(src)updateLeagueLogoDom(name,src);else pending.push(el);});
+  if(typeof IntersectionObserver==='function'){leagueLogoObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(!entry.isIntersecting)return;leagueLogoObserver.unobserve(entry.target);const name=nameOf(entry.target);fetchLeagueLogo(name).then(src=>{if(src)updateLeagueLogoDom(name,src);}).catch(()=>{});});},{root:null,rootMargin:'260px 0px'});pending.forEach(el=>leagueLogoObserver.observe(el));}
+  else loadLeagueLogos(pending.slice(0,12).map(nameOf),()=>{});
+}
+async function loadLeagueLogos(names,after){const list=[...new Set(names)].filter(Boolean);if(!list.length)return;let got=0;await Promise.all(list.map(async n=>{try{const src=await fetchLeagueLogo(n);if(src){got++;updateLeagueLogoDom(n,src);}}catch(e){}}));if(got&&after)after();}
 const lgImg=(n,cls='')=>{const u=lgLogo(n);return u?`<img src="${u}" alt="" class="${cls}">`:`<span class="lgini">${esc(lgShort(n)||'?')}</span>`;};
 // Same team already saved? Exact name, nickname, or same name with one extra word in the same league.
 function sameTeamId(name,league){const n=cleanName(name);if(!n)return null;const cands=[n,...(ALIAS[n]||[]).map(cleanName)];
@@ -1720,7 +1737,7 @@ function openCrests(){let lgView=null;
     $('subBody').innerHTML=`<input id="cq" placeholder="🔍 Search all teams" value="${esc(cFilter.q)}" style="margin-bottom:10px">
       <button class="btn-save green w100" id="cLeague" style="margin-bottom:8px">🌐 Get crests online</button><div class="btn-row" style="margin:0 0 12px"><button class="btn-half" id="cOne">+ Add one team</button><button class="btn-half" id="cMany">Add many from phone</button></div>${body}`;
     const q2=$('cq');q2.oninput=()=>{cFilter.q=q2.value;clearTimeout(q2._t);q2._t=setTimeout(()=>{const pos=q2.selectionStart;renderList();const n=$('cq');n.focus();n.setSelectionRange(pos,pos);},250);};
-    if(!q)loadLeagueLogos(G.map(g=>g.n).filter(n=>n!=='No league'),()=>{if(!lgView&&!cFilter.q)renderList();});};
+    hydrateCrestGrid($('subBody'));observeLeagueLogos($('subBody'));};
   const renderLeague=()=>{const g=lgView;const G=crestGroups();const dups=crestDups();const isDup=g==='Duplicates';const list=isDup?S.crestList.filter(c=>dups.has(c.id)).sort((a,b)=>a.name.localeCompare(b.name)):((G.find(x=>x.n===g)||{list:[]}).list);
     const e=lgEntry(g);cFilter.league=isDup?'Duplicates':g;$('subTitle').textContent=g;
     const chips=[...G.map(x=>x.n),...(dups.size?['Duplicates']:[])];
@@ -1729,13 +1746,13 @@ function openCrests(){let lgView=null;
       ${isDup?`${list.length?`<button class="btn-save w100" id="cDupAll" style="margin-bottom:12px">🗑️ Delete all duplicates</button><p class="muted" style="margin:-4px 0 12px">Keeps one crest of each team. The other names are kept on it, so every name still finds the crest.</p>`:'<p class="empty">No duplicates left ✓</p>'}`
         :`${e?`<button class="btn-save green w100" id="cGetLg" style="margin-bottom:8px">🌐 Get this league's crests</button>`:''}<div class="btn-row" style="margin:0 0 8px"><button class="btn-half" id="cOne">+ Add one team</button><button class="btn-half" id="cMany">Add many from phone</button></div>${g!=='No league'&&list.length?'<button class="btn-half w100" id="cRename" style="margin-bottom:12px">Rename league</button>':''}`}
       ${list.length?`<div class="cgrid">${list.map(cell).join('')}</div>`:'<p class="empty">No crests in this league yet.</p>'}
-      ${isDup?'':'<button class="btn-half w100" id="cClean" style="margin-top:14px">Clean all backgrounds</button>'}`;};
+      ${isDup?'':'<button class="btn-half w100" id="cClean" style="margin-top:14px">Clean all backgrounds</button>'}`;hydrateCrestGrid($('subBody'));observeLeagueLogos($('subBody'));};
   const render=async()=>{if(lgView)renderLeague();else renderList();};
-  openSub('Crests',async()=>{lgView=null;cFilter.league='All';renderList();await warmCrests();await crestSigs();if(!lgView&&$('cq'))renderList();});
+  openSub('Crests',()=>{lgView=null;cFilter.league='All';renderList();});
   $('subBody').onclick=async e=>{const b=e.target.closest('button');if(!b)return;
     if(b.dataset.lgo){lgView=b.dataset.lgo;openSub(lgView,()=>{if(lgView)renderLeague();},true);const pv=subPages[subPages.length-1];const orig=pv.render;pv.render=()=>{if(lgView)renderLeague();};
-      const top=subPages[0];top.render=()=>{lgView=null;cFilter.league='All';renderList();};return;}
-    if(b.dataset.lgc){lgView=b.dataset.lgc;renderLeague();$('sub').scrollTop=0;return;}
+      const top=subPages[0];top.render=()=>{lgView=null;cFilter.league='All';renderList();};if(lgView==='Duplicates'){await crestSigs();if(lgView==='Duplicates')renderLeague();}return;}
+    if(b.dataset.lgc){lgView=b.dataset.lgc;renderLeague();$('sub').scrollTop=0;if(lgView==='Duplicates'){await crestSigs();if(lgView==='Duplicates')renderLeague();}return;}
     if(b.id==='cLeague'){leagueSheet(render,lgView&&lgView!=='Duplicates'&&lgView!=='No league'?lgView:'');return;}
     if(b.id==='cGetLg'){const en=lgEntry(lgView);if(en)getLeague(en,render);return;}
     if(b.id==='cRename'){const old=lgView;editField('Rename league',old,v=>{const nv=(v||'').trim();if(!nv||nv===old)return;let n=0;S.crestList.forEach(c=>{if(lgGroup(c)===old){c.league=nv;n++;}});save('crestList');lgView=lgGroup({league:nv});toast(`${n} crest${n===1?'':'s'} moved to ${nv} ✓`);renderLeague();});return;}
@@ -1874,7 +1891,7 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
   const row=(k,i,t,sub,v='',cls='')=>`<button class="set-row" data-s="${k}"><span class="i ${cls}">${i}</span><span class="t">${t}${sub?`<small>${sub}</small>`:''}</span>${v?`<span class="v">${v}</span>`:''}<span class="ch">›</span></button>`;
   const wd=new Date().getDay();const mid=((S.imgIndex[wd]||[])[0]||{}).id;const mimg=mid?blobCache['img:'+mid]:null;if(mid&&!(('img:'+mid) in blobCache))cget('img:'+mid).then(()=>{if(tab==='settings')renderSettings();});
   const cr=[];for(const g of crestGroups()){for(const c of g.list){const u=blobCache['crest:'+c.id];if(u){cr.push(u);if(cr.length>=3)break;}}if(cr.length>=3)break;}
-  if(cr.length<3&&S.crestList.length)warmCrests().then(()=>{if(tab==='settings'&&!settingsWarm){settingsWarm=true;renderSettings();}});
+  if(cr.length<3&&S.crestList.length){const ids=S.crestList.filter(c=>!blobCache['crest:'+c.id]).slice(0,3-cr.length).map(c=>c.id);warmCrestIds(ids,3).then(()=>{if(tab==='settings'&&!settingsWarm){settingsWarm=true;renderSettings();}});}
   if(!vThumb)tplSrc(S.vset.tpl).then(u=>{if(u){vThumb=u;if(tab==='settings')renderSettings();}}).catch(()=>{});
   $('p-settings').innerHTML=`
   <div class="set-group"><div class="set-title">Brand</div><div class="set-list">
@@ -2235,7 +2252,7 @@ if(bc)bc.onmessage=e=>{const m=e.data||{};if(m.from===TAB_ID)return;if(m.type===
   loaded=true;clearTimeout(busyTimer);
   if(err){storageBroken=true;readyRej(err);showBanner('Storage did not open, so nothing new can be saved and nothing old was touched. Close Sure Stake fully (and any other copy), then open it again.');if(!S.vrows.length)S.vrows=[newRow()];}
   else{storageReady=true;readyRes();bcPost({type:'hello'});}
-  renderHeader();showTab('home');setTimeout(()=>{liveTick(true);warmCrests();},2500);
+  renderHeader();showTab('home');setTimeout(()=>{liveTick(true);},2500);
   try{await cget('eliteFlyer');}catch(e){}renderVideoUI();await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
 })();
 </script>
