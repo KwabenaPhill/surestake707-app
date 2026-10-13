@@ -1673,9 +1673,9 @@ const lgClean=s=>cleanName(String(s||'').replace(/^.*?\s+[—–-]\s+/,''));
 function lgEntry(name){const raw=String(name||'');if(!raw.trim())return null;const k=lgClean(raw),k2=cleanName(raw);return LEAGUES.find(L=>[L.n,...(L.a||[])].some(x=>{const c=cleanName(x);return c===k||c===k2;}))||null;}
 function lgGroup(c){if(!c.league||!c.league.trim())return 'No league';const e=lgEntry(c.league);return e?e.n:c.league.trim();}
 function lgShort(name){return String(name).split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ0-9]/.test(w)).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
-const lgFail=new Set();let lgBusy=0;const lgLogoPending=new Map();
+const lgFail=new Set();let lgBusy=0;const lgLogoPending=new Map();const lgLogoQueue=[];let lgLogoActive=0;const LG_LOGO_CONCURRENCY=5;
 function lgLogo(name){return blobCache['lgl:'+name]||null;}
-function fetchLeagueLogo(name){if(!name||name==='No league'||name==='Duplicates')return Promise.resolve(null);if(lgLogoPending.has(name))return lgLogoPending.get(name);const p=fetchLeagueLogoOnce(name).finally(()=>lgLogoPending.delete(name));lgLogoPending.set(name,p);return p;}
+function fetchLeagueLogo(name){if(!name||name==='No league'||name==='Duplicates')return Promise.resolve(null);const key='lgl:'+name;if(blobCache[key])return Promise.resolve(blobCache[key]);if(lgLogoPending.has(name))return lgLogoPending.get(name);const p=new Promise(resolve=>lgLogoQueue.push({name,resolve}));lgLogoPending.set(name,p);pumpLeagueLogoQueue();return p;}\nfunction pumpLeagueLogoQueue(){while(lgLogoActive<LG_LOGO_CONCURRENCY&&lgLogoQueue.length){const job=lgLogoQueue.shift();lgLogoActive++;fetchLeagueLogoOnce(job.name).then(job.resolve,()=>job.resolve(null)).finally(()=>{lgLogoActive--;lgLogoPending.delete(job.name);pumpLeagueLogoQueue();});}}
 async function fetchLeagueLogoOnce(name){if(!name||name==='No league'||name==='Duplicates')return null;const key='lgl:'+name;if(blobCache[key])return blobCache[key];
   if(!(key in blobCache)){const v=await kget(key).catch(()=>null);blobCache[key]=v||null;if(v)return v;}
   if(!navigator.onLine||lgFail.has(name))return null;const e=lgEntry(name);
