@@ -1634,7 +1634,7 @@ function findCrestId(name){const n=cleanName(name);if(!n)return null;const cands
 async function crestSrc(id){return id?await cget('crest:'+id):null;}
 async function findCrest(name){return crestSrc(findCrestId(name));}
 const titleCase=s=>String(s).replace(/(^|[\s(\-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
-async function addCrest(src,name,league){const id=uid();S.crestList.push({id,name:name.trim(),aliases:[],league:(league||'').trim()});await cset('crest:'+id,src);save('crestList');return id;}
+async function addCrest(src,name,league){const id=uid();S.crestList.push({id,name:name.trim(),aliases:[],league:leagueForSave(league)});await cset('crest:'+id,src);save('crestList');return id;}
 // ---------- Leagues (v47.1) ----------
 const LEAGUES=[
  {n:'Premier League',c:'England',w:'Premier League',a:['english premier league','epl','england premier league']},
@@ -1670,10 +1670,14 @@ const LEAGUES=[
  {n:'Liga MX',c:'Mexico',w:'Liga MX'},{n:'Botola Pro',c:'Morocco',w:'Botola'},{n:'Nigeria Premier Football League',c:'Nigeria',w:'Nigeria Premier Football League',a:['npfl']},
  {n:'Tunisian Ligue 1',c:'Tunisia',w:'Tunisian Ligue Professionnelle 1'},{n:'Algerian Ligue 1',c:'Algeria',w:'Algerian Ligue Professionnelle 1'},{n:'Scottish Championship',c:'Scotland',w:'Scottish Championship'}];
 const TOP_LEAGUES=20;
-const lgClean=s=>cleanName(String(s||'').replace(/^.*?\s+[—–-]\s+/,''));
-function lgEntry(name){const raw=String(name||'');if(!raw.trim())return null;const k=lgClean(raw),k2=cleanName(raw);return LEAGUES.find(L=>[L.n,...(L.a||[])].some(x=>{const c=cleanName(x);return c===k||c===k2;}))||null;}
-function lgGroup(c){if(!c.league||!c.league.trim())return 'No league';const e=lgEntry(c.league);return e?e.n:c.league.trim();}
-function lgShort(name){return String(name).split(/\s+/).filter(w=>/^[A-Za-zÀ-ÿ0-9]/.test(w)).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+const leagueText=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[’'"]/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+const LEAGUE_COUNTRIES=new Set([...LEAGUES.map(L=>L.c),'Sweden','England','Germany','Spain','Italy','France','Portugal','Netherlands','Denmark','Norway','Scotland','USA','United States','Ghana','Brazil','Argentina','Turkey','Japan','South Korea','Australia'].map(leagueText));
+function leagueBase(name){const raw=String(name||'').trim(),m=raw.match(/^(.+?)\s+[—–-]\s+(.+)$/);return m&&LEAGUE_COUNTRIES.has(leagueText(m[1]))?m[2].trim():raw;}
+const lgClean=s=>leagueText(leagueBase(s));
+function lgEntry(name){const k=lgClean(name);if(!k)return null;return LEAGUES.find(L=>[L.n,...(L.a||[])].some(x=>lgClean(x)===k))||null;}
+function sameLeagueName(a,b){if(!String(a||'').trim()||!String(b||'').trim())return false;const ea=lgEntry(a),eb=lgEntry(b);if(ea||eb)return !!(ea&&eb&&ea.n===eb.n);return lgClean(a)===lgClean(b);}
+function leagueForSave(name){const raw=String(name||'').trim();if(!raw)return '';const e=lgEntry(raw);if(e)return e.n;const key=lgClean(raw);const old=S.crestList.find(c=>c.league&&lgClean(c.league)===key);return old?String(old.league).trim():raw;}
+function lgGroup(c){const raw=String(c&&c.league||'').trim();if(!raw)return 'No league';const e=lgEntry(raw);if(e)return e.n;const key=lgClean(raw);const old=S.crestList.find(x=>x.league&&lgClean(x.league)===key);return old?String(old.league).trim():raw;}
 const lgFail=new Set();let lgBusy=0;const lgLogoPending=new Map();const lgLogoQueue=[];let lgLogoActive=0;const LG_LOGO_CONCURRENCY=5;
 function lgLogo(name){return blobCache['lgl:'+name]||null;}
 function fetchLeagueLogo(name){if(!name||name==='No league'||name==='Duplicates')return Promise.resolve(null);const key='lgl:'+name;if(blobCache[key])return Promise.resolve(blobCache[key]);if(lgLogoPending.has(name))return lgLogoPending.get(name);const p=new Promise(resolve=>lgLogoQueue.push({name,resolve}));lgLogoPending.set(name,p);pumpLeagueLogoQueue();return p;}
@@ -1694,18 +1698,49 @@ function observeLeagueLogos(root){if(leagueLogoObserver){leagueLogoObserver.disc
 async function loadLeagueLogos(names,after){const list=[...new Set(names)].filter(Boolean);if(!list.length)return;let got=0;await Promise.all(list.map(async n=>{try{const src=await fetchLeagueLogo(n);if(src){got++;updateLeagueLogoDom(n,src);}}catch(e){}}));if(got&&after)after();}
 const lgImg=(n,cls='')=>{const u=lgLogo(n);return u?`<img src="${u}" alt="" class="${cls}">`:`<span class="lgini">${esc(lgShort(n)||'?')}</span>`;};
 // Same team already saved? Exact name, nickname, or same name with one extra word in the same league.
-function sameTeamId(name,league){const n=cleanName(name);if(!n)return null;const cands=[n,...(ALIAS[n]||[]).map(cleanName)];
-  for(const c of cands){const hit=S.crestList.find(x=>crestNames(x).includes(c));if(hit)return hit.id;}
-  const g=league?(lgEntry(league)||{n:league.trim()}).n:'';
-  for(const c of cands){const ct=c.split(' ');for(const x of S.crestList){const xg=x.league?lgGroup(x):'';if(g&&xg&&g!==xg)continue;for(const k of crestNames(x)){const kt=k.split(' ');const [a,b]=ct.length<=kt.length?[ct,kt]:[kt,ct];if(a.length&&a.every(t=>b.includes(t))&&b.length-a.length<=1&&a.join('').length>=4)return x.id;}}}
-  return null;}
+function sameTeamId(name,league){
+  const n=cleanName(name);if(!n)return null;
+  const cands=[...new Set([n,...(ALIAS[n]||[]).map(cleanName)].filter(Boolean))];
+  const exact=S.crestList.filter(x=>crestNames(x).some(k=>cands.includes(k)));
+  if(league){
+    const eligible=exact.filter(x=>!x.league||sameLeagueName(x.league,league));
+    if(eligible.length){eligible.sort((a,b)=>Number(!!b.league)-Number(!!a.league));return eligible[0].id;}
+  }else if(exact.length){
+    const groups=new Set(exact.map(x=>x.league?lgClean(x.league):''));
+    if(groups.size===1)return exact[0].id;
+    return null;
+  }
+  const nearby=new Set();
+  for(const q of cands){
+    const words=q.split(' ');
+    for(const x of S.crestList){
+      if(league&&x.league&&!sameLeagueName(x.league,league))continue;
+      for(const k of crestNames(x)){
+        const other=k.split(' '),short=words.length<=other.length?words:other,long=words.length<=other.length?other:words;
+        if(short.length>1&&short.every(t=>long.includes(t))&&long.length-short.length===1&&short.join('').length>=6)nearby.add(x.id);
+      }
+    }
+  }
+  return nearby.size===1?[...nearby][0]:null;
+}
+
 function strSig(str){let h=0x811c9dc5;const s2=String(str||'');for(let i=0;i<s2.length;i+=3){h^=s2.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return s2.length+':'+h;}
 const sigCache=new Map();async function crestSigs(){await warmCrests();for(const c of S.crestList){if(!sigCache.has(c.id)){const v=blobCache['crest:'+c.id];if(v)sigCache.set(c.id,strSig(v));}}return sigCache;}
 function addAlias(c,name){const nm=String(name||'').trim();if(!nm)return;if(crestNames(c).includes(cleanName(nm)))return;c.aliases=[...(c.aliases||[]),nm];}
-async function addCrestSafe(src,name,league){const nm=String(name||'').trim();const hit=sameTeamId(nm,league);
-  if(hit){const c=S.crestList.find(x=>x.id===hit);addAlias(c,nm);if(!c.league&&league)c.league=league;save('crestList');return {id:hit,existed:true,name:c.name};}
-  const sig=strSig(src);const sigs=await crestSigs();for(const [id,sg] of sigs){if(sg===sig){const c=S.crestList.find(x=>x.id===id);if(c){addAlias(c,nm);if(!c.league&&league)c.league=league;save('crestList');return {id,existed:true,name:c.name};}}}
-  const id=await addCrest(src,nm,league);sigCache.set(id,sig);return {id,existed:false};}
+async function addCrestSafe(src,name,league){
+  const nm=String(name||'').trim(),target=leagueForSave(league),hit=sameTeamId(nm,target);
+  if(hit){const c=S.crestList.find(x=>x.id===hit);if(c){addAlias(c,nm);if(!c.league&&target)c.league=target;save('crestList');return {id:hit,existed:true,name:c.name};}}
+  const sig=strSig(src),sigs=await crestSigs();
+  for(const [id,sg] of sigs){
+    if(sg!==sig)continue;
+    const c=S.crestList.find(x=>x.id===id);
+    if(c&&(!target||!c.league||sameLeagueName(c.league,target))){
+      addAlias(c,nm);if(!c.league&&target)c.league=target;save('crestList');return {id,existed:true,name:c.name};
+    }
+  }
+  const id=await addCrest(src,nm,target);sigCache.set(id,sig);return {id,existed:false};
+}
+
 function seasonLabel(cal){const d=new Date();const y=d.getFullYear(),m=d.getMonth()+1;if(cal)return String(y);const a=m>=7?y:y-1;return `${a}–${String((a+1)%100).padStart(2,'0')}`;}
 async function wikiParseClubs(title){try{const r=await fetch(`https://en.wikipedia.org/w/api.php?action=parse&format=json&origin=*&redirects=1&prop=text&page=${enc(title)}`);const j=await r.json();if(!j.parse||!j.parse.text)return null;
   const doc=new DOMParser().parseFromString(j.parse.text['*'],'text/html');
@@ -1717,11 +1752,16 @@ async function wikiLeagueClubs(e){const lab=seasonLabel(e.cal);const tries=[`${l
   try{const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=search&srlimit=5&srsearch=${enc(lab+' '+e.w)}`);const j=await r.json();for(const h of (j.query&&j.query.search)||[]){if(!h.title.startsWith(lab))continue;const L=await wikiParseClubs(h.title);if(L)return L;}}catch(err){}
   return null;}
 function lgSaved(e){const have=S.crestList.filter(c=>lgGroup(c)===e.n).length;const done=(S.prefs.lgDone||{})[e.n];return done&&have>=Math.max(1,done.n-2);}
-async function getLeague(e,after){if(!navigator.onLine){toast('You are offline. Connect to the internet and try again.',3500);return;}
+async function getLeague(e,after){
+  if(!e){toast("This custom league has no supported online club list. Manage its teams manually, or enter known team names in Get crests online.",4500);return;}
+  if(!navigator.onLine){toast('You are offline. Connect to the internet and try again.',3500);return;}
   if(e.intl){await fetchMany(INTERNATIONAL_TEAMS,e.n,after,'international',e);return;}
-  toast(`Reading this season's ${e.n} clubs...`,2500);let L=await wikiLeagueClubs(e);if(!L&&LEAGUE_CLUBS[e.n])L=LEAGUE_CLUBS[e.n];
-  if(!L){toast(`Couldn't read the ${e.n} club list. Type the club names in Get crests online.`,4500);return;}
-  await fetchMany(L,e.n,after,'club',e);}
+  toast("Reading this season's "+e.n+" clubs...",2500);
+  let L=await wikiLeagueClubs(e);if(!L&&LEAGUE_CLUBS[e.n])L=LEAGUE_CLUBS[e.n];
+  if(!L){toast("Couldn't read the "+e.n+" club list. Type the club names in Get crests online.",4500);return;}
+  await fetchMany(L,e.n,after,'club',e);
+}
+
 let cFilter={q:'',league:'All'};
 function crestGroups(){const map=new Map();for(const c of S.crestList){const g=lgGroup(c);if(!map.has(g))map.set(g,[]);map.get(g).push(c);}
   const order=[];LEAGUES.slice(0,TOP_LEAGUES).forEach(L=>order.push(L.n));LEAGUES.slice(TOP_LEAGUES).forEach(L=>{if(map.has(L.n))order.push(L.n);});
@@ -1745,6 +1785,7 @@ function openCrests(){let lgView=null;
     const chips=[...G.map(x=>x.n),...(dups.size?['Duplicates']:[])];
     $('subBody').innerHTML=`<div class="chips scroll" style="margin-bottom:12px">${chips.map(n=>`<button class="chip ${n===g?'on':''}" data-lgc="${esc(n)}"><span class="lgchip">${n==='Duplicates'||n==='No league'?'':lgLogo(n)?`<img src="${lgLogo(n)}" alt="">`:''}${esc(n)}</span></button>`).join('')}</div>
       ${isDup?'':`<div class="lghead"><span class="lgl">${g==='No league'?'<span class="lgini">?</span>':lgImg(g)}</span><span><b>${esc(g)}</b><small>${list.length} team${list.length===1?'':'s'}${e?' · '+esc(e.c):''}</small></span></div>`}
+      ${!isDup&&!e?'<p class="muted" style="margin:0 0 12px">Custom league: no supported online club list is configured. Your league and teams are kept; add or rename teams manually, or enter known team names in Get crests online.</p>':''}
       ${isDup?`${list.length?`<button class="btn-save w100" id="cDupAll" style="margin-bottom:12px">🗑️ Delete all duplicates</button><p class="muted" style="margin:-4px 0 12px">Keeps one crest of each team. The other names are kept on it, so every name still finds the crest.</p>`:'<p class="empty">No duplicates left ✓</p>'}`
         :`${e?`<button class="btn-save green w100" id="cGetLg" style="margin-bottom:8px">🌐 Get this league's crests</button>`:''}<div class="btn-row" style="margin:0 0 8px"><button class="btn-half" id="cOne">+ Add one team</button><button class="btn-half" id="cMany">Add many from phone</button></div>${g!=='No league'&&list.length?'<button class="btn-half w100" id="cRename" style="margin-bottom:12px">Rename league</button>':''}`}
       ${list.length?`<div class="cgrid">${list.map(cell).join('')}</div>`:'<p class="empty">No crests in this league yet.</p>'}
@@ -1785,7 +1826,7 @@ function crestEdit(c,src,guess,after){let cur=src;const leagues=[...new Set(S.cr
     if(a==='img'){pickFile('image/*',false,async fs=>{if(!fs[0])return;const raw=await normaliseCrest(await fileToDataURL(fs[0]));cur=(await cutBackground(raw,true)).src;$('ceImg').src=cur;});return;}
     if(a==='cut'){const r=await cutBackground(cur);if(r.changed){cur=r.src;$('ceImg').src=cur;}else toast('No solid background found');return;}
     if(a==='del'){if(!confirm(`Delete ${c.name}?`))return;S.crestList=S.crestList.filter(x=>x!==c);sigCache.delete(c.id);await cdel('crest:'+c.id);save('crestList');closeSheet();toast('Crest deleted');after();return;}
-    if(a==='ok'){const name=$('ceName').value.trim();if(!name){toast('Type the team name.');return;}const al=$('ceAl').value.split(',').map(x=>x.trim()).filter(Boolean);const lg=$('ceLg').value.trim();
+    if(a==='ok'){const name=$('ceName').value.trim();if(!name){toast('Type the team name.');return;}const al=$('ceAl').value.split(',').map(x=>x.trim()).filter(Boolean);const lg=leagueForSave($('ceLg').value.trim());
       let msg=`${name} saved ✓`;if(c){c.name=name;c.aliases=al;c.league=lg;await cset('crest:'+c.id,cur);sigCache.delete(c.id);save('crestList');}else{const res=await addCrestSafe(cur,name,lg);const cc=S.crestList.find(x=>x.id===res.id);al.forEach(a2=>addAlias(cc,a2));save('crestList');if(res.existed)msg=`Already saved as ${res.name}. Name added ✓`;}
       closeSheet();toast(msg,3000);await autoFillCrests();after();return;}
     if(a==='no')closeSheet();});}
@@ -1803,11 +1844,16 @@ async function wikiCrest(name,kind='club'){const search=kind==='international'?n
     const ir=await fetch(pg.thumbnail.source);if(!ir.ok)return null;const b=await ir.blob();if(!b.size||!/image/.test(b.type))return null;
     return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});}catch(e){return null;}}
 const haveCrest=(name,lg)=>!!sameTeamId(name,lg);
-async function saveOnline(name,lg,kind='club'){const hit=sameTeamId(name,lg);if(hit){const c=S.crestList.find(x=>x.id===hit);if(c){addAlias(c,name);if(!c.league&&lg)c.league=lg;save('crestList');}return 'have';}const du=await wikiCrest(name,kind);if(!du)return 'fail';try{const raw=await normaliseCrest(du);const r=await cutBackground(raw,true);const res=await addCrestSafe(r.src,name,lg||'');return res.existed?'have':'ok';}catch(e){return 'fail';}}
-async function fetchMany(names,lg,after,kind='club',entry){const L=[...new Set(names.map(n=>n.trim()).filter(Boolean))];if(!L.length)return;if(!navigator.onLine){toast('You are offline. Connect to the internet and try again.',3500);return;}
-  let ok=0,have=0;const bad=[];for(let i=0;i<L.length;i++){toast(`Getting crests: ${i+1} of ${L.length}`,2500);const r=await saveOnline(L[i],lg,kind);if(r==='ok')ok++;else if(r==='have')have++;else bad.push(L[i]);}
+async function saveOnline(name,lg,kind='club'){const target=leagueForSave(lg),hit=sameTeamId(name,target);if(hit){const c=S.crestList.find(x=>x.id===hit);if(c){addAlias(c,name);if(!c.league&&target)c.league=target;save('crestList');}return 'have';}const du=await wikiCrest(name,kind);if(!du)return 'fail';try{const raw=await normaliseCrest(du);const r=await cutBackground(raw,true);const res=await addCrestSafe(r.src,name,target||'');return res.existed?'have':'ok';}catch(e){return 'fail';}}
+async function fetchMany(names,lg,after,kind='club',entry){
+  const L=[...new Set(names.map(n=>n.trim()).filter(Boolean))],target=leagueForSave(lg);
+  if(!L.length)return;if(!navigator.onLine){toast('You are offline. Connect to the internet and try again.',3500);return;}
+  let ok=0,have=0;const bad=[];
+  for(let i=0;i<L.length;i++){toast("Getting crests: "+(i+1)+" of "+L.length,2500);const r=await saveOnline(L[i],target,kind);if(r==='ok')ok++;else if(r==='have')have++;else bad.push(L[i]);}
   if(entry){S.prefs.lgDone=S.prefs.lgDone||{};S.prefs.lgDone[entry.n]={d:todayKey(),n:L.length};save('prefs');}
-  await autoFillCrests();if(after)after();resultSheet(ok,have,bad,lg,after);}
+  await autoFillCrests();if(after)after();resultSheet(ok,have,bad,target,after);
+}
+
 function resultSheet(ok,have,bad,lg,after){
   openSheet(`<div class="modal-title">Crests done</div><div class="statrow"><span>Added</span><b style="color:var(--green)">${ok}</b></div><div class="statrow"><span>Already saved</span><b>${have}</b></div><div class="statrow"><span>Need saving by hand</span><b style="color:${bad.length?'var(--red)':'#fff'}">${bad.length}</b></div>
     ${bad.length?`<p class="muted" style="margin:10px 0 6px">For each one: tap Find picture, long-press a crest and download it, then tap Add picture.</p>${bad.map(n=>`<div class="statrow" data-n="${esc(n)}"><span>${esc(n)}</span><span style="display:flex;gap:6px"><button class="btn-half" data-a="find" style="padding:7px 10px">Find picture</button><button class="btn-half green" data-a="add" style="padding:7px 10px">Add picture</button></span></div>`).join('')}`:''}
