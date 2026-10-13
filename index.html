@@ -890,12 +890,16 @@ const TPL_INFO=[
  ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 𝟳𝟬𝟳** 🏆\n{range}\n\n**Free Codes** 🔥\n{free}\n\n👑 **𝟳𝟬𝟳 Elite**\n{vip}\n\n{closer}'],
  ['elite_welcome','707 Elite welcome message','👑 **WELCOME TO 707 ELITE**\n\nHi {name}, You\'re In. Welcome To The Inner Circle 🙌\nYour Membership Runs Until {until}.\n\n**Join The Private Room** 👇\n{elitelink}\n\nTurn On Notifications So You Catch Every Pick 🔔'],
  ['elite_renew','707 Elite renewal reminder','Hi {name} 👋\n\nYour 707 Elite Membership Ends On {until}.\n\nRenew With GHS {price} To Keep Your Seat In The Room 👑✨'],
- ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 🔥\n\n**The Private Room For Serious Punters.**\n\n✔️ One Hand-Picked Code Daily, Researched Before It Drops\n✔️ Lower Odds, Built For Consistency\n✔️ Every Result Posted, Full Transparency\n✔️ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 **Only {spots} Seats Left**\n\n💳 **PAYMENT DETAILS**\n📱 Network: {network}\n👤 MoMo Name: {momoname}\n💰 MoMo Number: {momo}\n\n**How To Join** 👇\n1. Send GHS {price} To The MoMo Above\n2. Send Your Screenshot To {handle}\n3. Get Added To The Private Room\n\n📩 Send payment proof to {handle}.\n📌 Refund Terms Available'],
+ ['elite_promo','Join VIP post','👑 **707 ELITE IS OPEN** 🔥\n\n**The Private Room For Serious Punters.**\n\n✔️ Daily VIP Code Selection\n✔️ Lower Odds, Built For Consistency\n✔️ Every Result Posted, Full Transparency\n✔️ Direct Access To Roger\n\n💰 **GHS {price} Per Month**\n🚪 **Only {spots} Seats Left**\n\n💳 **PAYMENT DETAILS**\n📱 Network: {network}\n👤 MoMo Name: {momoname}\n💰 MoMo Number: {momo}\n\n**How To Join** 👇\n1. Send GHS {price} To The MoMo Above\n2. Send Your Screenshot To {handle}\n3. Get Added To The Private Room\n\n📩 Send payment proof to {handle}.\n📌 Refund Terms Available'],
  ['elite_refund','Refund terms','📌 **707 ELITE REFUND TERMS**\n\n1. Membership Is GHS {price} Per Month, Paid By MoMo.\n2. If You Leave, Unused Full Months Are Refunded.\n3. The Current Month Is Not Refunded Once It Starts.\n4. Every Payment Is Recorded With Its MoMo Reference.\n5. Betting Carries Risk. No Pick Is Guaranteed.\n\nQuestions? Message {handle}']];
 const DEF_TPL=Object.fromEntries(TPL_INFO.map(x=>[x[0],x[2]]));
 const tplText=k=>S.prefs.tpls[k]??DEF_TPL[k];
 function safePostWording(text,k){
   let t=String(text||'').replace(/Refund Terms Are Pinned In The Group/gi,'Refund Terms Available').replace(/\bCASHED\b/gi,'WON').replace(/\{(?:freerate|viprate|allrate|winrate|overallrate)\}/gi,'');
+  if(k==='elite_promo'){
+    t=t.replace(/One Hand-Picked Code Daily,\s*Researched Before It Drops/gi,'Daily VIP Code Selection');
+    t=t.replace(/💳\s*\*{0,2}Payment details\*{0,2}\s*\nMoMo:\s*([^\n]*)\nName:\s*([^\n]*)\nNetwork:\s*([^\n]*)/i,'💳 **PAYMENT DETAILS**\n📱 Network: $3\n👤 MoMo Name: $2\n💰 MoMo Number: $1');
+  }
   t=t.split('\n').filter(line=>!/hunger/i.test(line)&&!/win[\s-]*rate|overall rate/i.test(line)).join('\n');
   if(k==='hot_x'||k==='win_x')t=t.split('\n').filter(line=>!/t\.me\/\S+/i.test(line)&&!/free on the channel|telegram channel/i.test(line)).join('\n');
   return t.replace(/^[ \t]*[-|•]?[ \t]*$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
@@ -1111,7 +1115,7 @@ async function postClick(e,d,after){const b=e.target.closest('button');if(!b)ret
 function postInput(e,d){const t=e.target;if(t.dataset.edit){d.posts[t.dataset.edit]=t.value;save('days');}}
 async function openMorningPostPicker(startKey){
   let mk=startKey||todayKey();
-  const getGreeting=async d=>{if((d.posts.greeting||'').trim())return d.posts.greeting.trim();return buildMorningGreeting(d.key);};
+  const getGreeting=async d=>{if((d.posts.greeting||'').trim())return safePostWording(d.posts.greeting,'morning');return buildMorningGreeting(d.key);};
   const render=async()=>{
     const d=day(mk);await ensureMorning(d);if(d.morningImg)await cget('img:'+d.morningImg);
     await loadPostImgs(d);const man=postImgIds(d,'morning').map(x=>blobCache['pimg:'+x]).filter(Boolean);const img=man[0]||(d.morningImg?blobCache['img:'+d.morningImg]:null);
