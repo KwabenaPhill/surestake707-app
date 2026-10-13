@@ -443,7 +443,7 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 #p-history .rec-head .rec-range{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
 #p-history .rec-head .rec-range button{min-width:0;width:100%;padding:8px 6px}
 
-/* v47: auto tag, live scores, leagues, pictures */
+/* v47.1: crest loading improvements; existing auto tag, live scores, leagues, pictures */
 .autotag,.sliphd .autotag,.slipc .autotag{display:block;font-size:10.5px!important;font-weight:600!important;color:var(--acc)!important;letter-spacing:.3px;margin-top:3px}
 .lvs{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;white-space:nowrap;display:inline-block;background:var(--card2);border:1px solid var(--line);color:#fff}
 .lvs.live{background:var(--accSoft);border-color:var(--accLine);color:var(--acc)}
@@ -629,7 +629,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.1</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -672,7 +672,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v47';
+const VERSION='v47.1';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1151,7 +1151,7 @@ async function openPostSheet(k,id){const d=day(k);await loadSlips(k);await loadP
   const render=()=>{const any=Object.values(d.posted[id]||{}).some(Boolean);$('sheetBox').innerHTML=postCard(d,id)+`<div class="btn-row">${any?'<button class="btn-half red" data-undo="1">↩ Mark as not sent</button>':''}<button class="btn-half" data-close="1">Close</button></div>`;};
   openSheet('',e=>{if(e.target.closest('[data-close]')){closeSheet();return;}if(e.target.closest('[data-undo]')){delete d.posted[id];save('days');toast('Marked as not sent. It is back in To do');render();refresh();return;}postClick(e,d,render);});render();$('sheetBox').oninput=e=>postInput(e,d);}
 
-// ---------- Live scores and automatic results (v47) ----------
+// ---------- Live scores and automatic results (v47.1) ----------
 // Sources: API-Football (with the key saved in Settings) first, ESPN's public scores as backup.
 const AF_URL='https://v3.football.api-sports.io';
 const LV={busy:false,last:0,dayAt:{},err:'',lastOk:0};
@@ -1635,7 +1635,7 @@ async function crestSrc(id){return id?await cget('crest:'+id):null;}
 async function findCrest(name){return crestSrc(findCrestId(name));}
 const titleCase=s=>String(s).replace(/(^|[\s(\-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 async function addCrest(src,name,league){const id=uid();S.crestList.push({id,name:name.trim(),aliases:[],league:(league||'').trim()});await cset('crest:'+id,src);save('crestList');return id;}
-// ---------- Leagues (v47) ----------
+// ---------- Leagues (v47.1) ----------
 const LEAGUES=[
  {n:'Premier League',c:'England',w:'Premier League',a:['english premier league','epl','england premier league']},
  {n:'La Liga',c:'Spain',w:'La Liga',a:['laliga','primera division','spain la liga','laliga ea sports','spanish la liga']},
