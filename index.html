@@ -629,7 +629,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.1</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.2</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -1658,7 +1658,7 @@ async function crestSrc(id){return id?await cget('crest:'+id):null;}
 async function findCrest(name){return crestSrc(findCrestId(name));}
 const titleCase=s=>String(s).replace(/(^|[\s(\-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 async function addCrest(src,name,league){const id=uid();S.crestList.push({id,name:name.trim(),aliases:[],league:leagueForSave(league)});await cset('crest:'+id,src);save('crestList');return id;}
-// ---------- Leagues (v47.1) ----------
+// ---------- Leagues (v47.2) ----------
 const LEAGUES=[
  {n:'Premier League',c:'England',w:'Premier League',a:['english premier league','epl','england premier league']},
  {n:'La Liga',c:'Spain',w:'La Liga',a:['laliga','primera division','spain la liga','laliga ea sports','spanish la liga']},
@@ -1695,7 +1695,7 @@ const LEAGUES=[
 const TOP_LEAGUES=20;
 const leagueText=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[’'"]/g,'').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const LEAGUE_COUNTRIES=new Set([...LEAGUES.map(L=>L.c),'Sweden','England','Germany','Spain','Italy','France','Portugal','Netherlands','Denmark','Norway','Scotland','USA','United States','Ghana','Brazil','Argentina','Turkey','Japan','South Korea','Australia'].map(leagueText));
-function leagueBase(name){const raw=String(name||'').trim(),m=raw.match(/^(.+?)\s+[—–-]\s+(.+)$/);return m&&LEAGUE_COUNTRIES.has(leagueText(m[1]))?m[2].trim():raw;}
+function leagueBase(name){const raw=String(name||'').trim(),m=raw.match(/^(.+?)\s*[—–-]\s*(.+)$/);return m&&LEAGUE_COUNTRIES.has(leagueText(m[1]))?m[2].trim():raw;}
 const lgClean=s=>leagueText(leagueBase(s));
 function lgEntry(name){const k=lgClean(name);if(!k)return null;return LEAGUES.find(L=>[L.n,...(L.a||[])].some(x=>lgClean(x)===k))||null;}
 function sameLeagueName(a,b){if(!String(a||'').trim()||!String(b||'').trim())return false;const ea=lgEntry(a),eb=lgEntry(b);if(ea||eb)return !!(ea&&eb&&ea.n===eb.n);return lgClean(a)===lgClean(b);}
