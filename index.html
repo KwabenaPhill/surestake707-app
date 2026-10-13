@@ -760,8 +760,9 @@ const blobCache={};async function cget(key){if(!(key in blobCache))blobCache[key
 function cset(key,val){blobCache[key]=val;return kset(key,val);}
 function cdel(key){delete blobCache[key];return kdel(key);}
 let crestsWarm=null;function warmCrests(){if(!crestsWarm)crestsWarm=kgetPrefix('crest:').then(m=>{for(const k in m)if(!(k in blobCache))blobCache[k]=m[k]||null;}).catch(()=>{crestsWarm=null;});return crestsWarm;}
-const crestReadPending=new Map();
-function readCrestCached(id){const key='crest:'+id;if(key in blobCache)return Promise.resolve(blobCache[key]);if(crestReadPending.has(key))return crestReadPending.get(key);const p=cget(key).catch(()=>null).finally(()=>crestReadPending.delete(key));crestReadPending.set(key,p);return p;}
+const crestReadPending=new Map();const crestReadQueue=[];let crestReadActive=0;const CREST_READ_CONCURRENCY=6;
+function readCrestCached(id){const key='crest:'+id;if(key in blobCache)return Promise.resolve(blobCache[key]);if(crestReadPending.has(key))return crestReadPending.get(key);const p=new Promise(resolve=>crestReadQueue.push({key,resolve}));crestReadPending.set(key,p);pumpCrestReadQueue();return p;}
+function pumpCrestReadQueue(){while(crestReadActive<CREST_READ_CONCURRENCY&&crestReadQueue.length){const job=crestReadQueue.shift();crestReadActive++;cget(job.key).catch(()=>null).then(job.resolve).finally(()=>{crestReadActive--;crestReadPending.delete(job.key);pumpCrestReadQueue();});}}
 async function warmCrestIds(ids,limit=4){const list=[...new Set(ids)].filter(id=>id&&!(('crest:'+id) in blobCache));let next=0;await Promise.all(Array.from({length:Math.min(Math.max(1,limit),list.length)},async()=>{while(next<list.length){const id=list[next++];await readCrestCached(id);}}));}
 let crestGridObserver=null;
 function hydrateCrestGrid(root){if(crestGridObserver){crestGridObserver.disconnect();crestGridObserver=null;}const host=root||$('subBody');if(!host)return;const buttons=[...host.querySelectorAll('button[data-cid]')];if(!buttons.length)return;
