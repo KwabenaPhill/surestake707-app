@@ -917,9 +917,17 @@ const MORNING_DISCIPLINE=['Discipline First. Let The Games Talk 🎯⚽','Stay F
 function buildMorningGreeting(k){const serial=Math.floor(dateOf(k).getTime()/864e5),oi=((serial%MORNING_OPENERS.length)+MORNING_OPENERS.length)%MORNING_OPENERS.length,mi=((serial%MORNING_MOTTO.length)+MORNING_MOTTO.length)%MORNING_MOTTO.length,di=((serial%MORNING_DISCIPLINE.length)+MORNING_DISCIPLINE.length)%MORNING_DISCIPLINE.length;return styleText('**'+MORNING_OPENERS[oi]+'**\n\n**'+fullDate(k)+' — '+MORNING_MOTTO[mi]+'**\n\n'+MORNING_DISCIPLINE[di]+'\n\nCodes Drop Soon. Stay Locked In 🔔');}
 function varsFor(d){const a=d.codes.t10||{},b=d.codes.t5||{},v=d.codes.vip||{};return {big:rnd(a.odds),bigcode:a.code||'',bank:rnd(b.odds),bankcode:b.code||'',vip:rnd(v.odds),vipcode:v.code||'',key:d.key,channel:S.prefs.channel,handle:S.prefs.handle,date:fullDate(d.key)};}
 
+function vipPostCheck(d){
+  const c=d&&d.codes&&d.codes.vip;if(!c||!c.code)return 'Add the VIP code first.';
+  const odds=Number(c.odds);if(!Number.isFinite(odds)||odds<2||odds>5)return 'VIP post not generated: combined odds must be between 2 and 5.';
+  const count=(d.games||[]).filter(g=>g.slot==='vip').length;
+  if(count<2||count>3)return 'VIP post not generated: save 2–3 researched VIP picks first. The app does not perform match research.';
+  return '';
+}
 function buildFromCodes(d){const a=d.codes.t10,b=d.codes.t5,V=varsFor(d),o={};
   if(a&&b&&a.code&&b.code){o.hot_tg=fill('hot_tg',V);o.hot_x=fill('hot_x',V);o.status_link=fill('status_link',V);}
-  if(a&&a.code)o.status_1=fill('status_1',V);if(b&&b.code)o.status_2=fill('status_2',V);const vc=d.codes.vip;if(vc&&vc.code)o.vip=fill('vip_post',V);return o;}
+  if(a&&a.code)o.status_1=fill('status_1',V);if(b&&b.code)o.status_2=fill('status_2',V);const vc=d.codes.vip;if(vc&&vc.code&&!vipPostCheck(d))o.vip=fill('vip_post',V);return o;}
+
 function winPosts(d){const won=[];if(d.codes.t5&&d.codes.t5.result==='won')won.push({s:'t5',o:rnd(d.codes.t5.odds)});if(d.codes.t10&&d.codes.t10.result==='won')won.push({s:'t10',o:rnd(d.codes.t10.odds)});
   if(!won.length)return null;const V=varsFor(d);const top=won.reduce((m,w)=>w.o>m.o?w:m,won[0]);
   const tg=won.length>1?fill('win_both',V):fill('win_one',{...V,odds:won[0].o});const x=fill('win_x',{...V,odds:top.o});return {tg,x,slipsTg:won.map(w=>w.s),slipsX:[top.s]};}
@@ -1062,7 +1070,7 @@ function payload(d,id){const it=ITEMS[id];let text='',slips=[],img=null;
   else if(id==='vip_res')text=vipResults(d);else{text=d.posts[id]||'';slips=it.slips||[];}
   const man=it.gen?[]:postImgIds(d,id).map(x=>blobCache['pimg:'+x]).filter(Boolean);const files=[];
   if(man.length){man.forEach((u,i)=>files.push(dataURLtoFile(u,`${id}_${i+1}`)));slips=[];}else{if(img)files.push(dataURLtoFile(img,'morning'));slips.forEach((s,i)=>{const u=slipOf(d.key,s);if(u)files.push(dataURLtoFile(u,`slip_${i+1}`));});}return {text,files,slips,man:man.length};}
-async function send(d,id,p){await loadPostImgs(d);await loadSlips(d.key);const pl=payload(d,id);const ok=await shareTo(p,pl.text,p==='gpt'||p==='gemini'?[]:pl.files);
+async function send(d,id,p){if(id==='vip'){const reason=vipPostCheck(d);if(reason){toast(reason,5000);return;}}await loadPostImgs(d);await loadSlips(d.key);const pl=payload(d,id);const ok=await shareTo(p,pl.text,p==='gpt'||p==='gemini'?[]:pl.files);
   if(ok&&p!=='copy'){d.posted[id]=d.posted[id]||{};d.posted[id][p]=true;logPub(d,id,p,pl.text,pl.files.length);if(id==='morning')markMorningUsed(d);save('days');
     const next=itemIds(d).find(x=>!isDone(d,x));setTimeout(()=>toast(isDone(d,id)?(next?`Done ✓ Next: ${ITEMS[next].t}`:'Everything for today is sent ✓'):`Sent to ${PNAME[p]} ✓`,3000),900);refresh();}}
 
@@ -1512,7 +1520,7 @@ function openDay(k0){let k=k0;
     if(b.id==='dDeleteDay'){if(await askDeleteDay(k))popLayer();return;}
     if(b.id==='dAddPost'){const ids=itemIds(d);const miss=PREP_IDS.filter(id=>!ids.includes(id));openSheet(`<div class="modal-title">Add a post</div><div style="display:flex;flex-direction:column;gap:8px">${miss.map(id=>`<button class="btn-half" data-np="${id}">${esc(ITEMS[id].t)}</button>`).join('')}<button class="btn-half" data-np="">Close</button></div>`,
       ev=>{const bb=ev.target.closest('button');if(!bb)return;const id=bb.dataset.np;closeSheet();if(!id)return;d.keep=d.keep||{};d.keep[id]=true;clearSkip(d,id);if(id!=='morning'){const built=buildFromCodes(d);if(!String(d.posts[id]||'').trim())d.posts[id]=built[id]||'';}save('days');toast(`${ITEMS[id].t} added. Write it or add pictures.`,2800);setTimeout(render,250);});return;}
-    if(b.id==='dBuild'){const o=buildFromCodes(d);if(!Object.keys(o).length){toast('Add the 10 odds and 5 odds codes first.');return;}if(Object.keys(o).some(x=>d.posts[x])&&!confirm('Replace Hot Codes and status posts with new ones from your codes?'))return;Object.assign(d.posts,o);save('days');toast('Posts built ✓');render();return;}
+    if(b.id==='dBuild'){const o=buildFromCodes(d),vwarn=d.codes.vip&&d.codes.vip.code?vipPostCheck(d):'';if(!Object.keys(o).length){toast(vwarn||'Add the 10 odds and 5 odds codes first.');return;}if(Object.keys(o).some(x=>d.posts[x])&&!confirm('Replace Hot Codes and status posts with new ones from your codes?'))return;Object.assign(d.posts,o);save('days');toast(vwarn||'Posts built ✓',4500);render();return;}
     if(b.id==='dDeleteToday'){if(k!==todayKey()){toast('This button only clears today.');return;}if(!confirm("Delete Everything For Today?\n\nThis will remove today's codes, games, slips and posts.\n\nYour crests, settings and other days will not be affected."))return;
       try{await deleteDay(k);videoDateKey=todayKey();videoSlot='v1';S.vrows=[];curId=null;await writeKey('vrows');}catch(err){saveFailed(err);return;}k=todayKey();popLayer();setTimeout(()=>{toast('Today cleared ✓');refresh();},180);return;}
     if(b.dataset.slip){pickFile('image/*',false,async fs=>{if(!fs[0])return;const u=await shrink(await fileToDataURL(fs[0]),1400,'image/jpeg',0.9);await cset(`slip:${k}:${b.dataset.slip}`,u);d.slips[b.dataset.slip]=true;save('days');toast('Slip attached ✓');render();});return;}
