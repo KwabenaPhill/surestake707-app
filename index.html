@@ -629,7 +629,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.2</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.3</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -672,7 +672,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v47.2';
+const VERSION='v47.3';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -924,7 +924,8 @@ function parseHub(txt){const lines=txt.replace(/\r/g,'').split('\n');const out={
       else if(tag==='LAYOUT'){const n=parseInt(arg,10);if(n>=1&&n<=8)out.layout=n;sec=null;}else if(tag==='END')sec=null;else sec=tag.toLowerCase();continue;}
     if(sec==='post'){buf.push(raw.replace(/\s+$/,''));continue;}if(!l)continue;
     if(sec==='codes'){const p=l.split('|').map(x=>x.trim());if(p.length>=3){out._codes=out._codes||[];out._codes.push({lab:p[0].toUpperCase(),code:p[1].replace(/\s/g,''),odds:parseFloat(p[2])||0});}}
-    else if(sec==='games'){const p=l.split('|').map(x=>x.trim());if(p.length>=4){const tm=p[1].match(/(\d{1,2})[:.](\d{2})/);out.games.push({lab:p[0].toUpperCase(),time:tm?`${pad(tm[1])}:${tm[2]}`:'',match:p[2],pick:p.slice(3).join(' | ')});}}
+    else if(sec==='games'){/* v47.3: the match is the part with "vs", wherever it is; a line without one is reported */const p=l.split('|').map(x=>x.trim()).filter(x=>x!=='');const TM=/^(\d{1,2})[:.](\d{2})$/;const mi=p.findIndex((x,i)=>i>0&&/\s(vs\.?|v)\s/i.test(x));
+      if(p.length>=3&&mi>0){const tp=p.find((x,i)=>i>0&&i!==mi&&TM.test(x));const tm=tp?tp.match(TM):null;const pick=p.filter((x,i)=>i>mi&&!TM.test(x)).join(' | ');if(pick)out.games.push({lab:p[0].toUpperCase(),time:tm?`${pad(tm[1])}:${tm[2]}`:'',match:p[mi],pick});else(out.bad=out.bad||[]).push(l);}else(out.bad=out.bad||[]).push(l);}
     else if(sec==='vippicks')out.vipPicks.push(l.replace(/^\d+[.)]\s*/,''));else if(sec==='scorecard'){const s=parseScoreLine(l);if(s)out.scores.push(s);}}
   flush();
   // v47.2: the slips are placed by their ODDS (highest = first free code, next = second free code, lowest = VIP)
@@ -934,6 +935,7 @@ function parseHub(txt){const lines=txt.replace(/\r/g,'').split('\n');const out={
   out.games=out.games.map(g=>{let slot=map[g.lab];if(!slot){const n=parseFloat(g.lab);const c=raw.find(x=>parseFloat(x.lab)===n);slot=c?map[c.lab]:(g.lab.startsWith('VIP')?'vip':null);}const {lab,...rest}=g;return slot?{slot,...rest}:null;}).filter(Boolean);
   return out;}
 async function applyHub(txt,forKey){const p=parseHub(txt);
+  if(p.bad&&p.bad.length)setTimeout(()=>toast(`${p.bad.length} game line(s) have no "Home vs Away", so they cannot be followed live: ${p.bad[0].slice(0,60)}`,7000),1500);
   if(!p.isHub&&p.scores.length){await loadScores(p.scores);showTab('video');return;}
   if(!p.isHub){toast('No HUB block found. Copy the whole HUB block and try again.',3500);return;}
   const k=forKey||p.date||todayKey();const d=day(k);
