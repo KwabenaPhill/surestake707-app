@@ -629,7 +629,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.1</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.2</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -672,7 +672,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v47.1';
+const VERSION='v47.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -923,10 +923,16 @@ function parseHub(txt){const lines=txt.replace(/\r/g,'').split('\n');const out={
       if(tag==='HUB'){out.isHub=true;const dm=arg.match(/\d{4}-\d{2}-\d{2}/);if(dm)out.date=dm[0];sec=null;}else if(tag==='POST'){sec='post';pk=arg.toLowerCase().replace(/\s+/g,'_');}
       else if(tag==='LAYOUT'){const n=parseInt(arg,10);if(n>=1&&n<=8)out.layout=n;sec=null;}else if(tag==='END')sec=null;else sec=tag.toLowerCase();continue;}
     if(sec==='post'){buf.push(raw.replace(/\s+$/,''));continue;}if(!l)continue;
-    if(sec==='codes'){const p=l.split('|').map(x=>x.trim());if(p.length>=3){const lab=p[0].toUpperCase();const num=parseFloat(lab);const slot=lab.startsWith('VIP')?'vip':(num>=8?'t10':'t5');out.codes[slot]={code:p[1].replace(/\s/g,''),odds:parseFloat(p[2])||0};}}
-    else if(sec==='games'){const p=l.split('|').map(x=>x.trim());if(p.length>=4){const lab=p[0].toUpperCase();const num=parseFloat(lab);const slot=lab.startsWith('VIP')?'vip':(num>=8?'t10':'t5');const tm=p[1].match(/(\d{1,2})[:.](\d{2})/);out.games.push({slot,time:tm?`${pad(tm[1])}:${tm[2]}`:'',match:p[2],pick:p.slice(3).join(' | ')});}}
+    if(sec==='codes'){const p=l.split('|').map(x=>x.trim());if(p.length>=3){out._codes=out._codes||[];out._codes.push({lab:p[0].toUpperCase(),code:p[1].replace(/\s/g,''),odds:parseFloat(p[2])||0});}}
+    else if(sec==='games'){const p=l.split('|').map(x=>x.trim());if(p.length>=4){const tm=p[1].match(/(\d{1,2})[:.](\d{2})/);out.games.push({lab:p[0].toUpperCase(),time:tm?`${pad(tm[1])}:${tm[2]}`:'',match:p[2],pick:p.slice(3).join(' | ')});}}
     else if(sec==='vippicks')out.vipPicks.push(l.replace(/^\d+[.)]\s*/,''));else if(sec==='scorecard'){const s=parseScoreLine(l);if(s)out.scores.push(s);}}
-  flush();return out;}
+  flush();
+  // v47.2: the slips are placed by their ODDS (highest = first free code, next = second free code, lowest = VIP)
+  const raw=out._codes||[];delete out._codes;const map={};const ord=raw.slice().sort((a,b)=>b.odds-a.odds);
+  if(ord.length>=3)ord.slice(0,3).forEach((c,i)=>map[c.lab]=SLOTS[i]);else{ord.filter(c=>!c.lab.startsWith('VIP')).forEach((c,i)=>map[c.lab]=['t10','t5'][i]);ord.filter(c=>c.lab.startsWith('VIP')).forEach(c=>map[c.lab]='vip');}
+  for(const c of raw)if(map[c.lab])out.codes[map[c.lab]]={code:c.code,odds:c.odds};
+  out.games=out.games.map(g=>{let slot=map[g.lab];if(!slot){const n=parseFloat(g.lab);const c=raw.find(x=>parseFloat(x.lab)===n);slot=c?map[c.lab]:(g.lab.startsWith('VIP')?'vip':null);}const {lab,...rest}=g;return slot?{slot,...rest}:null;}).filter(Boolean);
+  return out;}
 async function applyHub(txt,forKey){const p=parseHub(txt);
   if(!p.isHub&&p.scores.length){await loadScores(p.scores);showTab('video');return;}
   if(!p.isHub){toast('No HUB block found. Copy the whole HUB block and try again.',3500);return;}
@@ -1905,6 +1911,7 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
     ${row('tpls',appImg('tg')+appImg('wa')+appImg('x'),'Post templates',edited?`${edited} edited`:'Hot Codes, statuses, win posts, recap','','pic stack')}</div></div>
   <div class="set-group"><div class="set-title">Records</div><div class="set-list">
     ${row('live',picImg('live'),'Live scores',liveSub(),'','pic')}
+    ${row('botsync',appImg('tg'),'Laptop bot sync',SYNC.sub(),'','pic')}
     ${row('stake',picImg('chart'),'Profit tracker',stakeOf()===1?'1 unit per slip (Records shows units)':`GH₵ ${stakeOf()} per slip (Records shows GH₵)`,'','pic')}</div></div>
   <div class="set-group"><div class="set-title">Video</div><div class="set-list">
     ${row('video',vThumb?`<img src="${vThumb}" alt="" style="object-fit:cover">`:'🎬','Video settings',`${esc((S.vtpls.find(t=>t.id===V.tpl)||{name:'Navy'}).name)} · ${AN[V.crestAnim]||'Pop'} · ${V.secs} sec per match`,'',vThumb?'pic':'')}</div></div>
@@ -1917,6 +1924,7 @@ $('p-settings').addEventListener('click',async e=>{const b=e.target.closest('but
   if(b.id==='clearAll'){if(!confirm('Delete everything in Sure Stake 707 Hub: days, slips, crests, images, members, followers? Save a backup first if unsure.'))return;
     cancelSaves();await wipe();Object.keys(blobCache).forEach(k=>delete blobCache[k]);S=blankState();takeSnap('days',{});takeSnap('videoDays',{});await kset('migrated',true);await kset('migrated2',true);S.vrows=[];curId=null;LY=null;tplLoaded=null;refresh();renderVideoUI();toast('Hub cleared');return;}
   if(s==='logo'){pickFile('image/*',false,async fs=>{if(!fs[0])return;S.logo=await shrink(await fileToDataURL(fs[0]),1200,'image/png');save('logo');refresh();toast('Logo saved ✓');});}
+  else if(s==='botsync')SYNC.open();
   else if(s==='channel')editField('Telegram link',S.prefs.channel,v=>{if(v&&v.trim()){S.prefs.channel=v.trim();save('prefs');refresh();toast('Saved ✓');}});
   else if(s==='handle')editField('Ticket handle',S.prefs.handle,v=>{if(v&&v.trim()){S.prefs.handle=v.trim();save('prefs');refresh();toast('Saved ✓');}});
   else if(s==='price')editField('Price per month (GHS)',S.prefs.price,v=>{const n=Number(v);if(n>0){S.prefs.price=n;save('prefs');refresh();toast('Saved ✓');}},{type:'number'});
@@ -2234,6 +2242,72 @@ async function loadAll(){const all=await kallState();const B=blankState();takeSn
   for(const d of Object.values(S.days)){if((d.vipPicks||[]).length&&!(d.games||[]).some(g=>g.slot==='vip')){d.games=d.games||[];d.vipPicks.forEach(p=>{const i=p.text.lastIndexOf(' - ');d.games.push({id:uid(),slot:'vip',time:'',match:i>0?p.text.slice(0,i):p.text,pick:i>0?p.text.slice(i+3):'',res:p.res||null});});d.vipPicks=[];save('days');}}
   if(!Object.keys(S.videoDays).length&&S.vrows.length){const built=buildVideoRowsForDay(todayKey());S.videoDays[todayKey()]={v1:built.v1,v2:built.v2,active:'v1',seeded:true};await kset('videoDays',S.videoDays);}
   if(!S.vtpls.some(t=>t.id===S.vset.tpl))S.vset.tpl='navy';if(!S.vrows.length)S.vrows=[];curId=S.vrows[0]?.id||null;LY=null;tplLoaded=null;}
+
+// ---------- v47.2: Laptop bot sync (a private GitHub "mailbox": the app writes app/, the bot writes bot/) ----------
+const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:{},up:{}};
+  const cfg=()=>{try{return Object.assign({repo:'KwabenaPhill/surestake707-sync',token:'',on:true},JSON.parse(localStorage.getItem(LS)||'{}'));}catch(e){return {repo:'KwabenaPhill/surestake707-sync',token:'',on:true};}};
+  const setCfg=c=>{try{localStorage.setItem(LS,JSON.stringify(c));}catch(e){}};
+  try{Object.assign(st.up,JSON.parse(localStorage.getItem(LS+'_up')||'{}'));}catch(e){}
+  const saveUp=()=>{try{localStorage.setItem(LS+'_up',JSON.stringify(st.up));}catch(e){}};
+  const on=()=>{const c=cfg();return c.on&&c.token&&c.repo;};
+  const b64=str=>btoa(unescape(encodeURIComponent(str)));const unb64=b=>decodeURIComponent(escape(atob(b.replace(/\s/g,''))));
+  const h=s=>{let x=0;for(let i=0;i<s.length;i+=Math.max(1,Math.floor(s.length/4000)))x=(x*31+s.charCodeAt(i))|0;return (x>>>0).toString(36)+'_'+s.length;};
+  async function gh(method,path,body){const c=cfg();const r=await fetch(`${c.api||'https://api.github.com'}/repos/${c.repo}/contents/${path}`,{method,cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json',...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
+    if(r.status===404)return null;const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(`GitHub ${r.status} ${j.message||''}`);return j;}
+  async function put(path,b64content,msg){for(let t=0;t<2;t++){const body={message:msg,content:b64content};if(st.sha[path])body.sha=st.sha[path];
+      try{const j=await gh('PUT',path,body);st.sha[path]=j&&j.content&&j.content.sha;return;}catch(e){if(t===0&&/409|422/.test(e.message)){const cur=await gh('GET',path);st.sha[path]=cur&&cur.sha;continue;}throw e;}}}
+  function sub(){const c=cfg();if(!c.token)return 'Off · paste your GitHub key to connect the laptop bot';return st.err?'Problem: '+st.err:st.ok?`On · in step ${fmtT(new Date(st.ok))}`:'On';}
+  const keysToSend=()=>{const t=todayKey();return Object.keys(S.days).filter(k=>k>=addDays(t,-1)&&k<=addDays(t,7)&&dayHasContent(S.days[k]));};
+  async function pkg(k){const d=S.days[k];await loadSlips(k);if(k>=todayKey())await ensureMorning(d);await loadPostImgs(d);
+    const V=varsFor(d),posts={...buildFromCodes(d)};for(const [x,v] of Object.entries(d.posts||{}))if(String(v||'').trim())posts[x]=v;
+    const T={};for(const s of ['t10','t5']){const c=d.codes[s];if(c&&c.code){T['win_one_'+s]=fill('win_one',{...V,odds:rnd(c.odds)});T['win_x_'+s]=fill('win_x',{...V,odds:rnd(c.odds)});}}
+    const L=(d.games||[]).filter(g=>g.slot==='vip');if(d.codes.vip&&d.codes.vip.code)T.vip_won=fill('vip_results',{...V,picks:L.map((g,i)=>`${i+1}. ${g.match} - ${g.pick} ✔️`).join('\n'),mark:'✔️ Won',line:(d.vipLine||'').trim()});
+    const imgs={};const want={};const man=postImgIds(d,'morning').map(x=>blobCache['pimg:'+x]).filter(Boolean);
+    want.morning=man[0]||(d.morningImg?(blobCache['img:'+d.morningImg]||await cget('img:'+d.morningImg)):null);for(const s of SLOTS)want[s]=slipOf(k,s);
+    for(const [nm,u] of Object.entries(want)){if(!u||!/^data:image/.test(u))continue;const path=`app/img/${k}-${nm}.jpg`,sig=h(u);
+      if(st.up[path]!==sig){await put(path,u.split(',')[1],`app: ${k} ${nm} picture`);st.up[path]=sig;saveUp();}imgs[nm]={path,sha:sig};}
+    const posted={};for(const [id,v] of Object.entries(d.posted||{}))if(v&&v.tg)posted[id]={tg:true};
+    if(posted.win_tg)for(const s of ['t10','t5'])if(d.codes[s]&&d.codes[s].result==='won')posted['win_'+s]={tg:true};if(posted.vip_res)posted.win_vip={tg:true};
+    return {v:1,app:VERSION,updated:new Date().toISOString(),day:{key:k,codes:Object.fromEntries(SLOTS.filter(s=>d.codes[s]&&d.codes[s].code).map(s=>[s,{code:d.codes[s].code,odds:d.codes[s].odds,result:d.codes[s].result||'pending',manual:!!d.codes[s].manual}])),
+      games:(d.games||[]).map(g=>({slot:g.slot,time:g.time||'',match:g.match,pick:g.pick,res:g.res||null})),layout:d.layout||null},posts,texts:T,images:imgs,posted};}
+  const lk=g=>`${g.slot}|${String(g.match).trim().toLowerCase()}|${String(g.pick).trim().toLowerCase()}`;
+  async function pull(){const list=await gh('GET','bot');if(!Array.isArray(list))return false;let ch=false;const lo=addDays(todayKey(),-1);
+    for(const f of list){const m=/^(\d{4}-\d{2}-\d{2})\.json$/.exec(f.name);if(!m||m[1]<lo||st.sha['bot/'+f.name]===f.sha)continue;const j=await gh('GET','bot/'+f.name);if(!j)continue;st.sha['bot/'+f.name]=j.sha;
+      const b=JSON.parse(unb64(j.content));const k=m[1];let d=S.days[k];
+      // a HUB pasted into the bot: the app takes it when it has nothing newer for that day
+      if(b.hub&&b.day&&(!d||!dayHasContent(d)||((b.hub_at||0)>(d.botHubAt||0)&&(d.botHubAt||!d.appEditedAt||d.appEditedAt<(b.hub_at||0)*1000)))){d=day(k);
+        for(const s of SLOTS){const c=(b.day.codes||{})[s];if(c&&c.code){const old=d.codes[s]||{};d.codes[s]={code:c.code,odds:c.odds||0,result:old.code===c.code?(old.result||'pending'):'pending',...(old.manual&&old.code===c.code?{manual:true}:{})};}}
+        const old=d.games||[];d.games=(b.day.games||[]).map(g=>{const o=old.find(x=>lk(x)===lk(g));return {id:o?o.id:uid(),slot:g.slot,time:g.time||'',match:g.match,pick:g.pick,res:o?o.res:null};});
+        for(const [x,v] of Object.entries(b.day.posts||{}))if(x!=='dayprompt'&&String(v||'').trim())d.posts[x]=v;if(b.day.layout)d.layout=b.day.layout;
+        for(const [nm,path] of Object.entries(b.images||{})){const im=await gh('GET',path);if(!im||!im.content)continue;const u='data:image/jpeg;base64,'+im.content.replace(/\s/g,'');
+          if(nm==='morning'){const id=uid();await cset('pimg:'+id,u);d.postImgs=d.postImgs||{};d.postImgs.morning=[id];}else{await cset(`slip:${k}:${nm}`,u);d.slips[nm]=true;}}
+        d.botHubAt=b.hub_at||Date.now()/1000;if(k>todayKey()&&!d.status)d.status='scheduled';ch=true;toast(`${shortDate(k)} came from the laptop bot ✓`,3000);}
+      if(!d)continue;
+      for(const [s,r] of Object.entries(b.codes||{})){const c=d.codes[s];if(!c||!c.code)continue;
+        if(r.mine&&['won','lost'].includes(r.mine)&&!c.manual){if(c.result!==r.mine){c.result=r.mine;c.manual=true;delete c.auto;ch=true;}}
+        else if(!c.manual&&['won','lost'].includes(r.result)&&c.result!==r.result){c.result=r.result;c.auto={at:Date.now()};ch=true;}}
+      for(const g of d.games||[]){const r=(b.legs||{})[lk(g)];if(!r)continue;if(r.res&&!g.res&&g.res!==r.res){g.res=r.res;ch=true;}if(r.auto&&!g.auto&&['won','lost','void'].includes(r.auto)){g.auto=r.auto;ch=true;}}
+      for(const [id,v] of Object.entries(b.posted||{})){const app=id.startsWith('win_')?(id==='win_vip'?'vip_res':'win_tg'):id;if(v&&v.tg&&ITEMS[app]){d.posted[app]=d.posted[app]||{};if(!d.posted[app].tg){d.posted[app].tg=true;ch=true;}}}}
+    if(ch){save('days');refresh();}return ch;}
+  async function push(){for(const k of keysToSend()){const p=await pkg(k);const sig=h(JSON.stringify({...p,updated:0}));if(st.up['app/'+k]===sig)continue;
+      await put(`app/${k}.json`,b64(JSON.stringify(p)),`app: ${k}`);st.up['app/'+k]=sig;saveUp();S.days[k].appEditedAt=Date.now();}}
+  async function run(force){if(!on()||st.busy||!navigator.onLine||!storageReady)return;if(!force&&Date.now()-st.last<20000)return;st.busy=true;st.last=Date.now();
+    try{await pull();await push();st.ok=Date.now();st.err='';}catch(e){st.err=String(e.message||e).slice(0,80);}finally{st.busy=false;if(tab==='settings')renderSettings();}}
+  function open(){const render=()=>{const c=cfg();
+      $('subBody').innerHTML=`<p class="muted" style="margin-bottom:12px">Your laptop bot and this app share one private mailbox on GitHub. What you paste and add here goes to the bot (it posts at the right times), and what the bot sees (live scores, won and lost, what it posted, a HUB you pasted in Telegram) comes back here by itself. Your taps always win.</p>
+      <span class="lbl">Mailbox (repository)</span><input id="syRepo" value="${esc(c.repo)}" autocapitalize="off" autocomplete="off">
+      <span class="lbl">GitHub key (fine-grained, only this repository)</span><input id="syTok" type="text" style="-webkit-text-security:disc" autocomplete="off" placeholder="${c.token?'Saved · '+esc(c.token.slice(0,11))+'…':'github_pat_…'}">
+      <div class="statrow"><span>Status</span><b>${esc(sub())}</b></div>
+      <div class="btn-row"><button class="btn-save" id="sySave">Save and sync now</button></div>
+      <div class="btn-row"><button class="btn-half" id="syOff">${c.on?'Turn sync off':'Turn sync on'}</button><button class="btn-half red" id="syForget">Forget the key</button></div>
+      <p class="muted" style="margin-top:10px">The key stays only on this phone (not in backups). It can only touch this one mailbox.</p>`;
+      $('sySave').onclick=async()=>{const c2=cfg();c2.repo=$('syRepo').value.trim()||c2.repo;const t=$('syTok').value.trim();if(t)c2.token=t;setCfg(c2);toast('Syncing…');await run(true);render();toast(st.err?'Problem: '+st.err:'In step with the laptop bot ✓',3500);};
+      $('syOff').onclick=()=>{const c2=cfg();c2.on=!c2.on;setCfg(c2);render();};
+      $('syForget').onclick=()=>{if(!confirm('Forget the GitHub key on this phone?'))return;const c2=cfg();c2.token='';setCfg(c2);render();};};
+    openSub('Laptop bot sync',render,true);}
+  setInterval(()=>run(false),30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(()=>run(true),1500);else run(true);});
+  window.addEventListener('online',()=>run(true));setTimeout(()=>run(true),4000);
+  return {run,open,sub};})();
 // Keep every open copy in step: save on leaving, reload on return if another copy saved.
 let syncing=false;
 async function syncFromStorage(){if(!storageReady||storageBroken||syncing)return;syncing=true;try{const rev=Number(await kget('_rev'))||0;if(rev===lastRev)return;
