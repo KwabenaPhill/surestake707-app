@@ -503,6 +503,7 @@ details.rpost pre{white-space:pre-wrap;font-family:var(--f);font-size:13.5px;bac
 .datepick{display:flex;gap:8px;margin-top:8px}.datepick input{flex:1;min-width:0}.datepick .btn-save{flex:none;padding:12px 18px}
 .daystat{margin-bottom:12px}
 .savedline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:16px;margin-bottom:8px}
+.secbar{display:flex;align-items:center;justify-content:space-between;border-radius:12px;padding:12px 16px;margin:6px 0 10px;font-size:15px;font-weight:900;letter-spacing:.12em;color:#06140A;background:#30D158}.secbar.lost{background:#FF453A;color:#fff;margin-top:18px}.secbar b{font-size:20px}.lvs.live{color:#FF453A!important;font-weight:800}.lvs.ft{color:#C9B27A!important;font-weight:700}
 </style>
 <style id="design-midnight-red">
 /* v36 DESIGN: Midnight Red. One accent colour (#E5243B) on deep black. Visual layer only: no features, data or markup changed. Keep this block last in <head>. */
@@ -629,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v47.3</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -672,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v47.3';
+const VERSION='v48';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1256,7 +1257,7 @@ async function liveTick(force){if(LV.busy||!navigator.onLine||document.hidden||!
     if(changed){LV.lastOk=Date.now();save('days');const a=document.activeElement;if(tab==='home'&&!layers.length&&!(a&&/INPUT|TEXTAREA/.test(a.tagName)))renderHome(true);}}
   catch(e){LV.err=e.message||String(e);}finally{LV.busy=false;}}
 function liveBadge(D,g){const F=(D.fx||{})[mKey(g.match)];const r=legState(g);const mark=r==='won'?'<span class="leg won">✔</span>':r==='lost'?'<span class="leg lost">✘</span>':r==='void'?'<span class="leg check">VOID</span>':r==='check'?'<span class="leg check">CHECK</span>':'';
-  if(F&&!F.miss){const sc=`${F.hs==null?0:F.hs}-${F.as==null?0:F.as}`;if(F.st==='LIVE')return `<span class="lvs live">${F.m?F.m+"' ":''}${sc}</span>${mark}`;if(F.st==='HT')return `<span class="lvs live">HT ${sc}</span>${mark}`;if(F.st==='FT')return `<span class="lvs">FT ${sc}</span>${mark}`;if(F.st==='PST')return `<span class="lvs nt">Postponed</span>${mark}`;if(F.st==='CANC')return `<span class="lvs nt">Cancelled</span>${mark}`;return null;}
+  if(F&&!F.miss){const sc=`${F.hs==null?0:F.hs}-${F.as==null?0:F.as}`;if(F.st==='LIVE')return `<span class="lvs live">${F.m?F.m+"' ":''}${sc}</span>${mark}`;if(F.st==='HT')return `<span class="lvs live">HT ${sc}</span>${mark}`;if(F.st==='FT')return `<span class="lvs ft">FT ${sc}</span>${mark}`;if(F.st==='PST')return `<span class="lvs nt">Postponed</span>${mark}`;if(F.st==='CANC')return `<span class="lvs nt">Cancelled</span>${mark}`;return null;}
   if(F&&F.miss)return `<span class="lvs nt">Not tracked</span>${mark}`;return mark||null;}
 function legSheet(D,g){const F=(D.fx||{})[mKey(g.match)];const r=legState(g);
   openSheet(`<div class="modal-title">${esc(g.match)}</div><p class="muted" style="margin-bottom:10px">${esc(g.pick)}${g.time?` · ${esc(g.time)}`:''}</p>
@@ -1360,6 +1361,7 @@ const thumbBtn=(D,s)=>{const img=slipOf(D.key,s);return `<button class="sthumb" 
 function slipsView(D){const now=new Date();const fk=firstKick(D);let banner='';
   if(fk){const left=Math.ceil((fk-now)/60000);banner=left>0?`<div class="kick ${left<=30?'hot':''}"><span>⏰ Post codes before ${fmtT(fk)}</span><span>${inMins(left)} left</span></div>`:`<div class="kick"><span>⚽ First game kicked off ${fmtT(fk)}</span></div>`;}
   const slots=SLOTS.filter(s=>(D.codes[s]&&D.codes[s].code)||gamesOf(D,s).length);
+  if(slots.includes('vip')&&!slipState(D,'vip',now).ended){slots.splice(slots.indexOf('vip'),1);slots.unshift('vip');}   // v48: 707 Elite pinned on top until its games end
   if(!slots.length)return `<div class="card"><p class="empty">No slips for today yet. They come in with the HUB block, or add them in Edit today.</p><button class="btn-half purple w100" data-home="edit">✏️ Edit today</button></div>`;
   return banner+slots.map(s=>{const c=D.codes[s]||{};const st=slipState(D,s,now);const G=gamesOf(D,s);const open=openSlips.has(s);
     return `<div class="card slipc ${s}" data-slot="${s}" data-dk="${D.key}"><div class="srow">${thumbBtn(D,s)}<div class="sbody"><div class="sliphd"><div class="sn"><b>${SLOTNAME[s]}</b><span>${esc(c.code||'')}${c.odds?` · ${rnd(c.odds)} odds`:''}</span></div><span style="text-align:right">${resPill(c.result)||statusPill(D,s)}${autoTag(c)}</span></div>
@@ -1376,7 +1378,9 @@ function resultsView(D,Y){const slots=D?SLOTS.filter(s=>D.codes[s]&&D.codes[s].c
   const yReady=Y&&SLOTS.some(s=>Y.codes[s]&&['won','lost'].includes(Y.codes[s].result))?readyRows(Y,'yesterday'):'';
   let h='';if(ys.length)h+=`<div class="sect">From yesterday</div>${ys.map(s=>resultCard(Y,s,true)).join('')}`;
   if(ys.length||yReady)h+=slots.length?`<div class="sect">Today</div>`:'';
-  h+=slots.length?slots.map(s=>resultCard(D,s,false)).join(''):(ys.length?'':`<div class="card"><p class="empty">No slips for today yet.</p></div>`);
+  // v48: like Match Vision: WON bar on top (707 Elite first), waiting in the middle, LOST bar at the bottom
+  const vf=(a,b)=>(b==='vip')-(a==='vip');const rw=slots.filter(x=>D.codes[x].result==='won').sort(vf),rl=slots.filter(x=>D.codes[x].result==='lost'),rp=slots.filter(x=>!['won','lost'].includes(D.codes[x].result)).sort(vf);
+  h+=slots.length?(rw.length?`<div class="secbar"><span>✅ WON</span><b>${rw.length}</b></div>`+rw.map(x=>resultCard(D,x,false)).join(''):'')+rp.map(x=>resultCard(D,x,false)).join('')+(rl.length?`<div class="secbar lost"><span>✘ LOST</span><b>${rl.length}</b></div>`+rl.map(x=>resultCard(D,x,false)).join(''):''):(ys.length?'':`<div class="card"><p class="empty">No slips for today yet.</p></div>`);
   const ready=(D?readyRows(D,''):'')+yReady;if(ready)h+=`<div class="card"><div class="ct">Ready to send</div>${ready}</div>`;return h;}
 function resultsBox(D){const codes=D?SLOTS.filter(s=>D.codes[s]&&D.codes[s].code):[];if(!codes.length)return {v:'-'};const won=codes.filter(s=>D.codes[s].result==='won').length;return {v:`${won}/${codes.length}`};}
 function slipsBox(D){const slots=D?SLOTS.filter(s=>(D.codes[s]&&D.codes[s].code)||gamesOf(D,s).length):[];if(!slots.length)return {v:'-',dots:''};const now=new Date();
