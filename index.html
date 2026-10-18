@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.1</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48';
+const VERSION='v48.1';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2084,7 +2084,10 @@ function duplicateVideoTeams(){const st=videoState(videoDateKey),seen=new Map(),
 function saveVideoState(){const st=videoState(videoDateKey);st[videoSlot]=cloneRows(S.vrows);st.active=videoSlot;save('videoDays');save('vrows');}
 function renderVideoTabs(){renderVideoDays();const host=$('videoPair');if(!host)return;const st=videoState(videoDateKey);host.innerHTML=`<button data-vslot="v1" class="${videoSlot==='v1'?'on':''}">🎬 VIDEO 1<small>${st.v1.length} game${st.v1.length===1?'':'s'}</small></button><button data-vslot="v2" class="${videoSlot==='v2'?'on':''}">🎬 VIDEO 2<small>${st.v2.length} game${st.v2.length===1?'':'s'}</small></button>`;const note=$('videoSlotNote');if(note)note.textContent=`Editing Video ${videoSlot==='v1'?'1':'2'} · ${st[videoSlot].length} game${st[videoSlot].length===1?'':'s'}`;}
 function loadVideoSlot(slot){const st=videoState(videoDateKey);st[slot]=Array.isArray(st[slot])?st[slot]:[];videoSlot=slot;st.active=slot;S.vrows=cloneRows(st[slot]);curId=S.vrows[0]?.id||null;renderVideoTabs();renderRows();redraw();}
-function activateVideoDay(k){if(videoDateKey!==k)saveVideoState();videoDateKey=k;const st=videoState(k);const dupes=ensureVideoDay(k);videoSlot=st.active||'v1';S.vrows=cloneRows(st[videoSlot]);curId=S.vrows[0]?.id||null;renderVideoTabs();renderRows();if(dupes.length)toast(`${dupes.length} repeated-team game${dupes.length===1?' was':'s were'} excluded from the two-video pool.`,3500);}
+function activateVideoDay(k){if(videoDateKey!==k)saveVideoState();videoDateKey=k;const st=videoState(k);const dupes=ensureVideoDay(k);videoSlot=st.active||'v1';S.vrows=cloneRows(st[videoSlot]);curId=S.vrows[0]?.id||null;renderVideoTabs();renderRows();if(dupes.length)toast(`${dupes.length} repeated-team game${dupes.length===1?' was':'s were'} excluded from the two-video pool.`,3500);fillDayCrests(k);}
+// v48.1: games that came from the bot or a HUB get their crests from the library by themselves (both videos)
+async function fillDayCrests(k){try{const st=videoState(k);let n=0;for(const slot of ['v1','v2'])for(const r of st[slot]){if(!r.hc&&r.home){const c=await findCrest(r.home);if(c){r.hc=c;n++;}}if(!r.ac&&r.away){const c=await findCrest(r.away);if(c){r.ac=c;n++;}}}
+  if(n){save('videoDays');if(videoDateKey===k){S.vrows=cloneRows(st[videoSlot]);curId=S.vrows[0]?.id||curId;save('vrows');renderRows();redraw();}}}catch(e){}}
 function syncCurrentVideo(){const st=videoState(videoDateKey);st[videoSlot]=cloneRows(S.vrows);st.active=videoSlot;}
 function crestBtn(r,side){const src=side==='h'?r.hc:r.ac;return `<button class="crest" data-act="crest" data-side="${side}" aria-label="${side==='h'?'Home':'Away'} crest">${src?`<img src="${src}" alt="">`:'+'}</button>`;}
 function renderRows(){rowsEl.innerHTML=S.vrows.map((r,i)=>`<div class="match${r.id===curId?' cur':''}" data-id="${r.id}"><div class="mhead">MATCH ${i+1}<button data-act="del">Remove</button></div>
