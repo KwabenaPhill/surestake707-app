@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.1</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.2</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.1';
+const VERSION='v48.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1021,19 +1021,25 @@ const appImg=k=>k==='elite'?`<img src="${ELITE_LOGO}" alt="">`:SVG[k]?`<img src=
 const btnHTML=(p,done)=>`<button data-p="${p}" class="${p!=='copy'&&done?'done':''}">${bi(p)}${PNAME[p]}</button>`;
 
 // ---------- Items (Home to-do) ----------
-const ITEMS={morning:{app:'tg',t:'Morning post',b:['tg','wa','copy'],need:['tg']},
- hot_tg:{app:'tg',badge:'wa',t:'Hot Codes - Telegram + WhatsApp',b:['tg','wa','copy'],need:['tg','wa'],slips:['t10','t5']},hot_x:{app:'x',t:'Hot Codes - X',b:['x','copy'],need:['x'],slips:['t10','t5']},
- status_link:{app:'wa',t:'Status - channel link',b:['wa','copy'],need:['wa']},status_1:{app:'wa',t:'Status - bigger odds',b:['wa','copy'],need:['wa'],slips:['t10']},status_2:{app:'wa',t:'Status - banker',b:['wa','copy'],need:['wa'],slips:['t5']},
+// v48.2 (Philip, 19 Oct): the bot posts Telegram itself; every other place is its OWN row here for you to post
+const ITEMS={morning:{app:'tg',t:'Morning post - Telegram (the bot posts it)',b:['tg','copy'],need:['tg']},
+ morning_wa:{app:'wa',t:'Morning post - WhatsApp',b:['wa','copy'],need:['wa'],alias:'morning'},
+ hot_tg:{app:'tg',t:'Hot Codes - Telegram (the bot posts it)',b:['tg','copy'],need:['tg'],slips:['t10','t5']},
+ hot_wa:{app:'wa',t:'Hot Codes - WhatsApp channel',b:['wa','copy'],need:['wa'],slips:['t10','t5'],alias:'hot_tg'},
+ hot_x:{app:'x',t:'Hot Codes - X',b:['x','copy'],need:['x'],slips:['t10','t5']},
+ status_link:{app:'wa',t:'WhatsApp Status 1 - channel link',b:['wa','copy'],need:['wa']},status_1:{app:'wa',t:'WhatsApp Status 2 - bigger odds',b:['wa','copy'],need:['wa'],slips:['t10']},status_2:{app:'wa',t:'WhatsApp Status 3 - banker',b:['wa','copy'],need:['wa'],slips:['t5']},
  vip:{app:'tg',badge:'elite',t:'707 Elite picks',b:['tg','copy'],need:['tg'],slips:['vip']},win_tg:{app:'tg',badge:'wa',t:'Win post - Telegram + WhatsApp',b:['tg','wa','copy'],need:['tg','wa'],gen:true},
  win_x:{app:'x',t:'Win post - X',b:['x','copy'],need:['x'],gen:true},vip_res:{app:'tg',badge:'elite',t:'707 Elite results',b:['tg','copy'],need:['tg'],gen:true}};
-const ORDER=['morning','hot_tg','hot_x','status_link','status_1','status_2','vip','win_tg','win_x','vip_res'];
+const ORDER=['morning','morning_wa','hot_tg','hot_wa','hot_x','status_link','status_1','status_2','vip','win_tg','win_x','vip_res'];
 function rowIcon(it,img){const main=img?`<img src="${img}" alt="">`:`<span class="ico">${SVG[it.app]}</span>`;const bd=img?it.app:it.badge;
   const b=bd?`<span class="bdg">${bd==='elite'?`<img src="${ELITE_LOGO}" alt="">`:SVG[bd]?`<span class="ico">${SVG[bd]}</span>`:bd}</span>`:'';return `<div class="ic"><div class="main">${main}</div>${b}</div>`;}
-function itemIds(d){const w=winPosts(d),vr=vipResults(d);return ORDER.filter(id=>{
+function itemIds(d){const w=winPosts(d),vr=vipResults(d);
+  {const built=buildFromCodes(d);let ch=false;for(const k of ['hot_tg','hot_x','status_link','status_1','status_2'])if(!String(d.posts[k]||'').trim()&&built[k]&&!(d.skip&&d.skip[k])){d.posts[k]=built[k];ch=true;}if(ch)save('days');}  // v48.2: every text, always
+  return ORDER.filter(id=>{const al=ITEMS[id].alias;if(al)id=al;
   if(id==='morning')return !(d.skip&&d.skip.morning)&&!!(d.posts.greeting||d.morningImg||postImgIds(d,'morning').length||(d.keep&&d.keep.morning));
   if(id==='win_tg'||id==='win_x')return !!w;if(id==='vip_res')return !!vr;return !!(d.posts[id]||(d.keep&&d.keep[id]));});}
 function isDone(d,id){const p=d.posted[id]||{};const need=ITEMS[id].need;return need[0]==='any'?Object.values(p).some(Boolean):need.every(x=>p[x]);}
-function payload(d,id){const it=ITEMS[id];let text='',slips=[],img=null;
+function payload(d,id){if(ITEMS[id]&&ITEMS[id].alias)return payload(d,ITEMS[id].alias);const it=ITEMS[id];let text='',slips=[],img=null;
   if(id==='morning'){text=d.posts.greeting||'';img=d.morningImg?blobCache['img:'+d.morningImg]:null;}
   else if(id==='win_tg'||id==='win_x'){const w=winPosts(d);text=id==='win_tg'?w.tg:w.x;slips=id==='win_tg'?w.slipsTg:w.slipsX;}
   else if(id==='vip_res')text=vipResults(d);else{text=d.posts[id]||'';slips=it.slips||[];}
@@ -1067,11 +1073,11 @@ function parseGameLine(l,slot){const m=l.trim().match(/^(\d{1,2}[:.]\d{2})?\s*(.
 const pct=o=>o.t?Math.round(o.w/o.t*100)+'%':'-';
 // ---------- Post card (sheet + day view) ----------
 function postCard(d,id){const it=ITEMS[id];const pl=payload(d,id);const posted=d.posted[id]||{};
-  const editable=!it.gen;const editKey=id==='morning'?'greeting':id;const man=postImgIds(d,id).length;const img=id==='morning'&&!man&&d.morningImg?blobCache['img:'+d.morningImg]:null;
+  const bid=it.alias||id;const editable=!it.gen;const editKey=bid==='morning'?'greeting':bid;const man=postImgIds(d,bid).length;const img=bid==='morning'&&!man&&d.morningImg?blobCache['img:'+d.morningImg]:null;
   const thumbs=(pl.slips||[]).map(s=>slipOf(d.key,s)).filter(Boolean);const sl=sentLine(d,id);
   return `<div class="post" data-post="${id}"><div class="ph"><span style="display:flex;align-items:center;font-size:13.5px;color:#fff">${bi(it.app)}${esc(it.t)}</span><span class="phr">${it.slips&&!man?`<span>${thumbs.length}/${it.slips.length} slip${it.slips.length>1?'s':''}</span>`:''}${stPill(postStatus(d,id))}</span></div>
     ${img?`<img class="mimg" src="${img}" alt="Morning image">`:''}
-    ${editable?`<textarea data-edit="${editKey}" rows="7" placeholder="${id==='morning'?'Morning greeting (optional)':'Write the post'}">${esc(id==='morning'?(d.posts.greeting||''):pl.text)}</textarea>`:`<pre>${esc(pl.text)}</pre>`}
+    ${editable?`<textarea data-edit="${editKey}" rows="7" placeholder="${id==='morning'?'Morning greeting (optional)':'Write the post'}">${esc(bid==='morning'?(d.posts.greeting||''):pl.text)}</textarea>`:`<pre>${esc(pl.text)}</pre>`}
     ${thumbs.length?`<div class="thumbs">${thumbs.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}
     ${editable?imgStrip(d,id):''}${sl?`<div class="pstat">${esc(sl)}</div>`:''}
     <div class="mini">${it.b.map(p=>btnHTML(p,posted[p])).join('')}${id==='morning'&&!man&&(S.imgIndex[dateOf(d.key).getDay()]||[]).length>1?'<button data-p="swap">🔄 Swap image</button>':''}${editable?'<button data-p="delpost">🗑 Delete post</button>':''}</div>
