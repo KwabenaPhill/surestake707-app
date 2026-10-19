@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.2</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.3</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.2';
+const VERSION='v48.3';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1816,8 +1816,11 @@ const LEAGUE_CLUBS={
  'Bundesliga':['FC Augsburg','Union Berlin','Werder Bremen','Borussia Dortmund','SV Elversberg','Eintracht Frankfurt','SC Freiburg','Hamburger SV','TSG Hoffenheim','1. FC Köln','RB Leipzig','Bayer Leverkusen','Mainz 05','Borussia Mönchengladbach','Bayern Munich','SC Paderborn','Schalke 04','VfB Stuttgart'],
  'Ligue 1':['Angers','Auxerre','Brest','Le Havre','Le Mans','Lens','Lille','Lorient','Lyon','Marseille','Monaco','Nice','Paris FC','Paris Saint-Germain','Rennes','Strasbourg','Toulouse','Troyes']};
 const INTERNATIONAL_TEAMS=['Afghanistan','Albania','Algeria','American Samoa','Andorra','Angola','Anguilla','Antigua and Barbuda','Argentina','Armenia','Aruba','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bermuda','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','British Virgin Islands','Brunei','Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon','Canada','Cayman Islands','Central African Republic','Chad','Chile','China','Chinese Taipei','Colombia','Comoros','Congo','Cook Islands','Costa Rica','Croatia','Cuba','Curaçao','Cyprus','Czechia','Denmark','Djibouti','Dominica','Dominican Republic','DR Congo','Ecuador','Egypt','El Salvador','England','Equatorial Guinea','Eritrea','Estonia','Eswatini','Ethiopia','Faroe Islands','Fiji','Finland','France','French Guiana','Gabon','Gambia','Georgia','Germany','Ghana','Gibraltar','Greece','Grenada','Guadeloupe','Guam','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Hong Kong','Hungary','Iceland','India','Indonesia','Iran','Iraq','Israel','Italy','Ivory Coast','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg','Macau','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Martinique','Mauritania','Mauritius','Mexico','Moldova','Mongolia','Montenegro','Montserrat','Morocco','Mozambique','Myanmar','Namibia','Nepal','Netherlands','New Caledonia','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Northern Mariana Islands','Norway','Oman','Pakistan','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Puerto Rico','Qatar','Republic of Ireland','Romania','Russia','Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines','Samoa','San Marino','São Tomé and Príncipe','Saudi Arabia','Scotland','Senegal','Serbia','Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands','Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan','Suriname','Sweden','Switzerland','Syria','Tahiti','Taiwan','Tajikistan','Tanzania','Thailand','Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Türkiye','Turks and Caicos Islands','Uganda','Ukraine','United Arab Emirates','United States','US Virgin Islands','Uruguay','Uzbekistan','Vanuatu','Venezuela','Vietnam','Wales','Yemen','Zambia','Zimbabwe'];
-async function wikiCrest(name,kind='club'){const search=kind==='international'?name+' national football team':name+' football club';const q=`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${enc(search)}&gsrlimit=5&prop=pageimages&piprop=thumbnail&pithumbsize=320&pilicense=any`;
-  try{const r=await fetch(q);if(!r.ok)return null;const j=await r.json();const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));const pg=pages.find(p=>p.thumbnail&&p.thumbnail.source);if(!pg)return null;
+async function sdbCrest(name){try{const r=await fetch(`https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t=${enc(name.replace(/\b(fc|sc|cf|afc|club)\b/gi,'').trim())}`);if(!r.ok)return null;const j=await r.json();
+    const t=((j&&j.teams)||[]).find(x=>/soccer/i.test(x.strSport||''));const u=t&&(t.strBadge||t.strTeamBadge);if(!u)return null;const ir=await fetch(u+'/medium');const b=ir.ok?await ir.blob():await (await fetch(u)).blob();
+    if(!b.size||!/image/.test(b.type))return null;return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});}catch(e){return null;}}
+async function wikiCrest(name,kind='club'){if(kind!=='international'){const s=await sdbCrest(name);if(s)return s;}const search=kind==='international'?name+' national football team':name+' football club';const q=`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrsearch=${enc(search)}&gsrlimit=5&prop=pageimages&piprop=thumbnail&pithumbsize=320&pilicense=any`;
+  try{const r=await fetch(q);if(!r.ok)return null;const j=await r.json();const pages=Object.values((j.query&&j.query.pages)||{}).sort((a,b)=>(a.index||0)-(b.index||0));const pg=pages.find(p=>p.thumbnail&&/logo|crest|badge|emblem|escudo|wappen|svg/i.test(p.thumbnail.source))||pages.find(p=>p.thumbnail&&p.thumbnail.source);if(!pg)return null;
     const ir=await fetch(pg.thumbnail.source);if(!ir.ok)return null;const b=await ir.blob();if(!b.size||!/image/.test(b.type))return null;
     return await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(b);});}catch(e){return null;}}
 const haveCrest=(name,lg)=>!!sameTeamId(name,lg);
@@ -2034,11 +2037,24 @@ async function shareVideoFile(blob,name){try{if(!blob)return false;const type=bl
   if(!supported){toast('This browser cannot share the video file directly. Save it, then share it from Gallery.',4500);return false;}
   await navigator.share({title:'Sure Stake 707 Full Time Score',text:'Sure Stake 707 Full Time Score',files:[file]});return true;
 }catch(err){if(err&&err.name==='AbortError')return false;toast('Video share could not open. Save the video, then share it from Gallery.',4500);return false;}}
+// v48.3 (Philip, 19 Oct): share the video straight to TikTok or Instagram with its caption (title + hashtags for that app)
+const CAP_LG={'Champions League':['#ucl','#championsleague'],'Europa League':['#uel','#europaleague'],'Conference League':['#uecl','#conferenceleague'],'Premier League':['#premierleague','#epl'],'La Liga':['#laliga'],'Serie A':['#seriea'],'Bundesliga':['#bundesliga'],'Ligue 1':['#ligue1'],'Saudi Pro League':['#saudiproleague','#spl'],'Football (mixed)':[]};
+function videoCaption(app,lg){const day=longDate(videoDateKey||todayKey());const title=lg&&lg!=='Football (mixed)'?`${lg} Predictions | ${day}`:`Football Predictions | ${day}`;
+  const base=['#footballpredictions','#football','#matchvision',...(CAP_LG[lg]||[]),'#correctscore'];const tags=app==='tt'?[...base,'#footballtiktok','#fyp']:[...base,'#footballreels','#instagram'];
+  return `${title}\n\n${tags.join(' ')}`;}
+async function shareVideoTo(app){const lg=($('vcLg')&&$('vcLg').value)||'Champions League';S.prefs.vcLg=lg;save('prefs');const cap=videoCaption(app,lg);
+  try{const ta=document.createElement('textarea');ta.value=cap;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}catch(e){}try{navigator.clipboard&&navigator.clipboard.writeText(cap);}catch(e){}
+  if(!lastBlob){toast('Record the video first.');return;}const type=lastBlob.type&&lastBlob.type.startsWith('video/')?lastBlob.type:'video/mp4';const file=new File([lastBlob],lastName||'score.mp4',{type,lastModified:Date.now()});
+  let ok=!!navigator.share;try{if(ok&&navigator.canShare)ok=navigator.canShare({files:[file]});}catch(e){}
+  if(ok){try{await navigator.share({files:[file],text:cap});toast(`Pick ${app==='tt'?'TikTok':'Instagram'}. The caption is copied: long-press the caption box and tap Paste.`,5000);return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Open ${app==='tt'?'TikTok':'Instagram'}, pick the video, paste the caption.`,6000);}
 function showResult(ext){if(lastUrl)URL.revokeObjectURL(lastUrl);lastUrl=URL.createObjectURL(lastBlob);
   openSheet(`<div class="modal-title">Video ready ✓</div><video class="res-v" src="${lastUrl}" controls playsinline></video><p class="muted" style="text-align:center;margin-bottom:10px">${ext==='mp4'?'MP4 ready for TikTok. Add a sound when you post.':'Saved as WebM. If TikTok will not take it, open it in CapCut and export as MP4.'}</p>
+    <span class="lbl">Caption competition</span><select id="vcLg">${Object.keys(CAP_LG).map(k=>`<option ${k===(S.prefs.vcLg||'Champions League')?'selected':''}>${k}</option>`).join('')}</select>
+    <div class="btn-row"><button class="btn-save" data-a="tt" style="background:#000;border:1px solid #444">${SVG&&SVG.tt?'':''}Share to TikTok</button><button class="btn-save" data-a="ig" style="background:linear-gradient(135deg,#FA7E1E,#D62976,#4F5BD5)">Share to Instagram</button></div>
     <div class="btn-row"><button class="btn-save orange" data-a="save">Save video</button><button class="btn-half orange" data-a="share">Share</button></div><div class="btn-row"><button class="btn-half" data-a="close">Close</button></div>`,
   async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='save'){const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast('Video saved to Downloads ✓');}
-    else if(b.dataset.a==='share'){await shareVideoFile(lastBlob,lastName);}else closeSheet();});}
+    else if(b.dataset.a==='share'){await shareVideoFile(lastBlob,lastName);}else if(b.dataset.a==='tt'||b.dataset.a==='ig'){await shareVideoTo(b.dataset.a);}else closeSheet();});}
 
 // ---------- VIDEO UI ----------
 const newRow=()=>({id:uid(),home:'',away:'',hs:'',as:'',hc:null,ac:null,hcOrig:null,acOrig:null});
@@ -2103,9 +2119,9 @@ function renderRows(){rowsEl.innerHTML=S.vrows.map((r,i)=>`<div class="match${r.
   <div class="match-tools"><button data-act="up">↑ Move up</button><button data-act="down">↓ Move down</button><button data-act="move">⇄ Other video</button></div></div>`).join('');}
 const rowOf=el=>S.vrows.find(r=>r.id===el.closest('.match')?.dataset.id);
 async function autoFillCrests(){let n=0;for(const r of S.vrows){if(!r.hc&&r.home){const c=await findCrest(r.home);if(c){r.hc=c;n++;}}if(!r.ac&&r.away){const c=await findCrest(r.away);if(c){r.ac=c;n++;}}}if(n){syncCurrentVideo();saveVideoState();renderRows();redraw();}return n;}
-async function loadScores(list,quiet,key){key=key||videoDateKey;const rows=[];for(const ss of list)rows.push({...newRow(),...ss,hc:await findCrest(ss.home),ac:await findCrest(ss.away)});
+async function loadScores(list,quiet,key,only){key=key||videoDateKey;const rows=[];for(const ss of list)rows.push({...newRow(),...ss,hc:await findCrest(ss.home),ac:await findCrest(ss.away)});
   const have=new Set();rows.forEach(r=>{have.add(teamKey(r.home));have.add(teamKey(r.away));});
-  for(const g of rowsFromDaily(key)){if(have.has(teamKey(g.home))||have.has(teamKey(g.away)))continue;have.add(teamKey(g.home));have.add(teamKey(g.away));rows.push({...g,hc:await findCrest(g.home),ac:await findCrest(g.away)});}
+  if(!only)for(const g of rowsFromDaily(key)){if(have.has(teamKey(g.home))||have.has(teamKey(g.away)))continue;have.add(teamKey(g.home));have.add(teamKey(g.away));rows.push({...g,hc:await findCrest(g.home),ac:await findCrest(g.away)});}
   const cur=key===videoDateKey;
   if(!quiet&&cur&&dailyVideoCount().total&&!confirm('Replace both Video 1 and Video 2 with this full scorecard?'))return;
   const ded=dedupeVideoRows(rows),n=ded.rows.length,cut=n<=1?n:Math.ceil(n/2),st=videoState(key);st.v1=ded.rows.slice(0,cut);st.v2=ded.rows.slice(cut);st.active='v1';st.seeded=true;save('videoDays');
@@ -2147,7 +2163,7 @@ $('vDays').onclick=e=>{const b=e.target.closest('[data-vday]');if(!b||playing)re
 $('videoPair').onclick=e=>{const b=e.target.closest('[data-vslot]');if(!b)return;saveVideoState();loadVideoSlot(b.dataset.vslot);};
 $('addRow').onclick=()=>{const r=newRow();S.vrows.push(r);curId=r.id;syncCurrentVideo();saveVideoState();renderRows();renderVideoTabs();redraw();nameSheet(r,'home');};
 $('newDay').onclick=()=>{if(!confirm(`Clear both videos for ${videoDateKey}? Saved crests stay.`))return;const st=videoState(videoDateKey);st.v1=[];st.v2=[];st.active='v1';st.seeded=true;videoSlot='v1';S.vrows=[];curId=null;syncCurrentVideo();saveVideoState();renderVideoTabs();renderRows();redraw();};
-$('pasteScores').onclick=()=>askPaste('Paste the scorecard',async t=>{const p=parseHub(t);let sc=p.scores;if(!sc.length)sc=t.split('\n').map(l=>parseScoreLine(l.trim())).filter(Boolean);if(!sc.length){toast('No scores found. Each line: Barcelona vs PSG | 2-1',3500);return;}await loadScores(sc);});
+$('pasteScores').onclick=()=>askPaste('Paste the scorecard',async t=>{const p=parseHub(t);let sc=p.scores;if(!sc.length)sc=t.split('\n').map(l=>parseScoreLine(l.trim())).filter(Boolean);if(!sc.length){toast('No scores found. Each line: Barcelona vs PSG | 2-1',3500);return;}await loadScores(sc,false,undefined,true);});   // v48.3: only the pasted games
 async function renderTpls(){if(!$('tpls'))return;$('tpls').onclick=tplsClick;const L=S.vtpls;const srcs=await Promise.all(L.map(t=>tplSrc(t.id)));
   $('tpls').innerHTML=L.map((t,i)=>`<button data-t="${t.id}" class="${S.vset.tpl===t.id?'on':''}">${srcs[i]?`<img src="${srcs[i]}" alt="">`:''}${esc(t.name)}</button>`).join('')+`<button data-t="__add"><span class="add">+</span>Add</button>`;}
 function tplsClick(e){const b=e.target.closest('button');if(!b)return;const id=b.dataset.t;
