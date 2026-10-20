@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.4</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.5</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.4';
+const VERSION='v48.5';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -1208,7 +1208,8 @@ function normPick(p,H,A){let q=' '+String(p||'').toLowerCase().normalize('NFD').
 function maxLead(goals,side){let h=0,a=0,m=0;for(const g of goals){if(g[1]==='h')h++;else a++;const d=side==='home'?h-a:a-h;if(d>m)m=d;}return m;}
 function evalCond(q,F){const fin=F.st==='FT';const hs=+F.hs||0,as=+F.as||0,tot=hs+as;const has=F.goals!=null;let m;
   if((m=q.match(/early|goal by (\d+)|by (\d+) ?min/))){const N=+(m[1]||m[2]||10);const lm=q.match(/over (\d+(?:\.\d+)?)/);const line=lm?+lm[1]:0.5;
-    if(tot>line&&fin)return 'won';if(has&&F.goals.some(g=>g[0]<=N))return 'won';if(F.st==='LIVE'&&F.m!=null&&F.m<=N&&tot>=1)return 'won';if(fin)return tot>line?'won':has?'lost':'check';return null;}
+    const km=q.match(/(\d+)\s*(?:goals?\s*)?by\s*(\d+)\s*min/);const K=km?+km[1]:1;const N2=km?+km[2]:N;   // v48.5: "1 goal by 10 min" = an early win
+    if(tot>line&&fin)return 'won';if(has&&F.goals.filter(g=>g[0]<=N2).length>=K)return 'won';if(F.st==='LIVE'&&F.m!=null&&F.m<=N2&&tot>=K)return 'won';if(tot>line&&lm)return 'won';if(fin)return tot>line?'won':(has||tot<K)?'lost':'check';return null;}
   if((m=q.match(/(home|away)?[^a-z0-9]*(\d)\s*up\b/))){const side=m[1]||(q.includes('away')?'away':'home');const n=+m[2];const diff=side==='home'?hs-as:as-hs;
     if(has&&maxLead(F.goals,side)>=n)return 'won';if((F.st==='LIVE'||F.st==='HT')&&diff>=n)return 'won';if(fin){if(diff>0)return 'won';return has?'lost':'check';}return null;}
   if((m=q.match(/(home|away) (?:dnb|draw no bet)/))){if(!fin)return null;if(hs===as)return 'void';return (m[1]==='home'?hs>as:as>hs)?'won':'lost';}
@@ -1368,6 +1369,9 @@ function slipsView(D){const now=new Date();const fk=firstKick(D);let banner='';
   if(fk){const left=Math.ceil((fk-now)/60000);banner=left>0?`<div class="kick ${left<=30?'hot':''}"><span>⏰ Post codes before ${fmtT(fk)}</span><span>${inMins(left)} left</span></div>`:`<div class="kick"><span>⚽ First game kicked off ${fmtT(fk)}</span></div>`;}
   const slots=SLOTS.filter(s=>(D.codes[s]&&D.codes[s].code)||gamesOf(D,s).length);
   if(slots.includes('vip')&&!slipState(D,'vip',now).ended){slots.splice(slots.indexOf('vip'),1);slots.unshift('vip');}   // v48: 707 Elite pinned on top until its games end
+  const doneN=slots.filter(s=>['won','lost'].includes((D.codes[s]||{}).result)||slipState(D,s,now).ended).length;   // v48.5: ended slips live in Results
+  for(let i=slots.length-1;i>=0;i--){const s=slots[i];if(['won','lost'].includes((D.codes[s]||{}).result)||slipState(D,s,now).ended)slots.splice(i,1);}
+  if(!slots.length&&doneN)return banner+`<div class="card"><p class="empty">✓ All of today's slips have ended. Their results are in the Results tab.</p></div>`;
   if(!slots.length)return `<div class="card"><p class="empty">No slips for today yet. They come in with the HUB block, or add them in Edit today.</p><button class="btn-half purple w100" data-home="edit">✏️ Edit today</button></div>`;
   return banner+slots.map(s=>{const c=D.codes[s]||{};const st=slipState(D,s,now);const G=gamesOf(D,s);const open=openSlips.has(s);
     return `<div class="card slipc ${s}" data-slot="${s}" data-dk="${D.key}"><div class="srow">${thumbBtn(D,s)}<div class="sbody"><div class="sliphd"><div class="sn"><b>${SLOTNAME[s]}</b><span>${esc(c.code||'')}${c.odds?` · ${rnd(c.odds)} odds`:''}</span></div><span style="text-align:right">${resPill(c.result)||statusPill(D,s)}${autoTag(c)}</span></div>
