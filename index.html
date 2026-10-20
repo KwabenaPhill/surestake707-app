@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.3</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.4</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.3';
+const VERSION='v48.4';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2031,7 +2031,7 @@ $('btnRec').onclick=async()=>{if(playing)return;const dupes=duplicateVideoTeams(
   drawAt(tl,0);let vthumb=null;try{drawAt(tl,Math.min(3,tl.total-0.1));const tc=document.createElement('canvas');tc.width=90;tc.height=160;tc.getContext('2d').drawImage(cv,0,0,90,160);vthumb=tc.toDataURL('image/jpeg',0.7);drawAt(tl,0);}catch(e){}const r720=S.vset.res==='720';const vbr=r720?(S.vset.q==='std'?4e6:6e6):(S.vset.q==='std'?8e6:12e6);let srcCv=cv;if(r720){recTarget=document.createElement('canvas');recTarget.width=720;recTarget.height=1280;recTarget.getContext('2d').drawImage(cv,0,0,720,1280);srcCv=recTarget;}else recTarget=null;const stream=srcCv.captureStream(30);const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:vbr}:{videoBitsPerSecond:vbr});const chunks=[];rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
   rec.onstop=async()=>{try{wake&&wake.release();}catch(e){}wake=null;const type=rec.mimeType||mime||'video/webm';lastBlob=await fixVideoDuration(new Blob(chunks,{type}),Math.max(500,Math.round((recT1||performance.now())-recT0)));recTarget=null;const ext=type.includes('mp4')?'mp4':'webm';lastName=`SureStake707_Scores_${videoDateKey}.${ext}`;
     btn.disabled=false;btn.classList.remove('on');btn.textContent='● Record video';$('btnPlay').disabled=false;vsay('');showResult(ext);saveVideo(lastBlob,ext,tl,vthumb);};rec.start();recT0=performance.now();recT1=0;setTimeout(()=>run(tl,()=>setTimeout(()=>{recT1=performance.now();if(rec.state!=='inactive')rec.stop();},120)),150);};
-async function shareVideoFile(blob,name){try{if(!blob)return false;const type=blob.type&&blob.type.startsWith('video/')?blob.type:'video/mp4';const file=new File([blob],name,{type,lastModified:Date.now()});
+async function shareVideoFile(blob,name){try{if(!blob)return false;const type=blob.type&&blob.type.startsWith('video/')?blob.type.split(';')[0]:'video/mp4';const file=new File([blob],name,{type,lastModified:Date.now()});
   if(!navigator.share){toast('Video sharing is not available here. Save the video, then share it from Gallery.',4500);return false;}
   let supported=true;try{if(navigator.canShare)supported=navigator.canShare({files:[file]});}catch(e){}
   if(!supported){toast('This browser cannot share the video file directly. Save it, then share it from Gallery.',4500);return false;}
@@ -2044,10 +2044,13 @@ function videoCaption(app,lg){const day=longDate(videoDateKey||todayKey());const
   return `${title}\n\n${tags.join(' ')}`;}
 async function shareVideoTo(app){const lg=($('vcLg')&&$('vcLg').value)||'Champions League';S.prefs.vcLg=lg;save('prefs');const cap=videoCaption(app,lg);
   try{const ta=document.createElement('textarea');ta.value=cap;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}catch(e){}try{navigator.clipboard&&navigator.clipboard.writeText(cap);}catch(e){}
-  if(!lastBlob){toast('Record the video first.');return;}const type=lastBlob.type&&lastBlob.type.startsWith('video/')?lastBlob.type:'video/mp4';const file=new File([lastBlob],lastName||'score.mp4',{type,lastModified:Date.now()});
+  if(!lastBlob){toast('Record the video first.');return;}const type=lastBlob.type&&lastBlob.type.startsWith('video/')?lastBlob.type.split(';')[0]:'video/mp4';const file=new File([lastBlob],lastName||'score.mp4',{type,lastModified:Date.now()});
   let ok=!!navigator.share;try{if(ok&&navigator.canShare)ok=navigator.canShare({files:[file]});}catch(e){}
   if(ok){try{await navigator.share({files:[file],text:cap});toast(`Pick ${app==='tt'?'TikTok':'Instagram'}. The caption is copied: long-press the caption box and tap Paste.`,5000);return;}catch(e){if(e&&e.name==='AbortError')return;}}
-  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Open ${app==='tt'?'TikTok':'Instagram'}, pick the video, paste the caption.`,6000);}
+  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Opening ${app==='tt'?'TikTok':'Instagram'}: pick the video, paste the caption.`,6000);
+  setTimeout(()=>{const isAnd=/android/i.test(navigator.userAgent);   // v48.4: open the app itself
+    location.href=app==='tt'?(isAnd?'intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https%3A%2F%2Fwww.tiktok.com%2Fupload;end':'https://www.tiktok.com/upload')
+      :(isAnd?'intent://instagram.com/#Intent;scheme=https;package=com.instagram.android;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com;end':'instagram://camera');},1500);}
 function showResult(ext){if(lastUrl)URL.revokeObjectURL(lastUrl);lastUrl=URL.createObjectURL(lastBlob);
   openSheet(`<div class="modal-title">Video ready ✓</div><video class="res-v" src="${lastUrl}" controls playsinline></video><p class="muted" style="text-align:center;margin-bottom:10px">${ext==='mp4'?'MP4 ready for TikTok. Add a sound when you post.':'Saved as WebM. If TikTok will not take it, open it in CapCut and export as MP4.'}</p>
     <span class="lbl">Caption competition</span><select id="vcLg">${Object.keys(CAP_LG).map(k=>`<option ${k===(S.prefs.vcLg||'Champions League')?'selected':''}>${k}</option>`).join('')}</select>
