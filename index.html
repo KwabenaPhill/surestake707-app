@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.5</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.6</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.5';
+const VERSION='v48.6';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2043,7 +2043,7 @@ async function shareVideoFile(blob,name){try{if(!blob)return false;const type=bl
 }catch(err){if(err&&err.name==='AbortError')return false;toast('Video share could not open. Save the video, then share it from Gallery.',4500);return false;}}
 // v48.3 (Philip, 19 Oct): share the video straight to TikTok or Instagram with its caption (title + hashtags for that app)
 const CAP_LG={'Champions League':['#ucl','#championsleague'],'Europa League':['#uel','#europaleague'],'Conference League':['#uecl','#conferenceleague'],'Premier League':['#premierleague','#epl'],'La Liga':['#laliga'],'Serie A':['#seriea'],'Bundesliga':['#bundesliga'],'Ligue 1':['#ligue1'],'Saudi Pro League':['#saudiproleague','#spl'],'Football (mixed)':[]};
-function videoCaption(app,lg){const day=longDate(videoDateKey||todayKey());const title=lg&&lg!=='Football (mixed)'?`${lg} Predictions | ${day}`:`Football Predictions | ${day}`;
+function videoCaption(app,lg){const day=longDate(videoDateKey||todayKey());const title=(lg&&lg!=='Football (mixed)'?`${lg.toUpperCase()} PREDICTIONS`:'FOOTBALL PREDICTIONS')+` | ${day}`;   // v48.6 (Philip, 21 Oct): the first part in capitals, like Match Vision
   const base=['#footballpredictions','#football','#matchvision',...(CAP_LG[lg]||[]),'#correctscore'];const tags=app==='tt'?[...base,'#footballtiktok','#fyp']:[...base,'#footballreels','#instagram'];
   return `${title}\n\n${tags.join(' ')}`;}
 async function shareVideoTo(app){const lg=($('vcLg')&&$('vcLg').value)||'Champions League';S.prefs.vcLg=lg;save('prefs');const cap=videoCaption(app,lg);
