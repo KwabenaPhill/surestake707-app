@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.6</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.7</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.6';
+const VERSION='v48.7';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -933,12 +933,15 @@ function parseHub(txt){const lines=txt.replace(/\r/g,'').split('\n');const out={
   const raw=out._codes||[];delete out._codes;const map={};const ord=raw.slice().sort((a,b)=>b.odds-a.odds);
   if(ord.length>=3)ord.slice(0,3).forEach((c,i)=>map[c.lab]=SLOTS[i]);else{ord.filter(c=>!c.lab.startsWith('VIP')).forEach((c,i)=>map[c.lab]=['t10','t5'][i]);ord.filter(c=>c.lab.startsWith('VIP')).forEach(c=>map[c.lab]='vip');}
   for(const c of raw)if(map[c.lab])out.codes[map[c.lab]]={code:c.code,odds:c.odds};
+  // v48.7 (Philip, 21 Oct): a block from Gemini (or any AI) with codes, games or posts but no "#HUB 2026-10-21" line is still a HUB (for today)
+  if(!out.isHub&&(raw.length||out.games.length||out.vipPicks.length||Object.keys(out.posts).length)){out.isHub=true;out.noHeader=true;}
   out.games=out.games.map(g=>{let slot=map[g.lab];if(!slot){const n=parseFloat(g.lab);const c=raw.find(x=>parseFloat(x.lab)===n);slot=c?map[c.lab]:(g.lab.startsWith('VIP')?'vip':null);}const {lab,...rest}=g;return slot?{slot,...rest}:null;}).filter(Boolean);
   return out;}
 async function applyHub(txt,forKey){const p=parseHub(txt);
   if(p.bad&&p.bad.length)setTimeout(()=>toast(`${p.bad.length} game line(s) have no "Home vs Away", so they cannot be followed live: ${p.bad[0].slice(0,60)}`,7000),1500);
   if(!p.isHub&&p.scores.length){await loadScores(p.scores);showTab('video');return;}
   if(!p.isHub){toast('No HUB block found. Copy the whole HUB block and try again.',3500);return;}
+  if(p.noHeader)setTimeout(()=>toast('No "#HUB date" line at the top: loaded as today ✓',4000),3400);
   const k=forKey||p.date||todayKey();const d=day(k);
   for(const s of ['t10','t5','vip'])if(p.codes[s]){const old=d.codes[s]||{};d.codes[s]={code:p.codes[s].code,odds:p.codes[s].odds,result:old.result||'pending'};}
   const inc=[...p.games];if(!inc.some(g=>g.slot==='vip'))p.vipPicks.forEach(t=>{const i=t.lastIndexOf(' - ');inc.push({slot:'vip',time:'',match:i>0?t.slice(0,i):t,pick:i>0?t.slice(i+3):''});});
