@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.7</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.8</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v48.7';
+const VERSION='v48.8';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2324,7 +2324,9 @@ const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:
           if(nm==='morning'){const id=uid();await cset('pimg:'+id,u);d.postImgs=d.postImgs||{};d.postImgs.morning=[id];}else{await cset(`slip:${k}:${nm}`,u);d.slips[nm]=true;}}
         d.botHubAt=b.hub_at||Date.now()/1000;if(k>todayKey()&&!d.status)d.status='scheduled';ch=true;toast(`${shortDate(k)} came from the laptop bot ✓`,3000);}
       if(!d)continue;
-      for(const [s,r] of Object.entries(b.codes||{})){const c=d.codes[s];if(!c||!c.code)continue;
+      for(const [s,r] of Object.entries(b.codes||{})){if(r&&r.code&&!(d.codes[s]&&d.codes[s].code)){d.codes[s]={code:r.code,odds:r.odds||0,result:'pending'};ch=true;}   // v48.8: a code the bot read from the slip picture
+        else if(r&&r.code&&d.codes[s]&&d.codes[s].code===r.code&&!d.codes[s].odds&&r.odds){d.codes[s].odds=r.odds;ch=true;}
+        const c=d.codes[s];if(!c||!c.code)continue;
         if(r.mine&&['won','lost'].includes(r.mine)&&!c.manual){if(c.result!==r.mine){c.result=r.mine;c.manual=true;delete c.auto;ch=true;}}
         else if(!c.manual&&['won','lost'].includes(r.result)&&c.result!==r.result){c.result=r.result;c.auto={at:Date.now()};ch=true;}}
       for(const g of d.games||[]){const r=(b.legs||{})[lk(g)];if(!r)continue;if(r.res&&!g.res&&g.res!==r.res){g.res=r.res;ch=true;}if(r.auto&&!g.auto&&['won','lost','void'].includes(r.auto)){g.auto=r.auto;ch=true;}}
