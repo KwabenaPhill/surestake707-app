@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v49';
+const VERSION='v49.1';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2330,7 +2330,12 @@ const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:
     return {v:1,app:VERSION,updated:new Date().toISOString(),day:{key:k,codes:Object.fromEntries(SLOTS.filter(s=>d.codes[s]&&d.codes[s].code).map(s=>[s,{code:d.codes[s].code,odds:d.codes[s].odds,result:d.codes[s].result||'pending',manual:!!d.codes[s].manual}])),
       games:(d.games||[]).map(g=>({slot:g.slot,time:g.time||'',match:g.match,pick:g.pick,res:g.res||null})),layout:d.layout||null},posts,texts:T,images:imgs,posted};}
   const lk=g=>`${g.slot}|${String(g.match).trim().toLowerCase()}|${String(g.pick).trim().toLowerCase()}`;
-  async function pull(){const list=await gh('GET','bot');if(!Array.isArray(list))return false;let ch=false;const lo=addDays(todayKey(),-1);
+  async function pull(){const list=await gh('GET','bot');if(!Array.isArray(list))return false;let ch=false;try{const mf=list.find(f=>f.name==='members.json');/* v49.1: 707 Elite members who joined and paid through the bot */
+      if(mf&&st.sha['bot/members.json']!==mf.sha){const mj=await gh('GET','bot/members.json');if(mj){st.sha['bot/members.json']=mj.sha;const mb=JSON.parse(unb64(mj.content));
+        (mb.members||[]).forEach(r=>{const pays=(r.payments||[]).filter(p=>p.date).map(p=>({date:p.date,months:Number(p.months)||1,amount:(Number(p.months)||1)*(Number(S.prefs.price)||0),ref:'bot'}));
+          let m=S.members.find(x=>x.id===r.id);if(!m){S.members.push({id:r.id,name:r.name||'Member',phone:r.user||'',payments:pays,bot:true});}else{m.name=r.name||m.name;m.phone=m.phone||r.user||'';if(pays.length)m.payments=pays;m.bot=true;}});
+        save('members');ch=true;}}}catch(e){console.warn('members from bot',e);}
+      const lo=addDays(todayKey(),-1);
     for(const f of list){const m=/^(\d{4}-\d{2}-\d{2})\.json$/.exec(f.name);if(!m||m[1]<lo||st.sha['bot/'+f.name]===f.sha)continue;const j=await gh('GET','bot/'+f.name);if(!j)continue;st.sha['bot/'+f.name]=j.sha;
       const b=JSON.parse(unb64(j.content));const k=m[1];let d=S.days[k];
       // a HUB pasted into the bot: the app takes it when it has nothing newer for that day
