@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v49.1';
+const VERSION='v49.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2062,27 +2062,35 @@ async function shareVideoFile(blob,name){try{if(!blob)return false;const type=bl
 }catch(err){if(err&&err.name==='AbortError')return false;toast('Video share could not open. Save the video, then share it from Gallery.',4500);return false;}}
 // v48.3 (Philip, 19 Oct): share the video straight to TikTok or Instagram with its caption (title + hashtags for that app)
 const CAP_LG={'Champions League':['#ucl','#championsleague'],'Europa League':['#uel','#europaleague'],'Conference League':['#uecl','#conferenceleague'],'Premier League':['#premierleague','#epl'],'La Liga':['#laliga'],'Serie A':['#seriea'],'Bundesliga':['#bundesliga'],'Ligue 1':['#ligue1'],'Saudi Pro League':['#saudiproleague','#spl'],'Football (mixed)':[]};
-function videoCaption(app,lg){const day=longDate(videoDateKey||todayKey());const title=(lg&&lg!=='Football (mixed)'?`${lg.toUpperCase()} PREDICTIONS`:'FOOTBALL PREDICTIONS')+` | ${day}`;   // v48.6 (Philip, 21 Oct): the first part in capitals, like Match Vision
-  const base=['#footballpredictions','#football','#matchvision',...(CAP_LG[lg]||[]),'#correctscore'];const tags=app==='tt'?[...base,'#footballtiktok','#fyp']:[...base,'#footballreels','#instagram'];
-  return `${title}\n\n${tags.join(' ')}`;}
+function videoCaption(app,lg){   // v49.2 (Philip, 28 Oct): EXACTLY the Match Vision Short captions (mv_texts.his_short_caption)
+  const d=dateOf(videoDateKey||todayKey());const day=longDate(videoDateKey||todayKey());
+  const base='#footballpredictions #football #matchvision';
+  const extra=app==='tt'?' #footballtiktok #fyp':app==='yt'?' #shorts':' #footballreels #instagram';   // each app's own tags
+  const names=(S.vrows||[]).map(r=>(String(r.home||'')+' | '+String(r.away||'')).toLowerCase());
+  if(names.some(n=>n.includes('barcelona')&&n.includes('real madrid')))
+    return `EL CLASICO + MORE PREDICTIONS | ${day}\n\nAll today's big games, including El Clasico ⚽🔥\n\n#ElClasico #barcelona #realmadrid ${base}${extra}`;
+  const BIG=['Champions League','Europa League','Conference League'];
+  if(lg&&BIG.includes(lg))return `${lg.toUpperCase()} PREDICTIONS | ${day}\n\n${base} ${(CAP_LG[lg]||[]).join(' ')}${extra}`;
+  return `${DAYS[d.getDay()].toUpperCase()} FOOTBALL PREDICTIONS | ${d.getDate()} ${MONTHS[d.getMonth()].toUpperCase()}\n\n${base} #correctscore${extra}`;}
 function autoLeague(){const rows=(S.vrows||[]);const c={};for(const r of rows){const l=String(r.league||'');const k=Object.keys(CAP_LG).find(x=>x!=='Football (mixed)'&&l.toLowerCase().includes(x.toLowerCase().replace('la liga','liga')));if(k)c[k]=(c[k]||0)+1;}const top=Object.entries(c).sort((a,b)=>b[1]-a[1])[0];return top&&rows.length&&top[1]>=rows.length*0.6?top[0]:'Football (mixed)';}
 async function shareVideoTo(app){let lg=($('vcLg')&&$('vcLg').value)||'Auto';if(lg==='Auto')lg=autoLeague();   // v49 (Philip, 25 Oct): never a wrong league in the title (Auto reads the games)
 S.prefs.vcLg=($('vcLg')&&$('vcLg').value)||'Auto';save('prefs');const cap=videoCaption(app,lg);
   try{const ta=document.createElement('textarea');ta.value=cap;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}catch(e){}try{navigator.clipboard&&navigator.clipboard.writeText(cap);}catch(e){}
   if(!lastBlob){toast('Record the video first.');return;}const type=lastBlob.type&&lastBlob.type.startsWith('video/')?lastBlob.type.split(';')[0]:'video/mp4';const file=new File([lastBlob],lastName||'score.mp4',{type,lastModified:Date.now()});
   let ok=!!navigator.share;try{if(ok&&navigator.canShare)ok=navigator.canShare({files:[file]});}catch(e){}
-  if(ok){try{await navigator.share({files:[file],text:cap});toast(`Pick ${app==='tt'?'TikTok':'Instagram'}. The caption is copied: long-press the caption box and tap Paste.`,5000);return;}catch(e){if(e&&e.name==='AbortError')return;}}
-  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Opening ${app==='tt'?'TikTok':'Instagram'}: pick the video, paste the caption.`,6000);
+  if(ok){try{await navigator.share({files:[file],text:cap});toast(`Pick ${app==='tt'?'TikTok':app==='yt'?'YouTube':'Instagram'}. The caption is copied: long-press the caption box and tap Paste.`,5000);return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Opening ${app==='tt'?'TikTok':app==='yt'?'YouTube':'Instagram'}: pick the video, paste the caption.`,6000);
   setTimeout(()=>{const isAnd=/android/i.test(navigator.userAgent);   // v48.4: open the app itself
-    location.href=app==='tt'?(isAnd?'intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https%3A%2F%2Fwww.tiktok.com%2Fupload;end':'https://www.tiktok.com/upload')
+    location.href=app==='yt'?(isAnd?'intent://www.youtube.com/#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url=https%3A%2F%2Fwww.youtube.com%2Fupload;end':'https://www.youtube.com/upload'):app==='tt'?(isAnd?'intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https%3A%2F%2Fwww.tiktok.com%2Fupload;end':'https://www.tiktok.com/upload')
       :(isAnd?'intent://instagram.com/#Intent;scheme=https;package=com.instagram.android;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com;end':'instagram://camera');},1500);}
 function showResult(ext){if(lastUrl)URL.revokeObjectURL(lastUrl);lastUrl=URL.createObjectURL(lastBlob);
   openSheet(`<div class="modal-title">Video ready ✓</div><video class="res-v" src="${lastUrl}" controls playsinline></video><p class="muted" style="text-align:center;margin-bottom:10px">${ext==='mp4'?'MP4 ready for TikTok. Add a sound when you post.':'Saved as WebM. If TikTok will not take it, open it in CapCut and export as MP4.'}</p>
     <span class="lbl">Caption competition</span><select id="vcLg">${['Auto',...Object.keys(CAP_LG)].map(k=>`<option ${k===(S.prefs.vcLg||'Auto')?'selected':''}>${k}</option>`).join('')}</select>
     <div class="btn-row"><button class="btn-save" data-a="tt" style="background:#000;border:1px solid #444">${SVG&&SVG.tt?'':''}Share to TikTok</button><button class="btn-save" data-a="ig" style="background:linear-gradient(135deg,#FA7E1E,#D62976,#4F5BD5)">Share to Instagram</button></div>
+    <div class="btn-row"><button class="btn-save" data-a="yt" style="background:#FF0000">Share to YouTube Shorts</button></div>
     <div class="btn-row"><button class="btn-save orange" data-a="save">Save video</button><button class="btn-half orange" data-a="share">Share</button></div><div class="btn-row"><button class="btn-half" data-a="close">Close</button></div>`,
   async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='save'){const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast('Video saved to Downloads ✓');}
-    else if(b.dataset.a==='share'){await shareVideoFile(lastBlob,lastName);}else if(b.dataset.a==='tt'||b.dataset.a==='ig'){await shareVideoTo(b.dataset.a);}else closeSheet();});}
+    else if(b.dataset.a==='share'){await shareVideoFile(lastBlob,lastName);}else if(b.dataset.a==='tt'||b.dataset.a==='ig'||b.dataset.a==='yt'){await shareVideoTo(b.dataset.a);}else closeSheet();});}
 
 // ---------- VIDEO UI ----------
 const newRow=()=>({id:uid(),home:'',away:'',hs:'',as:'',hc:null,ac:null,hcOrig:null,acOrig:null});
