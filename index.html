@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v49.8</title>
+<title>Sure Stake 707 Hub v49.9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v49.8';
+const VERSION='v49.9';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -715,7 +715,7 @@ function readOld(){return new Promise(res=>{let r;try{r=indexedDB.open('SS707_Sc
 const OLD_CLOSERS=["Another Day, Another Chance. Let's Go💰","New Day, Same Hunger 🔥","Another Day To Prove It 🎯","Fresh Day. Fresh Codes. Let's Move 🔥","Another Day In The Office. Let's Work 🏆","Back Again, Back Stronger 💰"];
 const DEF_CLOSERS=["New Day, Same Hunger 🔥💪","Load Them Before Kickoff ⚽🔥","Another Day, Another Chance. Let's Go 💲🔥","Another Day To Prove It 🎯💪","Back Again, Back Stronger 💪🏆","Locked In. Let's Work 🔒🔥","Discipline Pays. Stick To Your Stake 💲✨","We Move Together 🤝🔥","Built Different. Let's Ride 🚀✨","Eyes On The Prize 🏆⚽","Calm Mind, Sharp Picks 🧠👌","Patience Pays. Trust The Process ✨🙌","Same Team, Same Mission 💪🙌","Let The Games Talk ⚽🔥"];
 const DEF_PREFS={channel:'t.me/SureStake707',handle:'@RogerRich707',price:50,cap:50,closers:DEF_CLOSERS.slice(),tpls:{}};
-const DEF_VIDEO={tpl:'navy',res:'1080',q:'high',secs:5,crestAnim:'pop',scoreAnim:'pop',between:'soft',scoreColor:'#FFFFFF',end:true,endSecs:3,end1:'FOLLOW FOR MORE',end2:'Daily Football Scores',fontTeam:'Bebas Neue',fontScore:'Archivo Black',fontEnd:'Montserrat'};
+const DEF_VIDEO={tpl:'navy',res:'1080',q:'high',secs:5,crestAnim:'pop',scoreAnim:'pop',between:'soft',scoreColor:'#FFFFFF',end:true,endSecs:3,end1:'FOLLOW FOR MORE',end2:'Daily Football Scores',fontTeam:'Bebas Neue',fontScore:'Archivo Black',fontEnd:'Montserrat',autoVid:true};
 const blankState=()=>({days:{},crestList:[],vrows:[],videoDays:{},vset:{...DEF_VIDEO},vtpls:[{id:'navy',name:'Blue'},{id:'black',name:'Black'}],logo:null,members:[],followers:[],prefs:JSON.parse(JSON.stringify(DEF_PREFS)),imgIndex:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},vhist:[],finance:{saved:[],withdrawn:[],otherIncome:[],hide:false}});
 let S=blankState();
 // ---------- Safe saving (v43) ----------
@@ -2223,6 +2223,7 @@ function openVideoSettings(){const render=()=>{$('subBody').innerHTML=`<canvas c
     <div class="card"><div class="ct o">Animations</div><span class="lbl">Crests come in</span><div class="chips" id="aCrest"></div><span class="lbl">Score appears</span><div class="chips" id="aScore"></div><span class="lbl">Between matches</span><div class="chips" id="aBetween"></div></div>
     <div class="card"><div class="ct o">Fonts</div><p class="muted" style="margin:0 0 6px">The app interface stays in Outfit. Choose separate fonts for video text. Tap More Fonts to see the full list.</p><span class="lbl">Team names</span><div id="fontTeam"></div><span class="lbl">Scores</span><div id="fontScore"></div><span class="lbl">End card text</span><div id="fontEnd"></div></div>
     <div class="card"><div class="ct o">Timing and text</div><span class="lbl">Seconds per match</span><div class="chips" id="secs"></div><span class="lbl">Score colour</span><div class="chips" id="scol"></div><span class="lbl">Video size</span><div class="chips" id="vres"></div><span class="lbl">Sharpness</span><div class="chips" id="vq"></div>
+      <span class="lbl">Make videos by themselves</span><div class="chips" id="autoVid"></div><p class="muted" style="margin:6px 0 0">On = Video 1 and Video 2 are made by themselves when the games and scores are in. Change, move or remove a game and the video is made again.</p>
       <span class="lbl">End card</span><div class="chips" id="endOn"></div><p class="muted" id="endNote" style="margin:6px 0 0"></p><span class="lbl">End card big line</span><input type="text" id="end1" maxlength="40"><span class="lbl">End card small line</span><input type="text" id="end2" maxlength="60"></div>`;renderVideoControls();redraw().then(mirror);};
   openSub('Video settings',render);$('subBody').onclick=async e=>{
     const fb=e.target.closest('[data-font]');
@@ -2241,7 +2242,7 @@ function renderVideoControls(){if(!$('tpls'))return;renderTpls();
   chips($('aCrest'),[['pop','Pop'],['slide','Slide in'],['fade','Fade'],['drop','Drop'],['flip','Flip'],['spin','Spin'],['zoom','Zoom out'],['bounce','Bounce']],'crestAnim');  chips($('aScore'),[['pop','Pop'],['slam','Slam'],['count','Count up'],['fade','Fade'],['slideup','Slide up']],'scoreAnim');
   chips($('aBetween'),[['soft','Soft'],['fade','Fade to black'],['flash','Flash'],['slide','Slide']],'between');
   renderFontPicker('fontTeam','fontTeam');renderFontPicker('fontScore','fontScore');renderFontPicker('fontEnd','fontEnd');
-  chips($('secs'),[[4,'4 sec'],[5,'5 sec'],[6,'6 sec'],[7,'7 sec']],'secs');chips($('scol'),[['#FFFFFF','White'],['#FFD400','Yellow']],'scoreColor');chips($('vres'),[['1080','1080p'],['720','720p']],'res');chips($('vq'),[['high','High'],['std','Standard']],'q');chips($('endOn'),[[true,'On'],[false,'Off']],'end');
+  chips($('secs'),[[4,'4 sec'],[5,'5 sec'],[6,'6 sec'],[7,'7 sec']],'secs');chips($('scol'),[['#FFFFFF','White'],['#FFD400','Yellow']],'scoreColor');chips($('vres'),[['1080','1080p'],['720','720p']],'res');chips($('vq'),[['high','High'],['std','Standard']],'q');chips($('endOn'),[[true,'On'],[false,'Off']],'end');chips($('autoVid'),[[true,'On'],[false,'Off']],'autoVid');
   if($('end1'))$('end1').value=S.vset.end1;if($('end2'))$('end2').value=S.vset.end2;syncEndFields();}
 function syncEndFields(){const off=!S.vset.end;['end1','end2'].forEach(id=>{const x=$(id);if(x){x.disabled=off;x.style.opacity=off?'.45':'';}});const n=$('endNote');if(!n)return;
   n.textContent=off?'Off: the video ends right after the last match.':endCardOn()?`On: your end card shows for ${S.vset.endSecs} seconds after the last match.`:'On, but both lines are empty, so no end card is recorded. Type a line to show it.';}
@@ -2409,6 +2410,41 @@ if(bc)bc.onmessage=e=>{const m=e.data||{};if(m.from===TAB_ID)return;if(m.type===
   else{storageReady=true;readyRes();bcPost({type:'hello'});}
   renderHeader();showTab('home');setTimeout(()=>{liveTick(true);},2500);
   try{await cget('eliteFlyer');}catch(e){}renderVideoUI();await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
+
+// v49.9 (Philip, 3 Nov 2026): NO MORE RECORDING BY HAND. Video 1 and Video 2 are made by themselves (same template,
+// transitions, timing and your saved video settings) as soon as the games have their scores. Remove, move up/down,
+// "Other video" or add a game: that video is made again by itself. The new one replaces the old not-posted one.
+// The Record button stays as a backup. Settings > Video > Make videos by themselves (On / Off).
+(function(){
+  let busy=false,lastSig={},stable={};
+  const autoOn=()=>S.vset.autoVid!==false;
+  const ready=rows=>rows.length&&rows.every(r=>String(r.home||'').trim()&&String(r.away||'').trim()&&String(r.hs??'')!==''&&String(r.as??'')!=='');
+  const sigOf=rows=>JSON.stringify([videoDateKey,rows.map(r=>[r.home,r.away,r.hs,r.as,!!r.hc,!!r.ac]),S.vset.tpl,S.vset.secs,S.vset.between,S.vset.crestAnim,S.vset.scoreAnim,S.vset.scoreColor,S.vset.end,S.vset.end1,S.vset.end2,S.vset.res,S.vset.q,S.vset.fontTeam,S.vset.fontScore]);
+  const store=()=>{try{return JSON.parse(localStorage.getItem('ss707_autoVid')||'{}');}catch(e){return {};}};
+  const keep=o=>{try{localStorage.setItem('ss707_autoVid',JSON.stringify(o));}catch(e){}};
+  function recordNow(){return new Promise(res=>{const b=$('btnRec');b.click();let n=0;const iv=setInterval(()=>{n++;if((!b.disabled&&!playing)||n>900){clearInterval(iv);res();}},400);});}
+  async function makeSlot(slot,sig){
+    if(videoSlot!==slot){saveVideoState();loadVideoSlot(slot);await new Promise(r=>setTimeout(r,400));}
+    const before=(S.vhist||[]).length;vsay(`Making Video ${slot==='v1'?'1':'2'} by itself...`);
+    await recordNow();
+    {const st0=store();st0[videoDateKey+'|'+slot]=sig;keep(st0);}   // tried once: never loops
+    if((S.vhist||[]).length>before){const v=S.vhist[0];v.auto=true;
+      for(const o of S.vhist.slice(1))if(o.auto&&!o.posted&&o.videoDate===videoDateKey&&o.videoSlot===slot&&o.file){o.file=false;o.gone=true;try{await kdel('vid:'+o.id);}catch(e){}}
+      S.vhist=S.vhist.filter(o=>!o.gone);save('vhist');renderVHist();
+      const st=store();st[videoDateKey+'|'+slot]=sig;keep(st);toast(`Video ${slot==='v1'?'1':'2'} is ready ✓ Tap it under Recorded videos to share`,3500);}
+  }
+  async function tick(){
+    if(busy||playing||!autoOn()||document.hidden||tab!=='video'||$('btnRec').disabled)return;if(duplicateVideoTeams().length)return;
+    syncCurrentVideo();const st=videoState(videoDateKey);const done=store();
+    for(const slot of ['v1','v2']){const rows=(st[slot]||[]).filter(r=>r.home||r.away);if(!ready(rows))continue;const sig=sigOf(rows);
+      if(done[videoDateKey+'|'+slot]===sig)continue;
+      if(stable[slot]!==sig){stable[slot]=sig;lastSig[slot]=Date.now();continue;}   // wait until it stops changing
+      if(Date.now()-lastSig[slot]<4000)continue;
+      busy=true;const back=videoSlot;try{await makeSlot(slot,sig);}catch(e){vsay('');}
+      if(videoSlot!==back){saveVideoState();loadVideoSlot(back);}busy=false;return;}
+  }
+  setInterval(()=>{tick();},2000);
+})();
 })();
 </script>
 <script src="./pwa.js"></script>
