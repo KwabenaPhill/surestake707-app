@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v49.9</title>
+<title>Sure Stake 707 Hub v50.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v49.9';
+const VERSION='v50.0';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -888,8 +888,8 @@ const TPL_INFO=[
  ['status_1','Status - bigger odds','🔥 **{big} ODDS TODAY**\nCode 👉 {bigcode}\n\n{closer}'],
  ['status_2','Status - banker','🔥 **{bank} ODDS BANKER**\nCode 👉 {bankcode}\n\n{closer}'],
  ['vip_post','707 Elite picks','👑 **707 ELITE PICKS**\n{date}\n\n**{vip} Odds** 👉 {vipcode}\n\n{closer}'],
- ['win_both','Win post - both codes','✅ **BOTH CODES WON** 🏆🔥\n\n**{big} Odds** ✅\n**{bank} Odds** ✅\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👉 {handle}'],
- ['win_one','Win post - one code','✅ **{odds} ODDS WON** 🏆🔥\n\nDid You Cash Out? 💲\nDrop Your Ticket Here 👉 {handle}'],
+ ['win_both','Win post - both codes','✅ **BOTH CODES WON** 🏆🔥\n\n**{big} Odds** ✅ 👉 {bigcode}\n**{bank} Odds** ✅ 👉 {bankcode}\n\nBig Congrats To Everyone Who Played With Us 🥂\n_Did You Cash Out? Share Your Ticket_ 👉 {handle}'],
+ ['win_one','Win post - one code','✅ **{odds} ODDS WON** 🏆🔥\n\nBig Congrats To Everyone Who Played With Us 🥂\n_Did You Cash Out? Share Your Ticket_ 👉 {handle}'],
  ['win_x','Win post - X','✅ **{odds} ODDS WON** 🏆🔥\n\n{closer}'],
  ['vip_results','707 Elite results','👑 **707 ELITE RESULTS**\n{date}\n\n**{vip} Odds** {mark}\n\n{picks}\n\n{line}'],
  ['report','Recap post (week, month, all time)','📊 **{title} AT SURE STAKE 707** 🏆\n{range}\n\n**Free Codes** 🔥\n{free}\n\n👑 **707 Elite**\n{vip}\n\n_Every Result Posted. No Hiding 💯_'],
@@ -1260,8 +1260,19 @@ function evalPick(pick,F,H,A){if(!F||F.miss)return null;if(F.st==='PST'||F.st===
     if(rs.includes('won'))return 'won';if(rs.every(r=>r==='lost'))return 'lost';return F.st==='FT'?'check':null;}
   const r=evalCond(q,F);if(r===undefined)return F.st==='FT'?'check':null;return r;}
 function legState(g){if(g.res==='lost')return 'lost';if(g.res==='won')return 'won';return g.auto||null;}
+function fullTimeOk(d,G,st){/* v50.0 (Philip, 4 Nov): WON only with every FULL TIME score, at least 1 game won, voids not most of the slip */
+  if(!st.includes('won')||st.filter(x=>x==='void').length*2>=st.length)return false;const now=Date.now();
+  return G.every(g=>{if(g.res==='won'||g.res==='void')return true;const F=(d.fx||{})[mKey(g.match)];if(!F||F.miss||!['FT','PST','CANC'].includes(F.st))return false;
+    if(F.ko&&now<new Date(F.ko).getTime()+(F.st==='FT'?100:150)*60e3)return false;return true;});}
+async function orderByOdds(k,d){/* v50.0: biggest odds = 10 ODDS, next = 5 ODDS, lowest = VIP (codes and slip pictures move together) */
+  if(!d||!d.codes||d.oddsOrdered)return false;const have=SLOTS.filter(s=>d.codes[s]&&d.codes[s].code&&+d.codes[s].odds>1);if(have.length<2)return false;
+  const want=[...have].sort((a,b)=>(+d.codes[b].odds)-(+d.codes[a].odds));d.oddsOrdered=true;if(want.join()===have.join())return true;
+  const oc={},oi={};for(const s of have){oc[s]=d.codes[s];try{oi[s]=await cget(`slip:${k}:${s}`);}catch(e){oi[s]=null;}}
+  d.slips=d.slips||{};have.forEach((dst,i)=>{const src=want[i];d.codes[dst]=oc[src];if(oi[src]){cset(`slip:${k}:${dst}`,oi[src]);d.slips[dst]=true;}});
+  toast('Slips placed by odds ✓');return true;}
 function autoSlips(d){let ch=false;for(const s of SLOTS){const c=d.codes[s];if(!c||!c.code||c.manual)continue;const G=gamesOf(d,s);if(!G.length)continue;const st=G.map(legState);let r=null;
-  if(st.includes('lost'))r='lost';else if(st.every(x=>x==='won'||x==='void'))r='won';
+  if(st.includes('lost'))r='lost';else if(st.every(x=>x==='won'||x==='void')&&fullTimeOk(d,G,st))r='won';
+  if(c.result==='won'&&r!=='won'&&c.auto&&!c.manual){c.result='pending';ch=true;}
   if(r&&c.result!==r){c.result=r;c.auto={at:Date.now()};ch=true;}}return ch;}
 function applyLive(d){let ch=false;for(const g of d.games||[]){const F=(d.fx||{})[mKey(g.match)];if(!F)continue;
     if(F.ko&&!F.miss){const tm=accraHM(F.ko);if((!g.time||g.timeAuto)&&g.time!==tm){g.time=tm;g.timeAuto=true;ch=true;}}
@@ -1283,6 +1294,7 @@ async function liveTick(force){if(LV.busy||!navigator.onLine||document.hidden||!
       if(due.length&&(force?now-LV.last>45e3:now-LV.last>=(L.every||3)*60e3)){LV.last=now;
         const af=due.filter(F=>F.src==='af');for(let i=0;i<af.length;i+=20){try{const got=(await afGet(`/fixtures?ids=${af.slice(i,i+20).map(F=>F.id).join('-')}&timezone=Africa/Accra`)).map(afFix).filter(Boolean);for(const nf of got){nf.evTried=true;for(const x in d.fx)if(d.fx[x].src==='af'&&d.fx[x].id===nf.id){d.fx[x]=nf;changed=true;}}LV.err='';}catch(e){LV.err=e.message;}}
         if(due.some(F=>F.src==='espn')){try{const el=[...await espnDay(k),...await espnDay(addDays(k,1))];for(const x in d.fx){const F=d.fx[x];if(F.src!=='espn')continue;const nf=el.find(e=>e.id===F.id);if(nf){d.fx[x]=nf;changed=true;}}}catch(e){}}}
+      if(await orderByOdds(k,d))changed=true;
       if(applyLive(d))changed=true;}
     if(changed){LV.lastOk=Date.now();save('days');const a=document.activeElement;if(tab==='home'&&!layers.length&&!(a&&/INPUT|TEXTAREA/.test(a.tagName)))renderHome(true);}}
   catch(e){LV.err=e.message||String(e);}finally{LV.busy=false;}}
@@ -2139,7 +2151,11 @@ function dedupeVideoRows(rows){const seen=new Set(),out=[],dupes=[];for(const r 
 function rowsFromDaily(k){const d=S.days[k];if(!d)return [];return (d.games||[]).map(g=>{const tm=splitMatchTeams(g.match);return tm?{...newRow(),home:tm.home,away:tm.away}:null;}).filter(Boolean);}
 function scorePairKey(h,a){return teamKey(h)+'::'+teamKey(a);}
 function mergeScores(base,scores){const map=new Map((scores||[]).map(r=>[scorePairKey(r.home,r.away),r]));return base.map(r=>{const ss=map.get(scorePairKey(r.home,r.away));return ss?{...r,hs:ss.hs||'',as:ss.as||'',hc:ss.hc||r.hc,ac:ss.ac||r.ac}:r;});}
-function buildVideoRowsForDay(k){let rows=rowsFromDaily(k);const legacy=S.vrows&&S.vrows.some(r=>r.home||r.away)?cloneRows(S.vrows):[];if(rows.length)rows=mergeScores(rows,legacy);else rows=legacy;const ded=dedupeVideoRows(rows);const n=ded.rows.length;const cut=n<=1?n:Math.ceil(n/2);return {v1:ded.rows.slice(0,cut),v2:ded.rows.slice(cut),dupes:ded.dupes};}
+/* v50.0 (Philip, 4 Nov): the biggest teams first in both videos, everywhere */
+const TOP_TEAMS='Real Madrid,Barcelona,Manchester City,Liverpool,Arsenal,Paris Saint-Germain,PSG,Bayern Munich,Bayern,Manchester United,Chelsea,Inter,Juventus,AC Milan,Atletico Madrid,Borussia Dortmund,Tottenham,Newcastle,Napoli,Bayer Leverkusen,Benfica,Porto,Aston Villa,Roma,Sporting,Ajax,PSV,Marseille,Galatasaray,Fenerbahce'.split(',').map(x=>x.trim().toLowerCase());
+function teamRank(t){const n=String(t||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');let best=999;TOP_TEAMS.forEach((x,i)=>{if(i<best&&(n===x||n.startsWith(x+' ')||n.endsWith(' '+x)||n.includes(x)))best=i;});return best;}
+function bigFirst(rows){return rows.map((r,i)=>({r,i,k:Math.min(teamRank(r.home),teamRank(r.away))})).sort((a,b)=>a.k-b.k||a.i-b.i).map(x=>x.r);}
+function buildVideoRowsForDay(k){let rows=rowsFromDaily(k);const legacy=S.vrows&&S.vrows.some(r=>r.home||r.away)?cloneRows(S.vrows):[];if(rows.length)rows=mergeScores(rows,legacy);else rows=legacy;const ded=dedupeVideoRows(bigFirst(rows));const n=ded.rows.length;const cut=n<=1?n:Math.ceil(n/2);return {v1:ded.rows.slice(0,cut),v2:ded.rows.slice(cut),dupes:ded.dupes};}
 function ensureVideoDay(k,force=false){const st=videoState(k);if(force||!st.seeded){const built=buildVideoRowsForDay(k);st.v1=built.v1;st.v2=built.v2;st.active='v1';st.seeded=true;save('videoDays');return built.dupes;}return [];}
 function dailyVideoCount(){const st=videoState(videoDateKey);return {v1:st.v1.length,v2:st.v2.length,total:st.v1.length+st.v2.length};}
 function duplicateVideoTeams(){const st=videoState(videoDateKey),seen=new Map(),dupes=[];for(const slot of ['v1','v2'])for(const r of st[slot]){for(const side of ['home','away']){const key=teamKey(r[side]);if(!key)continue;if(seen.has(key)){dupes.push({team:r[side],current:slot,first:seen.get(key)});}else seen.set(key,{slot,match:`${r.home} vs ${r.away}`});}}return dupes;}
@@ -2164,7 +2180,7 @@ async function loadScores(list,quiet,key,only){key=key||videoDateKey;const rows=
   if(!only)for(const g of rowsFromDaily(key)){if(have.has(teamKey(g.home))||have.has(teamKey(g.away)))continue;have.add(teamKey(g.home));have.add(teamKey(g.away));rows.push({...g,hc:await findCrest(g.home),ac:await findCrest(g.away)});}
   const cur=key===videoDateKey;
   if(!quiet&&cur&&dailyVideoCount().total&&!confirm('Replace both Video 1 and Video 2 with this full scorecard?'))return;
-  const ded=dedupeVideoRows(rows),n=ded.rows.length,cut=n<=1?n:Math.ceil(n/2),st=videoState(key);st.v1=ded.rows.slice(0,cut);st.v2=ded.rows.slice(cut);st.active='v1';st.seeded=true;save('videoDays');
+  const ded=dedupeVideoRows(bigFirst(rows)),n=ded.rows.length,cut=n<=1?n:Math.ceil(n/2),st=videoState(key);st.v1=ded.rows.slice(0,cut);st.v2=ded.rows.slice(cut);st.active='v1';st.seeded=true;save('videoDays');
   if(cur){videoSlot='v1';S.vrows=cloneRows(st.v1);curId=S.vrows[0]?.id||null;save('vrows');renderVideoTabs();renderRows();redraw();}
   const miss=rows.filter(r=>!r.hc||!r.ac).length;if(miss&&cur)setTimeout(onlineFill,600);if(ded.dupes.length)toast(`${ded.dupes.length} repeated game${ded.dupes.length===1?'':'s'} shown once.`,3200);else if(!quiet)toast(`${n} match${n>1?'es':''} split into two videos ✓`,3200);}
 rowsEl.addEventListener('input',e=>{const r=rowOf(e.target);if(!r)return;const f=e.target.dataset.f;if(!f)return;r[f]=e.target.value;syncCurrentVideo();saveVideoState();if(!playing)drawStill();});
@@ -2411,7 +2427,7 @@ if(bc)bc.onmessage=e=>{const m=e.data||{};if(m.from===TAB_ID)return;if(m.type===
   renderHeader();showTab('home');setTimeout(()=>{liveTick(true);},2500);
   try{await cget('eliteFlyer');}catch(e){}renderVideoUI();await preloadAll();drawStill();document.fonts&&document.fonts.ready.then(()=>{if(!playing)drawStill();});})();
 
-// v49.9 (Philip, 3 Nov 2026): NO MORE RECORDING BY HAND. Video 1 and Video 2 are made by themselves (same template,
+// v50.0 (Philip, 3 Nov 2026): NO MORE RECORDING BY HAND. Video 1 and Video 2 are made by themselves (same template,
 // transitions, timing and your saved video settings) as soon as the games have their scores. Remove, move up/down,
 // "Other video" or add a game: that video is made again by itself. The new one replaces the old not-posted one.
 // The Record button stays as a backup. Settings > Video > Make videos by themselves (On / Off).
