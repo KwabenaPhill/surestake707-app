@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v50.1</title>
+<title>Sure Stake 707 Hub v50.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v50.1';
+const VERSION='v50.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -821,6 +821,51 @@ function editField(title,value,cb,opts={}){
     <div class="btn-row">${opts.reset?`<button class="btn-half" data-a="reset">Reset</button>`:''}<button class="btn-half" data-a="cancel">Cancel</button><button class="btn-save" data-a="ok">Save</button></div>`,
   e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='ok'){const v=$('efIn').value;closeSheet();cb(v);}else if(b.dataset.a==='reset'){closeSheet();cb(null);}else closeSheet();});
   setTimeout(()=>$('efIn')&&$('efIn').focus(),80);}
+
+// ---------- v50.2 (Philip, 5 Nov): POSTING TIMES, grouped, picked on a clock, sent to the laptop bot ----------
+const TGROUPS=[['Morning posts',[['GREETING_TIME','🌅','Greeting + day picture'],['CODES_TIME','🔥','Hot codes'],['VIP_TIME','👑','VIP (707 Elite)'],['EARLIEST_POST_TIME','⏱️','Earliest post of the day'],['ELITE_PROMO_TIME','📣','707 Elite promo']]],
+  ['Night',[['SUMMARY_TIME','📊','Day summary'],['WEEKLY_TIME','🏆','Weekly results']]],
+  ['Game check',[['GAME_CHECK_FROM','🔎','Check games from'],['GAME_CHECK_TO','🔍','Check games until']]],
+  ['Reminders (no games or slips for tomorrow)',[['REMIND_1','⏰','Reminder 1'],['REMIND_2','⏰','Reminder 2'],['REMIND_3','⏰','Reminder 3']]]];
+const TDEF={GREETING_TIME:'05:00',CODES_TIME:'06:00',VIP_TIME:'06:00',EARLIEST_POST_TIME:'05:00',ELITE_PROMO_TIME:'09:30',SUMMARY_TIME:'23:30',WEEKLY_TIME:'23:45',GAME_CHECK_FROM:'06:00',GAME_CHECK_TO:'20:00',REMIND_1:'17:00',REMIND_2:'20:00',REMIND_3:'21:30'};
+const TCOL=['#F59E0B','#EF4444','#EAB308','#22C55E','#3B82F6','#A855F7','#06B6D4','#F97316','#EC4899'];
+const clockSvg=c=>`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
+const botT=()=>Object.assign({},TDEF,(S.prefs&&S.prefs.botTimes)||{});
+function timesSub(){const t=botT();return `Greeting ${t.GREETING_TIME} · Codes ${t.CODES_TIME} · VIP ${t.VIP_TIME}`;}
+function openTimes(){let ci=0;const render=()=>{const t=botT(),P=(S.prefs.timesWait||0)>Date.now()-15*60e3;ci=0;
+    $('subBody').innerHTML=`<p class="muted" style="margin-bottom:12px">Tap a time to change it on the clock. The laptop bot takes it within a minute${P?' <b style="color:#F59E0B">· sending…</b>':''}.</p>`+
+    TGROUPS.map(([g,L])=>`<div class="set-group"><div class="set-title">${esc(g)}</div><div class="set-list">${L.map(([k,ic,l])=>{const c=TCOL[(ci++)%TCOL.length];
+      return `<button class="set-row" data-tk="${k}"><span style="background:${c}26;border:1px solid ${c}55;border-radius:10px;width:36px;height:36px;min-width:36px;display:flex;align-items:center;justify-content:center">${clockSvg(c)}</span><span class="t">${esc(l)}</span><span class="v" style="font-size:22px;font-weight:800;color:${t[k]?'#fff':'#666'};letter-spacing:.5px;font-variant-numeric:tabular-nums">${t[k]||'Off'}</span></button>`;}).join('')}</div></div>`).join('');};
+  openSub('Posting times',render);
+  if(SYNC.on())SYNC.botTimes().then(bt=>{if(bt){S.prefs.botTimes=Object.assign({},bt,(S.prefs.timesWait||0)>Date.now()-15*60e3?S.prefs.botTimesMine||{}:{});save('prefs');if($('sub').classList.contains('open'))render();}}).catch(()=>{});
+  $('subBody').onclick=e=>{const b=e.target.closest('[data-tk]');if(!b)return;const k=b.dataset.tk;const lab=TGROUPS.flatMap(g=>g[1]).find(x=>x[0]===k);
+    clockPick(lab[2],botT()[k]||TDEF[k],/^REMIND_/.test(k),async v=>{S.prefs.botTimes=Object.assign(botT(),{[k]:v});S.prefs.botTimesMine=Object.assign(S.prefs.botTimesMine||{},{[k]:v});S.prefs.timesWait=Date.now();save('prefs');render();
+      try{await SYNC.sendTimes(S.prefs.botTimes);toast(`${lab[2]}: ${v||'Off'} ✓ Sent to the laptop bot`,3000);}catch(err){toast(String(err.message||err),4000);}});};}
+function clockPick(title,val,canOff,cb){let [H,M]=(val||'06:00').split(':').map(Number);let mode='h';const R=118,C=130;
+  const pos=(i,n,r)=>{const a=(i/n)*2*Math.PI-Math.PI/2;return [C+r*Math.cos(a),C+r*Math.sin(a)];};
+  const draw=()=>{let svg=`<svg viewBox="0 0 260 260" width="260" height="260" id="clk" style="touch-action:none;display:block;margin:6px auto 4px"><circle cx="${C}" cy="${C}" r="128" fill="#202024"/>`;
+    let sel;if(mode==='h'){sel=H<12?pos(H,12,R-14):pos(H-12,12,R-56);}else sel=pos(M,60,R-14);
+    svg+=`<line x1="${C}" y1="${C}" x2="${sel[0]}" y2="${sel[1]}" stroke="var(--acc)" stroke-width="3"/><circle cx="${C}" cy="${C}" r="5" fill="var(--acc)"/><circle cx="${sel[0]}" cy="${sel[1]}" r="19" fill="var(--acc)"/>`;
+    if(mode==='h'){for(let i=0;i<12;i++){const [x,y]=pos(i,12,R-14);svg+=`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">${String(i).padStart(2,'0')}</text>`;const [x2,y2]=pos(i,12,R-56);svg+=`<text x="${x2}" y="${y2+5}" text-anchor="middle" font-size="14" font-weight="700" fill="#bbb">${i+12}</text>`;}}
+    else for(let i=0;i<60;i+=5){const [x,y]=pos(i,60,R-14);svg+=`<text x="${x}" y="${y+6}" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">${String(i).padStart(2,'0')}</text>`;}
+    svg+='</svg>';const hh=String(H).padStart(2,'0'),mm=String(M).padStart(2,'0');
+    $('sheetBox').innerHTML=`<div class="modal-title">${esc(title)}</div>
+      <div style="display:flex;justify-content:center;align-items:center;gap:4px;font-size:52px;font-weight:800;font-variant-numeric:tabular-nums;margin:2px 0">
+        <button data-c="h" style="background:${mode==='h'?'var(--acc)':'#202024'};color:#fff;border:0;border-radius:14px;padding:2px 14px;font:inherit">${hh}</button><span>:</span>
+        <button data-c="m" style="background:${mode==='m'?'var(--acc)':'#202024'};color:#fff;border:0;border-radius:14px;padding:2px 14px;font:inherit">${mm}</button></div>
+      <p class="muted" style="text-align:center;margin:0">${mode==='h'?'Tap the hour (inner ring = 12 to 23)':'Tap the minutes'}</p>${svg}
+      <div class="chips" style="justify-content:center;margin-bottom:10px"><button class="chip" data-c="-5">−5 min</button><button class="chip" data-c="-1">−1</button><button class="chip" data-c="+1">+1</button><button class="chip" data-c="+5">+5 min</button></div>
+      <div class="btn-row">${canOff?'<button class="btn-half" data-c="off">Off</button>':''}<button class="btn-half" data-c="cancel">Cancel</button><button class="btn-save" data-c="ok">Save ${hh}:${mm}</button></div>`;
+    const el=$('clk');const pick=ev=>{const r=el.getBoundingClientRect();const x=(ev.clientX-r.left)*260/r.width-C,y=(ev.clientY-r.top)*260/r.height-C;let a=Math.atan2(y,x)+Math.PI/2;if(a<0)a+=2*Math.PI;const d=Math.hypot(x,y);
+      if(mode==='h'){const i=Math.round(a/(2*Math.PI)*12)%12;H=d<R-35?i+12:i;}else M=Math.round(a/(2*Math.PI)*60)%60;};
+    el.onpointerdown=ev=>{pick(ev);draw();const up=()=>{if(mode==='h'){mode='m';}draw();window.removeEventListener('pointerup',up);};window.addEventListener('pointerup',up);};};
+  openSheet('',e=>{const b=e.target.closest('button');if(!b)return;const c=b.dataset.c;
+    if(c==='h'||c==='m'){mode=c;draw();return;}
+    if(/^[+-]\d+$/.test(c||'')){let t=(H*60+M+Number(c)+1440)%1440;H=Math.floor(t/60);M=t%60;draw();return;}
+    if(c==='cancel'){closeSheet();return;}
+    if(c==='off'){closeSheet();cb('');return;}
+    if(c==='ok'){closeSheet();cb(String(H).padStart(2,'0')+':'+String(M).padStart(2,'0'));}});
+  draw();}
 
 // ---------- Files / sharing ----------
 function dataURLtoFile(url,name){const [h,b]=url.split(',');const type=(h.match(/data:([^;]+)/)||[])[1]||'image/png';const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);const ext=type.split('/')[1].replace('jpeg','jpg');return new File([a],`${name}.${ext}`,{type});}
@@ -1966,6 +2011,7 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
   <div class="set-group"><div class="set-title">Records</div><div class="set-list">
     ${row('live',picImg('live'),'Live scores',liveSub(),'','pic')}
     ${row('botsync',appImg('tg'),'Laptop bot sync',SYNC.sub(),'','pic')}
+    ${row('times',clockSvg('#F59E0B'),'Posting times',timesSub(),'','pic')}
     ${row('stake',picImg('chart'),'Profit tracker',stakeOf()===1?'1 unit per slip (Records shows units)':`GH₵ ${stakeOf()} per slip (Records shows GH₵)`,'','pic')}</div></div>
   <div class="set-group"><div class="set-title">Video</div><div class="set-list">
     ${row('video',vThumb?`<img src="${vThumb}" alt="" style="object-fit:cover">`:'🎬','Video settings',`${esc((S.vtpls.find(t=>t.id===V.tpl)||{name:'Navy'}).name)} · ${AN[V.crestAnim]||'Pop'} · ${V.secs} sec per match`,'',vThumb?'pic':'')}</div></div>
@@ -1987,6 +2033,7 @@ $('p-settings').addEventListener('click',async e=>{const b=e.target.closest('but
   else if(s==='eliteSettings')openEliteSettings();else if(s==='morning')openMorning();else if(s==='crests')openCrests();else if(s==='tpls')openTemplates();else if(s==='video')openVideoSettings();
   else if(s==='stake')editField('Stake per slip',stakeOf(),v=>{if(v===null){delete S.prefs.stake;save('prefs');refresh();toast('Back to 1 unit ✓');return;}const n=Number(v);if(n>0){S.prefs.stake=n;save('prefs');refresh();toast('Saved ✓');}else toast('Type a number above 0.');},{type:'number',reset:true,note:'1 = profit in units (a win at 9.71 odds is +8.71, a loss is -1). Any other number shows profit in GH₵ using that stake.'});
   else if(s==='live')openLiveSettings();
+  else if(s==='times')openTimes();
   else if(s==='bkSave')saveBackup();else if(s==='bkLoad')loadBackup();});
 async function saveBackup(){try{await flushSaves();const data=await kall();Object.keys(data).forEach(k=>{if(k.startsWith('vid:'))delete data[k];});const json=JSON.stringify({app:'SS707Hub',version:VERSION,saved:new Date().toISOString(),data});
   const name=`SS707Hub_Backup_${todayKey()}.json`;const blob=new Blob([json],{type:'application/json'});const f=new File([blob],name,{type:'application/json'});
@@ -2403,7 +2450,10 @@ const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:
     openSub('Laptop bot sync',render,true);}
   setInterval(()=>run(false),30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(()=>run(true),1500);else run(true);});
   window.addEventListener('online',()=>run(true));setTimeout(()=>run(true),4000);
-  return {run,open,sub};})();
+  /* v50.2 (Philip, 5 Nov): posting times picked on a clock in the app go to the laptop bot */
+  async function botTimes(){if(!on())return null;const j=await gh('GET','bot/settings.json');if(!j)return null;try{return JSON.parse(unb64(j.content)).times||null;}catch(e){return null;}}
+  async function sendTimes(times){if(!on())throw new Error('Laptop bot sync is off. Settings > Laptop bot sync');await put('app/settings.json',b64(JSON.stringify({v:1,times,at:Date.now()})),'app: posting times');}
+  return {run,open,sub,botTimes,sendTimes,on};})();
 // Keep every open copy in step: save on leaving, reload on return if another copy saved.
 let syncing=false;
 async function syncFromStorage(){if(!storageReady||storageBroken||syncing)return;syncing=true;try{const rev=Number(await kget('_rev'))||0;if(rev===lastRev)return;
