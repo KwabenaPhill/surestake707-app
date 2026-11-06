@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v50.2</title>
+<title>Sure Stake 707 Hub v51.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v48.8</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.0</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v50.2';
+const VERSION='v51.0';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -826,8 +826,9 @@ function editField(title,value,cb,opts={}){
 const TGROUPS=[['Morning posts',[['GREETING_TIME','🌅','Greeting + day picture'],['CODES_TIME','🔥','Hot codes'],['VIP_TIME','👑','VIP (707 Elite)'],['EARLIEST_POST_TIME','⏱️','Earliest post of the day'],['ELITE_PROMO_TIME','📣','707 Elite promo']]],
   ['Night',[['SUMMARY_TIME','📊','Day summary'],['WEEKLY_TIME','🏆','Weekly results']]],
   ['Game check',[['GAME_CHECK_FROM','🔎','Check games from'],['GAME_CHECK_TO','🔍','Check games until']]],
-  ['Reminders (no games or slips for tomorrow)',[['REMIND_1','⏰','Reminder 1'],['REMIND_2','⏰','Reminder 2'],['REMIND_3','⏰','Reminder 3']]]];
-const TDEF={GREETING_TIME:'05:00',CODES_TIME:'06:00',VIP_TIME:'06:00',EARLIEST_POST_TIME:'05:00',ELITE_PROMO_TIME:'09:30',SUMMARY_TIME:'23:30',WEEKLY_TIME:'23:45',GAME_CHECK_FROM:'06:00',GAME_CHECK_TO:'20:00',REMIND_1:'17:00',REMIND_2:'20:00',REMIND_3:'21:30'};
+  ['Reminders (no games or slips for tomorrow)',[['REMIND_1','⏰','Reminder 1'],['REMIND_2','⏰','Reminder 2'],['REMIND_3','⏰','Reminder 3']]],
+  ['Social posts (v51.0)',[['SOCIAL_EVENING_TIME','🎯','Correct scores (B + X) + Short 1 (A), day before'],['SOCIAL_MORNING_TIME','📋','Day post (B) + Short 2 (A), match day']]]];
+const TDEF={GREETING_TIME:'05:00',CODES_TIME:'06:00',VIP_TIME:'06:00',EARLIEST_POST_TIME:'05:00',ELITE_PROMO_TIME:'09:30',SUMMARY_TIME:'23:30',WEEKLY_TIME:'23:45',GAME_CHECK_FROM:'06:00',GAME_CHECK_TO:'20:00',REMIND_1:'17:00',REMIND_2:'20:00',REMIND_3:'21:30',SOCIAL_EVENING_TIME:'21:00',SOCIAL_MORNING_TIME:'09:00'};
 const TCOL=['#F59E0B','#EF4444','#EAB308','#22C55E','#3B82F6','#A855F7','#06B6D4','#F97316','#EC4899'];
 const clockSvg=c=>`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
 const botT=()=>Object.assign({},TDEF,(S.prefs&&S.prefs.botTimes)||{});
@@ -2013,6 +2014,7 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
     ${row('botsync',appImg('tg'),'Laptop bot sync',SYNC.sub(),'','pic')}
     ${row('times',clockSvg('#F59E0B'),'Posting times',timesSub(),'','pic')}
     ${row('stake',picImg('chart'),'Profit tracker',stakeOf()===1?'1 unit per slip (Records shows units)':`GH₵ ${stakeOf()} per slip (Records shows GH₵)`,'','pic')}</div></div>
+  <div class="set-group"><div class="set-title">Social posts</div><div class="set-list">${row('soc',appImg('tt')+appImg('ig')+appImg('x'),'Social posts',window.SOC?SOC.sub():'Accounts, safe mode, end cards, captions','','pic stack')}</div></div>
   <div class="set-group"><div class="set-title">Video</div><div class="set-list">
     ${row('video',vThumb?`<img src="${vThumb}" alt="" style="object-fit:cover">`:'🎬','Video settings',`${esc((S.vtpls.find(t=>t.id===V.tpl)||{name:'Navy'}).name)} · ${AN[V.crestAnim]||'Pop'} · ${V.secs} sec per match`,'',vThumb?'pic':'')}</div></div>
   
@@ -2034,6 +2036,7 @@ $('p-settings').addEventListener('click',async e=>{const b=e.target.closest('but
   else if(s==='stake')editField('Stake per slip',stakeOf(),v=>{if(v===null){delete S.prefs.stake;save('prefs');refresh();toast('Back to 1 unit ✓');return;}const n=Number(v);if(n>0){S.prefs.stake=n;save('prefs');refresh();toast('Saved ✓');}else toast('Type a number above 0.');},{type:'number',reset:true,note:'1 = profit in units (a win at 9.71 odds is +8.71, a loss is -1). Any other number shows profit in GH₵ using that stake.'});
   else if(s==='live')openLiveSettings();
   else if(s==='times')openTimes();
+  else if(s==='soc'&&window.SOC)SOC.openSettings();
   else if(s==='bkSave')saveBackup();else if(s==='bkLoad')loadBackup();});
 async function saveBackup(){try{await flushSaves();const data=await kall();Object.keys(data).forEach(k=>{if(k.startsWith('vid:'))delete data[k];});const json=JSON.stringify({app:'SS707Hub',version:VERSION,saved:new Date().toISOString(),data});
   const name=`SS707Hub_Backup_${todayKey()}.json`;const blob=new Blob([json],{type:'application/json'});const f=new File([blob],name,{type:'application/json'});
@@ -2127,8 +2130,8 @@ async function shareVideoFile(blob,name){try{if(!blob)return false;const type=bl
 const CAP_LG={'Champions League':['#ucl','#championsleague'],'Europa League':['#uel','#europaleague'],'Conference League':['#uecl','#conferenceleague'],'Premier League':['#premierleague','#epl'],'La Liga':['#laliga'],'Serie A':['#seriea'],'Bundesliga':['#bundesliga'],'Ligue 1':['#ligue1'],'Saudi Pro League':['#saudiproleague','#spl'],'Football (mixed)':[]};
 function videoCaption(app,lg){   // v49.2 (Philip, 28 Oct): EXACTLY the Match Vision Short captions (mv_texts.his_short_caption)
   const d=dateOf(videoDateKey||todayKey());const day=longDate(videoDateKey||todayKey());
-  const base='#footballpredictions #football #matchvision';
-  const extra=app==='tt'?' #footballtiktok #fyp':app==='yt'?' #shorts':' #footballreels #instagram';   // each app's own tags
+  const base='#footballpredictions #football #matchpredict';   // v51.0: Sure Stake account A is Match Predict
+  const extra=app==='tt'?' #footballtiktok #fyp':app==='yt'?' #shorts':app==='fb'?' #footballreels #facebookreels':' #footballreels #instagram';   // each app's own tags
   const names=(S.vrows||[]).map(r=>(String(r.home||'')+' | '+String(r.away||'')).toLowerCase());
   if(names.some(n=>n.includes('barcelona')&&n.includes('real madrid')))
     return `EL CLASICO + MORE PREDICTIONS | ${day}\n\nAll today's big games, including El Clasico ⚽🔥\n\n#ElClasico #barcelona #realmadrid ${base}${extra}`;
@@ -2141,19 +2144,20 @@ S.prefs.vcLg=($('vcLg')&&$('vcLg').value)||'Auto';save('prefs');const cap=videoC
   try{const ta=document.createElement('textarea');ta.value=cap;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}catch(e){}try{navigator.clipboard&&navigator.clipboard.writeText(cap);}catch(e){}
   if(!lastBlob){toast('Record the video first.');return;}const type=lastBlob.type&&lastBlob.type.startsWith('video/')?lastBlob.type.split(';')[0]:'video/mp4';const file=new File([lastBlob],lastName||'score.mp4',{type,lastModified:Date.now()});
   let ok=!!navigator.share;try{if(ok&&navigator.canShare)ok=navigator.canShare({files:[file]});}catch(e){}
-  if(ok){try{await navigator.share({files:[file],text:cap});toast(`Pick ${app==='tt'?'TikTok':app==='yt'?'YouTube':'Instagram'}. The caption is copied: long-press the caption box and tap Paste.`,5000);return;}catch(e){if(e&&e.name==='AbortError')return;}}
-  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Opening ${app==='tt'?'TikTok':app==='yt'?'YouTube':'Instagram'}: pick the video, paste the caption.`,6000);
+  if(ok){try{await navigator.share({files:[file],text:cap});toast(`Pick ${app==='tt'?'TikTok':app==='yt'?'YouTube':app==='fb'?'Facebook':'Instagram'}. The caption is copied: long-press the caption box and tap Paste.`,5000);return;}catch(e){if(e&&e.name==='AbortError')return;}}
+  const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast(`Video saved and caption copied. Opening ${app==='tt'?'TikTok':app==='yt'?'YouTube':app==='fb'?'Facebook':'Instagram'}: pick the video, paste the caption.`,6000);
   setTimeout(()=>{const isAnd=/android/i.test(navigator.userAgent);   // v48.4: open the app itself
     location.href=app==='yt'?(isAnd?'intent://www.youtube.com/#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url=https%3A%2F%2Fwww.youtube.com%2Fupload;end':'https://www.youtube.com/upload'):app==='tt'?(isAnd?'intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https%3A%2F%2Fwww.tiktok.com%2Fupload;end':'https://www.tiktok.com/upload')
+      :app==='fb'?(isAnd?'intent://www.facebook.com/#Intent;scheme=https;package=com.facebook.katana;S.browser_fallback_url=https%3A%2F%2Fm.facebook.com;end':'https://m.facebook.com')
       :(isAnd?'intent://instagram.com/#Intent;scheme=https;package=com.instagram.android;S.browser_fallback_url=https%3A%2F%2Fwww.instagram.com;end':'instagram://camera');},1500);}
 function showResult(ext){if(lastUrl)URL.revokeObjectURL(lastUrl);lastUrl=URL.createObjectURL(lastBlob);
   openSheet(`<div class="modal-title">Video ready ✓</div><video class="res-v" src="${lastUrl}" controls playsinline></video><p class="muted" style="text-align:center;margin-bottom:10px">${ext==='mp4'?'MP4 ready for TikTok. Add a sound when you post.':'Saved as WebM. If TikTok will not take it, open it in CapCut and export as MP4.'}</p>
     <span class="lbl">Caption competition</span><select id="vcLg">${['Auto',...Object.keys(CAP_LG)].map(k=>`<option ${k===(S.prefs.vcLg||'Auto')?'selected':''}>${k}</option>`).join('')}</select>
-    <div class="btn-row"><button class="btn-save" data-a="tt" style="background:#000;border:1px solid #444">${SVG&&SVG.tt?'':''}Share to TikTok</button><button class="btn-save" data-a="ig" style="background:linear-gradient(135deg,#FA7E1E,#D62976,#4F5BD5)">Share to Instagram</button></div>
-    <div class="btn-row"><button class="btn-save" data-a="yt" style="background:#FF0000">Share to YouTube Shorts</button></div>
+    <div class="btn-row"><button class="btn-save" data-a="tt" style="background:#000;border:1px solid #444">TikTok A</button><button class="btn-save" data-a="ig" style="background:linear-gradient(135deg,#FA7E1E,#D62976,#4F5BD5)">Instagram A</button></div>
+    <div class="btn-row"><button class="btn-save" data-a="fb" style="background:#1877F2">Facebook A</button><button class="btn-save" data-a="yt" style="background:#FF0000">YouTube Shorts</button></div><p class="muted" style="text-align:center;margin:0 0 8px">A = ${esc(((S.prefs.soc||{}).accAName)||'Match Predict')} (your videos account)</p>
     <div class="btn-row"><button class="btn-save orange" data-a="save">Save video</button><button class="btn-half orange" data-a="share">Share</button></div><div class="btn-row"><button class="btn-half" data-a="close">Close</button></div>`,
   async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='save'){const a=document.createElement('a');a.href=lastUrl;a.download=lastName;document.body.appendChild(a);a.click();a.remove();toast('Video saved to Downloads ✓');}
-    else if(b.dataset.a==='share'){await shareVideoFile(lastBlob,lastName);}else if(b.dataset.a==='tt'||b.dataset.a==='ig'||b.dataset.a==='yt'){await shareVideoTo(b.dataset.a);}else closeSheet();});}
+    else if(b.dataset.a==='share'){await shareVideoFile(lastBlob,lastName);}else if(b.dataset.a==='tt'||b.dataset.a==='ig'||b.dataset.a==='yt'||b.dataset.a==='fb'){await shareVideoTo(b.dataset.a);}else closeSheet();});}
 
 // ---------- VIDEO UI ----------
 const newRow=()=>({id:uid(),home:'',away:'',hs:'',as:'',hc:null,ac:null,hcOrig:null,acOrig:null});
@@ -2511,6 +2515,204 @@ if(bc)bc.onmessage=e=>{const m=e.data||{};if(m.from===TAB_ID)return;if(m.type===
   }
   setInterval(()=>{tick();},2000);
 })();
+/* v51.0 SOCIAL POSTS (Philip, Fix Hub #1793929617929, OPEN LIST 31-37, 6 Nov 2026) - the Match Vision 3.40 way, Sure Stake colours.
+   Account A (videos) = the Shorts (Video tab: TikTok A, Instagram A, Facebook A, YouTube).
+   Account B (pictures) = Correct scores post (21:00 the day before, B + X) and Day post (09:00 match day, B).
+   Day post = Top picks, Banker, end card. No games list, no results slide. "No odds" (TikTok, Instagram, Threads:
+   banker = PICK OF THE DAY, no odds) and "With odds" (Facebook, Telegram, WhatsApp). X = correct scores only.
+   Safe mode: TikTok / Instagram / Threads pictures and captions never show odds, betting words, bookmakers, codes or Telegram.
+   Nothing posts by itself: each post is shared from here (app button = picture shared + caption copied + ticked). */
+(function(){
+const SD={on:true,accAName:'Match Predict',accAHandle:'@matchpredict707',accBName:'Score Predict',accBHandle:'@scorepredict2',
+  xAccounts:1,xHandle:'@SureStake707',safe:true,review:true,banker:'Lowest free code',
+  endSafe:"MORE GAMES IN BIO|FULL PICKS: LINK IN BIO|WANT ALL TODAY'S GAMES? CHECK BIO|FREE TIPS DAILY: TAP THE LINK IN BIO|FOLLOW FOR TOMORROW'S PICKS",
+  endTg:'SEARCH SURE STAKE 707 ON TELEGRAM',
+  csHead:"Tomorrow's Correct Scores",csTags:'#football #correctscore #predictions',xTags:'#football #correctscore',
+  dayHead:'Top Picks + Pick Of The Day',dayHeadOdds:'Top Picks + Banker',dayBio:'More Games In Bio',dayTags:'#football #predictions #matchpredict',
+  hooks:"Save This And Check Back After The Games|Which Score Do You See?|Comment Your Score Below|Share This With A Football Friend|Follow For Tomorrow's Scores",
+  dayHooks:"Who Wins Today?|Which Pick Do You Like?|Comment Your Pick Below|Save This For Later|Follow For Tomorrow's Picks",
+  perPic:7,maxGames:14};
+const HELP={on:'Show the Social posts card on Home (21:00 correct scores, 09:00 day post).',accAName:'Account A = your videos (Shorts).',accAHandle:'Handle of account A.',
+  accBName:'Account B = your pictures (correct scores + day post). Shown big on every picture.',accBHandle:'Small handle on every account B picture.',
+  xAccounts:'How many X accounts (1 = correct scores only).',xHandle:'Your X handle (on the X end card).',safe:'TikTok, Instagram, Threads: no odds, no betting words, no bookmakers, no codes, no Telegram.',
+  review:'Nothing posts by itself. Every post waits here until you share it.',banker:'Which games make the Banker slide. VIP keeps 707 Elite picks off socials only when off.',
+  endSafe:'TikTok / Instagram end card line. One per line in the box, a new one every day.',endTg:'X / Facebook end card line.',
+  csHead:'First caption line of the correct scores post.',csTags:'Correct scores hashtags (3 to 5).',xTags:'X hashtags.',dayHead:'Day post first line (no odds).',
+  dayHeadOdds:'Day post first line (with odds: Facebook, Telegram, WhatsApp).',dayBio:'Day post bio line.',dayTags:'Day post hashtags (3 to 5).',
+  hooks:'Correct scores hook lines (one a day). One per line in the box.',dayHooks:'Day post hook lines (one a day). One per line in the box.',perPic:'Games per correct scores picture.',maxGames:'Most games in the correct scores post.'};
+const NAMES={on:'Social posts on Home',accAName:'Account A name',accAHandle:'Account A handle',accBName:'Account B name',accBHandle:'Account B handle',xAccounts:'X accounts',
+  xHandle:'X handle',safe:'Safe mode',review:'Review before post',banker:'Banker from',endSafe:'End cards (TikTok / Instagram)',endTg:'End card (X / Facebook)',
+  csHead:'Correct scores caption',csTags:'Correct scores hashtags',xTags:'X hashtags',dayHead:'Day post caption (no odds)',dayHeadOdds:'Day post caption (with odds)',
+  dayBio:'Day post bio line',dayTags:'Day post hashtags',hooks:'Correct scores hooks',dayHooks:'Day post hooks',perPic:'Games per picture',maxGames:'Most games'};
+const ACC='#E5243B',ACC2='#8E0F1F',W=1080,H=1350;
+const BLOCKED=/(@\s*\d+[.,]\d+|\bodds?\b|\bbet\w*\b|\bwager\w*\b|\bstake\b|\bbooking\b|\bcodes?\b|\btelegram\b|t\.me\/|sportybet|betway|bet9ja|1xbet|betika|msport|betpawa|22bet|melbet|bet365|betking|\bslip\b)/i;
+const C=()=>Object.assign({},SD,(S.prefs&&S.prefs.soc)||{});
+const setC=(k,v)=>{S.prefs.soc=Object.assign({},(S.prefs&&S.prefs.soc)||{});if(v===null)delete S.prefs.soc[k];else S.prefs.soc[k]=v;save('prefs');};
+const list=s=>String(s||'').split(/[|\n]/).map(x=>x.trim()).filter(Boolean);
+const ord=k=>Math.floor(dateOf(k).getTime()/864e5);
+const rot=(opts,k)=>{const o=list(opts);return o.length?o[((ord(k)%o.length)+o.length)%o.length]:'';};
+const safeTxt=t=>String(t||'').split('\n').filter(l=>!BLOCKED.test(l)).join('\n').replace(/\n{3,}/g,'\n\n').trim();
+const noOdds=p=>String(p||'').replace(/@\s*\d+(?:[.,]\d+)?/g,'').replace(/\(\s*\d+(?:[.,]\d+)?\s*\)/g,'').replace(/\s{2,}/g,' ').trim();
+function maxEmoji(t,n=2){let c=0;return String(t).replace(/[\u{1F300}-\u{1FAFF}☀-➿⭐✅❌]️?/gu,m=>(++c<=n?m:'')).replace(/[ \t]+\n/g,'\n').replace(/ {2,}/g,' ').trim();}
+const niceD=k=>shortDate(k);
+const short=n=>{try{return typeof vidName==='function'?vidName(n):n;}catch(e){return n;}};
+
+// ---------------------------------------------------------------- the games
+function csGames(k){const v=(S.videoDays||{})[k];let rows=v?[...(v.v1||[]),...(v.v2||[])]:[];
+  rows=rows.filter(r=>r.home&&r.away&&String(r.hs)!==''&&String(r.as)!==''&&r.hs!=null&&r.as!=null);
+  const seen=new Set();rows=rows.filter(r=>{const x=teamKey(r.home)+'|'+teamKey(r.away);if(seen.has(x))return false;seen.add(x);return true;});
+  return bigFirst(rows).slice(0,Math.max(1,Number(C().maxGames)||14));}
+function dayGames(k){const d=S.days[k];if(!d)return {picks:[],banker:[],odds:0};
+  const gs=(d.games||[]).map(g=>{const t=splitMatchTeams(g.match);return t?{...t,lab:String(g.lab||''),time:g.time||'',pick:g.pick||''}:null;}).filter(Boolean);
+  const vip=gs.filter(g=>/^VIP/i.test(g.lab)),free=gs.filter(g=>!/^VIP/i.test(g.lab));
+  let banker=[],odds=0;
+  if(C().banker==='VIP (707 Elite)'&&vip.length){banker=vip;odds=Number((d.codes.vip||{}).odds)||0;}
+  else if(free.length){const labs=[...new Set(free.map(g=>g.lab))];const low=labs.slice().sort((a,b)=>(parseFloat(a)||99)-(parseFloat(b)||99))[0];
+    banker=free.filter(g=>g.lab===low);odds=Number((d.codes.t5||{}).odds)||parseFloat(low)||0;if(labs.length===1)odds=Number((d.codes.t10||d.codes.t5||{}).odds)||parseFloat(low)||0;}
+  const bk=new Set(banker.map(g=>teamKey(g.home)+teamKey(g.away)));
+  let picks=free.filter(g=>!bk.has(teamKey(g.home)+teamKey(g.away)));if(!picks.length)picks=free.slice();
+  const dd=new Set();picks=bigFirst(picks).filter(g=>{const x=teamKey(g.home)+teamKey(g.away);if(dd.has(x))return false;dd.add(x);return true;}).slice(0,10);
+  return {picks,banker,odds};}
+
+// ---------------------------------------------------------------- drawing (1080 x 1350, Midnight Red)
+const imgCache={};
+function loadImg(src){if(!src)return Promise.resolve(null);if(imgCache[src])return imgCache[src];imgCache[src]=new Promise(ok=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src;});return imgCache[src];}
+function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+function fitText(x,t,max,size,weight){let s=size;x.font=`${weight} ${s}px Inter, sans-serif`;while(s>18&&x.measureText(t).width>max){s-=2;x.font=`${weight} ${s}px Inter, sans-serif`;}return s;}
+function base(title,sub,handle){const cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  x.fillStyle='#000';x.fillRect(0,0,W,H);const g=x.createRadialGradient(W/2,-120,40,W/2,-120,900);g.addColorStop(0,'rgba(229,36,59,.55)');g.addColorStop(1,'rgba(229,36,59,0)');x.fillStyle=g;x.fillRect(0,0,W,700);
+  x.fillStyle='#fff';x.textAlign='center';x.textBaseline='alphabetic';fitText(x,title,W-120,84,800);x.fillText(title,W/2,150);
+  if(sub){x.font='700 34px Inter, sans-serif';const w=x.measureText(sub).width+56;x.fillStyle=ACC;rr(x,(W-w)/2,182,w,58,29);x.fill();x.fillStyle='#fff';x.fillText(sub,W/2,223);}
+  x.fillStyle='rgba(255,255,255,.55)';x.font='600 30px Inter, sans-serif';x.fillText(handle||'',W/2,H-46);
+  return {cv,x};}
+async function crest(x,src,name,cx,cy,r){const im=await loadImg(src);if(im){const s=Math.min(2*r/im.width,2*r/im.height);x.drawImage(im,cx-im.width*s/2,cy-im.height*s/2,im.width*s,im.height*s);return;}
+  x.fillStyle='#26262B';x.beginPath();x.arc(cx,cy,r,0,7);x.fill();x.fillStyle='#fff';x.font=`800 ${Math.round(r*.7)}px Inter, sans-serif`;x.textAlign='center';x.fillText(String(name||'?').slice(0,3).toUpperCase(),cx,cy+r*.25);}
+async function csPicture(rows,k,handle,brand){const {cv,x}=base('CORRECT SCORES',niceD(k).toUpperCase(),handle);
+  x.fillStyle='rgba(255,255,255,.7)';x.font='700 28px Inter, sans-serif';x.textAlign='center';x.fillText(String(brand||'').toUpperCase(),W/2,60);
+  const gap=14,avail=H-280-120,rh=Math.min(140,Math.floor((avail-gap*(rows.length-1))/Math.max(rows.length,1))),top=280+Math.max(0,(avail-(rows.length*(rh+gap)-gap))/2);
+  for(let i=0;i<rows.length;i++){const r=rows[i],y=top+i*(rh+gap);x.fillStyle='#131315';rr(x,50,y,W-100,rh,24);x.fill();x.strokeStyle='#26262B';x.lineWidth=2;x.stroke();
+    const cy=y+rh/2,cr=Math.min(40,rh*.32);await crest(x,r.hc,r.home,120,cy,cr);await crest(x,r.ac,r.away,W-120,cy,cr);
+    x.fillStyle='#fff';x.textAlign='left';fitText(x,short(r.home),300,36,700);x.fillText(short(r.home),178,cy+12);
+    x.textAlign='right';fitText(x,short(r.away),300,36,700);x.fillText(short(r.away),W-178,cy+12);
+    x.fillStyle=ACC;rr(x,W/2-82,cy-38,164,76,18);x.fill();x.fillStyle='#fff';x.textAlign='center';x.font='800 46px Inter, sans-serif';x.fillText(`${r.hs} - ${r.as}`,W/2,cy+16);}
+  return cv;}
+async function listPicture(title,sub,rows,handle,brand,safe,foot){const {cv,x}=base(title,sub,handle);
+  x.fillStyle='rgba(255,255,255,.7)';x.font='700 28px Inter, sans-serif';x.textAlign='center';x.fillText(String(brand||'').toUpperCase(),W/2,60);
+  const gap=12,n=Math.max(rows.length,1),avail=H-280-(foot?230:130),rh=Math.min(150,Math.floor((avail-gap*(n-1))/n)),top=280+Math.max(0,(avail-(n*(rh+gap)-gap))/2);
+  for(let i=0;i<rows.length;i++){const r=rows[i],y=top+i*(rh+gap);x.fillStyle='#131315';rr(x,50,y,W-100,rh,24);x.fill();x.strokeStyle='#26262B';x.lineWidth=2;x.stroke();
+    const cy=y+rh/2;x.fillStyle=ACC;x.font='800 30px Inter, sans-serif';x.textAlign='left';x.fillText(r.time||'',84,cy-rh*.12+10);
+    x.fillStyle='#fff';fitText(x,`${short(r.home)} vs ${short(r.away)}`,W-320,38,700);x.fillText(`${short(r.home)} vs ${short(r.away)}`,r.time?200:84,cy-rh*.12+10);
+    const p=safe?noOdds(r.pick):r.pick;x.fillStyle='#FF8A95';fitText(x,p,W-280,32,700);x.fillText(p,r.time?200:84,cy+rh*.22+8);}
+  if(foot){x.fillStyle=ACC;rr(x,190,H-210,W-380,96,26);x.fill();x.fillStyle='#fff';x.textAlign='center';x.font='800 50px Inter, sans-serif';x.fillText(foot,W/2,H-146);}
+  return cv;}
+async function endPicture(line,handle,brand){const {cv,x}=base('',null,handle);x.textAlign='center';
+  x.fillStyle='rgba(255,255,255,.75)';x.font='800 40px Inter, sans-serif';x.fillText(String(brand||'').toUpperCase(),W/2,360);
+  const words=String(line||'').split(/\s+/);const lines=[];let cur='';x.font='900 92px Inter, sans-serif';
+  for(const w of words){const t=cur?cur+' '+w:w;if(x.measureText(t).width>W-160&&cur){lines.push(cur);cur=w;}else cur=t;}if(cur)lines.push(cur);
+  const y0=H/2-(lines.length-1)*55;lines.forEach((l,i)=>{x.fillStyle=i===lines.length-1?ACC:'#fff';x.fillText(l,W/2,y0+i*110);});
+  x.fillStyle=ACC;rr(x,W/2-160,H-330,320,8,4);x.fill();x.fillStyle='#fff';x.font='700 44px Inter, sans-serif';x.fillText(handle||'',W/2,H-240);return cv;}
+
+// ---------------------------------------------------------------- posts
+async function csSlides(k,ver){const c=C(),rows=csGames(k);if(!rows.length)return [];const per=Math.max(3,Number(c.perPic)||7);const out=[];
+  const handle=ver==='x'?c.xHandle:c.accBHandle;
+  const pages=Math.ceil(rows.length/per),size=Math.ceil(rows.length/pages);for(let i=0;i<rows.length;i+=size)out.push(await csPicture(rows.slice(i,i+size),k,handle,c.accBName));   // games shared evenly (MV pages())
+  out.push(await endPicture(ver==='safe'?rot(c.endSafe,k):c.endTg,handle,c.accBName));return out;}
+async function daySlides(k,safe){const c=C(),g=dayGames(k);if(!g.picks.length&&!g.banker.length)return [];const out=[];
+  out.push(await listPicture("TODAY'S TOP PICKS",niceD(k).toUpperCase(),g.picks,c.accBHandle,c.accBName,safe,null));
+  if(g.banker.length)out.push(safe?await listPicture('PICK OF THE DAY',niceD(k).toUpperCase(),g.banker,c.accBHandle,c.accBName,true,null)
+    :await listPicture('TODAY\'S BANKER',niceD(k).toUpperCase(),g.banker,c.accBHandle,c.accBName,false,g.odds?`${Number(g.odds).toFixed(2)} TOTAL ODDS`:null));
+  out.push(await endPicture(safe?rot(c.endSafe,k):c.endTg,c.accBHandle,c.accBName));return out;}
+function csCaption(k,app){const c=C(),rows=csGames(k);const top=rows[0]?`${short(rows[0].home)} vs ${short(rows[0].away)}`:'';const more=Math.max(0,rows.length-1);
+  const head=`${c.csHead} | ${niceD(k)}`,line=top&&more?`${top} + ${more} More Games`:(top||`${rows.length} Games`),hook=rot(c.hooks,k);
+  let t;if(app==='x')t=`${head}\n${line}\n\n${c.xTags}`;else if(app==='fb')t=`${head}\n${line}\n${titleish(c.endTg)}\n\n${c.csTags}`;
+  else if(app==='tg'||app==='wa')t=`🎯 ${head}\n${line}`;else t=`${head}\n${line}\n${hook}\n\n${c.csTags}`;
+  if(c.safe&&SAFEAPPS.includes(app))t=safeTxt(t);return maxEmoji(t);}
+function dayCaption(k,app){const c=C();const hook=rot(c.dayHooks,k);
+  let t;if(SAFEAPPS.includes(app))t=`${c.dayHead} | ${niceD(k)}\n${hook}\n${c.dayBio}\n\n${c.dayTags}`;
+  else if(app==='fb')t=`${c.dayHeadOdds} | ${niceD(k)}\n${hook}\n${titleish(c.endTg)}\n\n${c.dayTags}`;
+  else t=`${c.dayHeadOdds} | ${niceD(k)}`;
+  if(c.safe&&SAFEAPPS.includes(app))t=safeTxt(t);return maxEmoji(t);}
+const titleish=s=>String(s).toLowerCase().replace(/\b\w/g,m=>m.toUpperCase()).replace(/\b(On|In|The)\b/g,m=>m);
+const SAFEAPPS=['tt','ig','th'];
+const APPN={tt:'TikTok',ig:'Instagram',th:'Threads',fb:'Facebook',x:'X',tg:'Telegram',wa:'WhatsApp'};
+const APPC={tt:'#000',ig:'linear-gradient(135deg,#FA7E1E,#D62976,#4F5BD5)',th:'#101010',fb:'#1877F2',x:'#000',tg:'#229ED9',wa:'#25D366'};
+const POSTS={cs:{name:'Correct scores',acc:'B',apps:['tt','ig','th','fb','x']},day:{name:'Day post',acc:'B',apps:['tt','ig','th','fb','tg','wa']}};
+function times(){const t=(typeof botT==='function'?botT():{});return {eve:t.SOCIAL_EVENING_TIME||'21:00',morn:t.SOCIAL_MORNING_TIME||'09:00'};}
+const doneOf=(k,p)=>((S.prefs.socDone||{})[k+':'+p])||{};
+function tick(k,p,app,v=true){S.prefs.socDone=Object.assign({},S.prefs.socDone||{});const o=Object.assign({},S.prefs.socDone[k+':'+p]||{});if(v)o[app]=Date.now();else delete o[app];S.prefs.socDone[k+':'+p]=o;
+  const ks=Object.keys(S.prefs.socDone).sort();while(ks.length>200)delete S.prefs.socDone[ks.shift()];save('prefs');}
+const textOf=(k,p,app)=>((S.prefs.socText||{})[`${k}:${p}:${app}`]);
+function capOf(k,p,app){const own=textOf(k,p,app);return own!=null?own:(p==='cs'?csCaption(k,app):dayCaption(k,app));}
+const accLabel=(p,app)=>{if(app==='x'||app==='tg'||app==='wa')return APPN[app];return `${APPN[app]} ${POSTS[p].acc}`;};
+function chip(t,done){const now=new Date();const [h,m]=t.split(':').map(Number);const at=new Date();at.setHours(h,m,0,0);const min=(at-now)/6e4;
+  if(done)return `<span class="tag ok">${t} ✓</span>`;if(min<0)return `<span class="tag exp">${t} late</span>`;if(min<=60)return `<span class="tag due">${t} soon</span>`;return `<span class="tag">${t}</span>`;}
+function allDone(k,p){const d=doneOf(k,p);return d.skip||POSTS[p].apps.every(a=>d[a]);}
+
+// ---------------------------------------------------------------- Home card
+function homeCard(){const c=C();if(!c.on)return;const el=$('p-home');if(!el||$('socCard'))return;const k=todayKey(),tk=addDays(k,1),T=times();
+  const nCs=csGames(tk).length,g=dayGames(k);
+  const row=(p,dk,t,title,sub,ok)=>`<button class="set-row" data-soc="${p}" data-k="${dk}"><span class="i" style="background:${ACC}22;border:1px solid ${ACC}66;border-radius:10px">${p==='cs'?'🎯':p==='day'?'📋':'🎬'}</span><span class="t">${esc(title)}<small>${esc(sub)}</small></span><span class="v">${chip(t,ok)}</span><span class="ch">›</span></button>`;
+  const html=`<div class="set-group" id="socCard"><div class="set-title">Social posts</div><div class="set-list">
+    ${row('s2',k,T.morn,`Short 2 · ${c.accAName}`,'TikTok A, Instagram A, Facebook A, YouTube',!!doneOf(k,'s2').tt)}
+    ${row('day',k,T.morn,`Day post · ${c.accBName}`,g.picks.length||g.banker.length?`Top picks, ${C().banker==='VIP (707 Elite)'?'VIP':'Banker'}, end card`:'No games for today yet',allDone(k,'day'))}
+    ${row('s1',tk,T.eve,`Short 1 · ${c.accAName}`,`For ${niceD(tk)} · TikTok A, Instagram A, Facebook A, YouTube`,!!doneOf(tk,'s1').tt)}
+    ${row('cs',tk,T.eve,`Correct scores · ${c.accBName} + X`,nCs?`${niceD(tk)} · ${nCs} games`:`Paste the scorecard of ${niceD(tk)} in Video`,allDone(tk,'cs'))}
+  </div></div>`;
+  const sg=el.querySelector('.summary-grid');if(sg)sg.insertAdjacentHTML('afterend',html);else el.insertAdjacentHTML('afterbegin',html);}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-soc]');if(!b)return;e.stopPropagation();const p=b.dataset.soc,k=b.dataset.k;
+  if(p==='s1'||p==='s2'){videoPick=k;showTab('video');setTimeout(()=>{try{loadVideoSlot(p==='s1'?'v1':'v2');}catch(_){}},250);toast(`${p==='s1'?'Video 1':'Video 2'} of ${niceD(k)}: tap Record, then share with the A buttons.`,4200);return;}
+  openPost(p,k);},true);
+
+let cur=null;
+async function openPost(p,k){const c=C();openSheet(`<div class="modal-title">${POSTS[p].name} · ${niceD(k)}</div><p class="muted" style="text-align:center">Making the pictures…</p>`);
+  const safe=await (p==='cs'?csSlides(k,'safe'):daySlides(k,true));const odds=await (p==='cs'?csSlides(k,'x'):daySlides(k,false));
+  if(!safe.length){closeSheet();toast(p==='cs'?`No correct scores for ${niceD(k)} yet. Paste the scorecard in Video (pick that day).`:`No games for ${niceD(k)} yet.`,4500);return;}
+  const toU=cvs=>cvs.map(cv=>cv.toDataURL('image/jpeg',.9));cur={p,k,safe:toU(safe),odds:toU(odds)};render();}
+function render(){const {p,k}=cur,d=doneOf(k,p);const c=C();
+  const strip=(L,lab)=>`<span class="lbl">${lab}</span><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px">${L.map(u=>`<img src="${u}" alt="" style="width:31%;min-width:31%;border-radius:10px;border:1px solid #26262B">`).join('')}</div>`;
+  const btn=a=>`<button class="btn-save" data-sa="${a}" style="background:${APPC[a]};border:1px solid #444;position:relative">${d[a]?'✓ ':''}${accLabel(p,a)}</button>`;
+  const apps=POSTS[p].apps.filter(a=>a!=='x'||Number(c.xAccounts)>0);
+  openSheet(`<div class="modal-title">${POSTS[p].name} · ${niceD(k)}</div>
+    ${strip(cur.safe,p==='cs'?'TikTok · Instagram · Threads':'No odds · TikTok · Instagram · Threads')}${strip(cur.odds,p==='cs'?'X · Facebook end card':'With odds · Facebook · Telegram · WhatsApp')}
+    <p class="muted" style="margin:4px 0 8px">Tap an app: the pictures are shared and its caption is copied (long-press the caption box, Paste). ${c.review?'Nothing posts by itself.':''}</p>
+    ${apps.map((a,i)=>i%2===0?`<div class="btn-row">${btn(a)}${apps[i+1]?btn(apps[i+1]):''}</div>`:'').join('')}
+    <div class="btn-row"><button class="btn-half" data-sa="edit">Edit text</button><button class="btn-half" data-sa="save">Save pictures</button><button class="btn-half ${d.skip?'red':''}" data-sa="skip">${d.skip?'Skipped':'Skip'}</button></div>
+    <div class="btn-row"><button class="btn-half" data-sa="close">Close</button></div>`,
+  async e=>{const b=e.target.closest('[data-sa]');if(!b)return;const a=b.dataset.sa;
+    if(a==='close'){closeSheet();refresh();return;}
+    if(a==='skip'){S.prefs.socDone=Object.assign({},S.prefs.socDone||{});const o=Object.assign({},doneOf(k,p));if(o.skip)delete o.skip;else o.skip=Date.now();S.prefs.socDone[k+':'+p]=o;save('prefs');render();return;}
+    if(a==='save'){[...cur.safe,...cur.odds].forEach((u,i)=>{const x=document.createElement('a');x.href=u;x.download=`${p==='cs'?'Correct_scores':'Day_post'}_${k}_${i<cur.safe.length?'safe':'odds'}_${(i%cur.safe.length)+1}.jpg`;document.body.appendChild(x);x.click();x.remove();});toast('Pictures saved to Downloads ✓');return;}
+    if(a==='edit'){pickApp(p,k);return;}
+    const urls=SAFEAPPS.includes(a)?cur.safe:(p==='cs'&&a==='fb'?[...cur.safe.slice(0,-1),cur.odds[cur.odds.length-1]]:cur.odds);
+    const cap=capOf(k,p,a);copy(cap);const files=urls.map((u,i)=>dataURLtoFile(u,`${p}_${k}_${i+1}`));
+    if(canShareFiles(files)){try{await navigator.share({files,text:cap});tick(k,p,a);toast(`${accLabel(p,a)}: caption copied. Long-press the caption box and Paste.`,4500);render();}catch(err){if(err&&err.name!=='AbortError')toast(String(err.message||err));}}
+    else{urls.forEach((u,i)=>{const x=document.createElement('a');x.href=u;x.download=`${p}_${k}_${i+1}.jpg`;document.body.appendChild(x);x.click();x.remove();});tick(k,p,a);toast(`Pictures saved, caption copied. Open ${APPN[a]} and post.`,4500);render();}});}
+function copy(t){try{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}catch(e){}try{navigator.clipboard&&navigator.clipboard.writeText(t);}catch(e){}}
+function pickApp(p,k){const apps=POSTS[p].apps;openSheet(`<div class="modal-title">Edit text · ${POSTS[p].name}</div>${apps.map(a=>`<button class="set-row" data-ea="${a}"><span class="t">${accLabel(p,a)}<small>${esc(capOf(k,p,a).split('\n')[0])}</small></span><span class="ch">›</span></button>`).join('')}<div class="btn-row"><button class="btn-half" data-ea="back">Back</button></div>`,
+  e=>{const b=e.target.closest('[data-ea]');if(!b)return;const a=b.dataset.ea;if(a==='back'){render();return;}
+    editField(`${accLabel(p,a)} caption`,capOf(k,p,a),v=>{S.prefs.socText=Object.assign({},S.prefs.socText||{});if(v===null)delete S.prefs.socText[`${k}:${p}:${a}`];else S.prefs.socText[`${k}:${p}:${a}`]=v;save('prefs');toast(v===null?'Back to the builder text ✓':'Saved ✓');setTimeout(()=>pickApp(p,k),150);},{multi:true,rows:8,reset:true});});}
+
+// ---------------------------------------------------------------- Settings > Social posts
+const BOOL=['on','safe','review'],NUM=['xAccounts','perPic','maxGames'],MULTI=['endSafe','hooks','dayHooks'];
+const GROUPS=[['Accounts',['accAName','accAHandle','accBName','accBHandle','xAccounts','xHandle']],['Rules',['on','safe','review','banker']],['End cards',['endSafe','endTg']],
+  ['Captions',['csHead','csTags','xTags','dayHead','dayHeadOdds','dayBio','dayTags','hooks','dayHooks']],['Correct scores pictures',['perPic','maxGames']]];
+function valTxt(k){const v=C()[k];if(BOOL.includes(k))return v?'On':'Off';if(MULTI.includes(k))return `${list(v).length}`;return String(v).length>18?String(v).slice(0,17)+'…':String(v);}
+function openSettings(){const render=()=>{$('subBody').innerHTML=GROUPS.map(([g,L])=>`<div class="set-group"><div class="set-title">${esc(g)}</div><div class="set-list">${L.map(k=>`<button class="set-row" data-sk="${k}"><span class="t">${esc(NAMES[k])}<small>${esc(HELP[k])}</small></span><span class="v">${esc(valTxt(k))}</span><span class="ch">›</span></button>`).join('')}</div></div>`).join('')
+    +`<div class="set-group"><div class="set-title">Times</div><div class="set-list"><button class="set-row" data-sk="_times"><span class="t">Posting times<small>Correct scores + Short 1 ${times().eve} (day before) · Day post + Short 2 ${times().morn}</small></span><span class="ch">›</span></button></div></div>
+    <button class="btn-half w100" data-sk="_reset" style="margin-top:6px">Back to default (social posts)</button>`;};
+  openSub('Social posts',render);
+  $('subBody').onclick=e=>{const b=e.target.closest('[data-sk]');if(!b)return;const k=b.dataset.sk;
+    if(k==='_times'){openTimes();return;}
+    if(k==='_reset'){if(confirm('Put every social posts setting back to its default?')){S.prefs.soc={};save('prefs');render();toast('Back to default ✓');}return;}
+    if(BOOL.includes(k)){setC(k,!C()[k]);render();refresh();return;}
+    if(k==='banker'){setC(k,C().banker==='VIP (707 Elite)'?'Lowest free code':'VIP (707 Elite)');render();return;}
+    const isM=MULTI.includes(k);editField(NAMES[k],isM?list(C()[k]).join('\n'):C()[k],v=>{if(v===null){setC(k,null);}else{let x=isM?list(v).join('|'):v.trim();if(NUM.includes(k)){x=Number(x);if(!(x>=0)){toast('Type a number.');return;}}setC(k,x);}render();refresh();toast('Saved ✓');},
+      {multi:isM,rows:7,reset:true,type:NUM.includes(k)?'number':'text',note:`${HELP[k]} Default: ${isM?list(SD[k]).join(' / '):SD[k]}`});};}
+window.SOC={homeCard,openSettings,sub:()=>{const c=C();return `${c.accAName} (videos) · ${c.accBName} (pictures) · Safe mode ${c.safe?'On':'Off'}`;},csCaption,dayCaption,csGames,dayGames,csSlides,daySlides,_t:{day,todayKey,addDays,getS:()=>S,home:()=>renderHome(true)}};
+const _rh=renderHome;renderHome=async function(q){const r=await _rh(q);try{homeCard();}catch(err){console.log('SOC',err);}return r;};
+try{if(tab==='home')renderHome(true);}catch(e){}
+})();
+
 })();
 </script>
 <script src="./pwa.js"></script>
