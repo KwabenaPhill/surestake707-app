@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.1</title>
+<title>Sure Stake 707 Hub v51.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.1</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.2</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.1';
+const VERSION='v51.2';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -2677,14 +2677,29 @@ function allDone(k,p){const d=doneOf(k,p);return d.skip||POSTS[p].apps.every(a=>
 // ---------------------------------------------------------------- Home card
 function homeCard(){const c=C();if(!c.on)return;const el=$('p-home');if(!el||$('socCard'))return;const k=todayKey(),tk=addDays(k,1),T=times();
   const nCs=csGames(tk).length,g=dayGames(k);
-  const row=(p,dk,t,title,sub,ok)=>`<button class="set-row" data-soc="${p}" data-k="${dk}"><span class="i" style="background:${ACC}22;border:1px solid ${ACC}66;border-radius:10px">${p==='cs'?'🎯':p==='day'?'📋':'🎬'}</span><span class="t">${esc(title)}<small>${esc(sub)}</small></span><span class="v">${chip(t,ok)}</span><span class="ch">›</span></button>`;
-  const html=`<div class="set-group" id="socCard"><div class="set-title">Social posts</div><div class="set-list">
+  // v51.2 (S22, Philip 11 Nov): the "To do now" look of the Match Vision app: one row per post, a button per app;
+  // tap = that post's pictures + its caption ready to share (the old big tabs are gone).
+  const APPS2={s2:['tt','ig','fb','yt'],s1:['tt','ig','fb','yt'],day:POSTS.day.apps.filter(a=>a!=='th').concat(Number(c.xAccounts)>0?['x']:[]),cs:POSTS.cs.apps.filter(a=>a!=='th'&&(a!=='x'||Number(c.xAccounts)>0))};
+  const ab=(p,dk,a,done)=>`<button class="todo-app" data-socapp="${p}|${dk}|${a}" title="${esc(a==='yt'?'YouTube':(APPN[a]||a))}" style="background:${a==='yt'?'#FF0000':(APPC[a]||'#222')}">${done?'✓ ':''}${esc(a==='yt'?'YouTube':(APPN[a]||a))}</button>`;
+  const row=(p,dk,t,title,sub,ok)=>{const d=doneOf(dk,p);return `<div class="todo-row"><div class="todo-top"><span class="todo-t">${esc(title)}<small>${esc(sub)}</small></span>${chip(t,ok)}</div><div class="todo-apps">${APPS2[p].map(a=>ab(p,dk,a,!!d[a])).join('')}<button class="todo-app more" data-soc="${p}" data-k="${dk}">More ›</button></div></div>`;};
+  const html=`<div class="set-group" id="socCard"><div class="set-title">To do now · Social posts</div><div class="set-list todo-list">
     ${row('s2',k,T.morn,`Short 2 · ${c.accAName}`,'TikTok A, Instagram A, Facebook A, YouTube',!!doneOf(k,'s2').tt)}
     ${row('day',k,T.morn,`Day post · ${c.accBName}`,g.picks.length||g.banker.length?`Top picks, ${C().banker==='VIP (707 Elite)'?'VIP':'Banker'}, end card`:'No games for today yet',allDone(k,'day'))}
     ${row('s1',tk,T.eve,`Short 1 · ${c.accAName}`,`For ${niceD(tk)} · TikTok A, Instagram A, Facebook A, YouTube`,!!doneOf(tk,'s1').tt)}
     ${row('cs',tk,T.eve,`Correct scores · ${c.accBName} + X`,nCs?`${niceD(tk)} · ${nCs} games`:`Paste the scorecard of ${niceD(tk)} in Video`,allDone(tk,'cs'))}
   </div></div>`;
+  if(!document.getElementById('todoCss'))document.head.insertAdjacentHTML('beforeend',`<style id="todoCss">.todo-list{padding:4px 0}.todo-row{padding:10px 12px;border-bottom:1px solid #26262B}.todo-row:last-child{border-bottom:0}.todo-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}.todo-t{font-weight:800;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis}.todo-t small{display:block;font-weight:500;font-size:12px;color:#9a9a9f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.todo-apps{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.todo-app{border:1px solid #444;border-radius:10px;padding:6px 10px;font:700 12px Inter,system-ui;color:#fff;min-width:0}.todo-app.more{background:#1a1a1d}</style>`);
   const sg=el.querySelector('.summary-grid');if(sg)sg.insertAdjacentHTML('afterend',html);else el.insertAdjacentHTML('afterbegin',html);}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-socapp]');if(!b)return;e.stopPropagation();const [p,k,a]=b.dataset.socapp.split('|');
+  if(p==='s1'||p==='s2'){videoPick=k;showTab('video');setTimeout(()=>{try{loadVideoSlot(p==='s1'?'v1':'v2');}catch(_){}},250);toast(`${p==='s1'?'Video 1':'Video 2'} of ${niceD(k)}: tap Record, then share with ${a==='yt'?'YouTube':(APPN[a]||a)}.`,4200);return;}
+  socShare(p,k,a);},true);
+async function socShare(p,k,a){toast('Making the pictures…',1500);   // v51.2 (S22): one tap = pictures + caption for that app
+  const safe=await (p==='cs'?csSlides(k,'safe'):daySlides(k,true));const odds=p==='cs'?[]:await daySlides(k,false);
+  if(!safe.length){toast(p==='cs'?`No correct scores for ${niceD(k)} yet. Paste the scorecard in Video (pick that day).`:`No games for ${niceD(k)} yet.`,4500);return;}
+  const toU=L=>L.map(cv=>cv.toDataURL('image/jpeg',.9));const urls=SAFEAPPS.includes(a)||p==='cs'?toU(safe):toU(odds);
+  const cap=capOf(k,p,a);copy(cap);const files=urls.map((u,i)=>dataURLtoFile(u,`${p}_${k}_${i+1}`));
+  if(canShareFiles(files)){try{await navigator.share({files,text:cap});tick(k,p,a);toast(`${accLabel(p,a)}: caption copied. Long-press the caption box and Paste.`,4500);refresh();}catch(err){if(err&&err.name!=='AbortError')toast(String(err.message||err));}}
+  else{urls.forEach((u,i)=>{const x=document.createElement('a');x.href=u;x.download=`${p}_${k}_${i+1}.jpg`;document.body.appendChild(x);x.click();x.remove();});tick(k,p,a);toast(`Pictures saved, caption copied. Open ${APPN[a]} and post.`,4500);refresh();}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-soc]');if(!b)return;e.stopPropagation();const p=b.dataset.soc,k=b.dataset.k;
   if(p==='s1'||p==='s2'){videoPick=k;showTab('video');setTimeout(()=>{try{loadVideoSlot(p==='s1'?'v1':'v2');}catch(_){}},250);toast(`${p==='s1'?'Video 1':'Video 2'} of ${niceD(k)}: tap Record, then share with the A buttons.`,4200);return;}
   openPost(p,k);},true);
