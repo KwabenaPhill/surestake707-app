@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.6</title>
+<title>Sure Stake 707 Hub v51.7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.6</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.7</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.6'; /* v51.6 (F80): the notes button no longer covers the cards */
+const VERSION='v51.7'; /* v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
 /* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
 function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
@@ -1244,7 +1244,7 @@ async function openPostSheet(k,id){const d=day(k);await loadSlips(k);await loadP
 // Sources: API-Football (with the key saved in Settings) first, ESPN's public scores as backup.
 const AF_URL='https://v3.football.api-sports.io';
 const LV={busy:false,last:0,dayAt:{},err:'',lastOk:0};
-const liveCfg=()=>({key:'',every:3,espn:true,limit:100,...(S.prefs.live||{})});
+const liveCfg=()=>({key:'',every:1,espn:true,limit:100,...(S.prefs.live||{})});
 function liveSub(){const L=liveCfg();if(SYNC.on())return 'Laptop bot (API-Football Pro) + ESPN · every minute · no key needed here';return L.key?`API-Football${L.espn?' + ESPN':''} · every ${L.every} min`:'ESPN scores · add an API-Football key for more leagues';}
 const accraFmt=(()=>{try{return {d:new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Accra',year:'numeric',month:'2-digit',day:'2-digit'}),t:new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',hour:'2-digit',minute:'2-digit',hour12:false})};}catch(e){return null;}})();
 const accraDay=iso=>{const d=new Date(iso);return accraFmt?accraFmt.d.format(d):keyOf(d);};
@@ -2377,7 +2377,8 @@ document.querySelector('.bottom-nav').onclick=e=>{const b=e.target.closest('.nav
 async function loadAll(){const all=await kallState();const B=blankState();takeSnap('days',all.days||{});takeSnap('videoDays',all.videoDays||{});lastRev=Number(all._rev)||0;
   S.days=all.days||{};S.crestList=all.crestList||[];S.vrows=Array.isArray(all.vrows)&&all.vrows.length?all.vrows.map(r=>({...newRow(),...r})):[];S.videoDays=all.videoDays||{};
   S.vset={...DEF_VIDEO,...(all.vset||{})};if(S.vset.trans&&!(all.vset||{}).crestAnim)S.vset.crestAnim=S.vset.trans;delete S.vset.trans;
-  S.vtpls=all.vtpls||B.vtpls;S.vtpls.forEach(t=>{if(t.id==='navy'&&t.name==='Navy')t.name='Blue';});S.vhist=all.vhist||[];S.logo=all.logo||null;S.members=all.members||[];S.followers=all.followers||[];S.prefs={...B.prefs,...(all.prefs||{})};if(JSON.stringify(S.prefs.closers)===JSON.stringify(OLD_CLOSERS)){S.prefs.closers=DEF_CLOSERS.slice();save('prefs');}S.imgIndex={...B.imgIndex,...(all.imgIndex||{})};S.finance={...B.finance,...(all.finance||{}),saved:Array.isArray(all.finance?.saved)?all.finance.saved:[],withdrawn:Array.isArray(all.finance?.withdrawn)?all.finance.withdrawn:[],otherIncome:Array.isArray(all.finance?.otherIncome)?all.finance.otherIncome:[],hide:!!(all.finance?.hide)};
+  S.vtpls=all.vtpls||B.vtpls;S.vtpls.forEach(t=>{if(t.id==='navy'&&t.name==='Navy')t.name='Blue';});S.vhist=all.vhist||[];S.logo=all.logo||null;S.members=all.members||[];S.followers=all.followers||[];S.prefs={...B.prefs,...(all.prefs||{})};if(!S.prefs.v517){S.prefs.v517=1;S.prefs.live={...(S.prefs.live||{}),every:1};save('prefs');}   /* v51.7: every minute, set now (Match Vision fix #1794758533568) */
+if(JSON.stringify(S.prefs.closers)===JSON.stringify(OLD_CLOSERS)){S.prefs.closers=DEF_CLOSERS.slice();save('prefs');}S.imgIndex={...B.imgIndex,...(all.imgIndex||{})};S.finance={...B.finance,...(all.finance||{}),saved:Array.isArray(all.finance?.saved)?all.finance.saved:[],withdrawn:Array.isArray(all.finance?.withdrawn)?all.finance.withdrawn:[],otherIncome:Array.isArray(all.finance?.otherIncome)?all.finance.otherIncome:[],hide:!!(all.finance?.hide)};
   if(!all.migrated){const old=await readOld();if(old){if(old.crests&&!all.crests)all.crests=old.crests;if(!S.vrows.length&&Array.isArray(old.rows))S.vrows=old.rows.map(r=>({...newRow(),...r}));if(old.settings)S.vset={...S.vset,...old.settings};if(old.customTpl&&!all.customTpl)all.customTpl=old.customTpl;}await kset('migrated',true);}
   if(!all.migrated2){ // v1 -> v2 storage
     if(all.crests&&typeof all.crests==='object'){for(const [k,src] of Object.entries(all.crests)){if(!src)continue;const id=uid();S.crestList.push({id,name:titleCase(k),aliases:[],league:''});await kset('crest:'+id,src);}await kdel('crests');}
@@ -2986,5 +2987,43 @@ function voiceTyping(btn,box,tell){
   draw();
 })();
 </script>
+
+<script>
+/* PIC VIEW (Philip, 15 Nov 2026, Fix Hub #1794759022709): in Fix notes, tap any picture to see it full size.
+   Voice recording keeps going: the viewer only sits on top, it never touches the Speak button or the microphone.
+   ‹ › = other pictures of the same note, tap the dark part or ✕ to go back. */
+(function(){
+  if(window.__fxPicView)return;window.__fxPicView=1;
+  let L=[],i=0,v=null;
+  function make(){
+    v=document.createElement('div');v.id='fxPicView';
+    v.style.cssText='display:none;position:fixed;inset:0;z-index:2147483600;background:rgba(0,0,0,.94);flex-direction:column;align-items:center;justify-content:center;padding:12px';
+    const b='background:#1c1c1f;color:#fff;border:1px solid #333;border-radius:12px;font:700 16px system-ui,sans-serif;padding:10px 16px;min-width:48px;cursor:pointer';
+    v.innerHTML='<div id="fxPicRec" style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);left:14px;color:#ff5a5f;font:700 13px system-ui,sans-serif"></div>'+
+      '<img id="fxPicImg" alt="" style="max-width:100%;max-height:80vh;object-fit:contain;border-radius:10px;touch-action:pinch-zoom">'+
+      '<div style="display:flex;gap:10px;align-items:center;margin-top:14px"><button data-pv="-1" style="'+b+'">‹</button><span id="fxPicN" style="color:#bbb;font:600 13px system-ui,sans-serif;min-width:44px;text-align:center"></span><button data-pv="1" style="'+b+'">›</button><button data-pv="0" style="'+b+'">✕ Close</button></div>';
+    document.body.appendChild(v);
+    v.addEventListener('click',e=>{e.stopPropagation();const k=e.target.closest('[data-pv]');
+      if(k){const d=+k.dataset.pv;if(!d){hide();return;}i=(i+d+L.length)%L.length;show();return;}
+      if(e.target===v)hide();});
+    let x0=null;v.addEventListener('touchstart',e=>{x0=e.touches.length===1?e.touches[0].clientX:null;},{passive:true});
+    v.addEventListener('touchend',e=>{if(x0===null||L.length<2)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>60){i=(i+(dx<0?1:-1)+L.length)%L.length;show();}},{passive:true});
+  }
+  function rec(){const s=document.getElementById('fxSheet');return !!(s&&s.querySelector('.rec'));}
+  function show(){v.querySelector('#fxPicImg').src=L[i];v.querySelector('#fxPicN').textContent=L.length>1?(i+1)+' / '+L.length:'';
+    v.querySelectorAll('[data-pv="-1"],[data-pv="1"]').forEach(x=>x.style.visibility=L.length>1?'visible':'hidden');
+    v.querySelector('#fxPicRec').textContent=rec()?'🎤 Still recording':'';}
+  function hide(){if(v)v.style.display='none';}
+  setInterval(()=>{if(v&&v.style.display==='flex')v.querySelector('#fxPicRec').textContent=rec()?'🎤 Still recording':'';},1000);
+  document.addEventListener('click',e=>{
+    const im=e.target&&e.target.closest&&e.target.closest('#fxSheet img');if(!im||!im.src)return;
+    e.preventDefault();e.stopPropagation();
+    const box=im.parentElement.closest('#fxNewPics,.note,div')||im.parentElement;
+    L=[...box.querySelectorAll('img')].map(x=>x.src).filter(Boolean);i=Math.max(0,L.indexOf(im.src));if(!L.length)L=[im.src];
+    if(!v)make();v.style.display='flex';show();},true);
+  document.addEventListener('keydown',e=>{if(v&&v.style.display==='flex'){if(e.key==='Escape')hide();else if(e.key==='ArrowRight'&&L.length>1){i=(i+1)%L.length;show();}else if(e.key==='ArrowLeft'&&L.length>1){i=(i-1+L.length)%L.length;show();}}});
+})();
+</script>
+
 </body>
 </html>
