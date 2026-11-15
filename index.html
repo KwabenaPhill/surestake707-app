@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.3</title>
+<title>Sure Stake 707 Hub v51.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.3</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.4</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,12 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.3';
+const VERSION='v51.4';
+/* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
+function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24')&&/^\d{4}$/.test(t.value))t.value=hm24(t.value.slice(0,2)+':'+t.value.slice(2));},true);
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let toastT;function toast(t,ms=2600){const el=$('toast');el.textContent=t;el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),ms);}
@@ -828,7 +833,7 @@ const TGROUPS=[['Morning posts',[['GREETING_TIME','🌅','Greeting + day picture
   ['Game check',[['GAME_CHECK_FROM','🔎','Check games from'],['GAME_CHECK_TO','🔍','Check games until']]],
   ['Reminders (no games or slips for tomorrow)',[['REMIND_1','⏰','Reminder 1'],['REMIND_2','⏰','Reminder 2'],['REMIND_3','⏰','Reminder 3']]],
   ['Social posts (v51.0)',[['SOCIAL_EVENING_TIME','🎯','Correct scores (B + X) + Short 1 (A), day before'],['SOCIAL_MORNING_TIME','📋','Day post (B) + Short 2 (A), match day']]]];
-const TDEF={GREETING_TIME:'05:00',CODES_TIME:'06:00',VIP_TIME:'06:00',EARLIEST_POST_TIME:'05:00',ELITE_PROMO_TIME:'09:30',SUMMARY_TIME:'23:30',WEEKLY_TIME:'23:45',GAME_CHECK_FROM:'06:00',GAME_CHECK_TO:'20:00',REMIND_1:'17:00',REMIND_2:'20:00',REMIND_3:'21:30',SOCIAL_EVENING_TIME:'21:00',SOCIAL_MORNING_TIME:'09:00'};
+const TDEF={GREETING_TIME:'06:00',CODES_TIME:'07:00',VIP_TIME:'07:00',EARLIEST_POST_TIME:'05:00',ELITE_PROMO_TIME:'09:30',SUMMARY_TIME:'23:30',WEEKLY_TIME:'23:45',GAME_CHECK_FROM:'06:00',GAME_CHECK_TO:'20:00',REMIND_1:'17:00',REMIND_2:'20:00',REMIND_3:'21:30',SOCIAL_EVENING_TIME:'21:00',SOCIAL_MORNING_TIME:'09:00'};
 const TCOL=['#F59E0B','#EF4444','#EAB308','#22C55E','#3B82F6','#A855F7','#06B6D4','#F97316','#EC4899'];
 const clockSvg=c=>`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
 const botT=()=>Object.assign({},TDEF,(S.prefs&&S.prefs.botTimes)||{});
@@ -1025,7 +1030,7 @@ async function openReview(txt,forKey,mode){const p=parseHub(txt);mode=mode||'new
   const dr={date:forKey||p.date||todayKey(),codes:JSON.parse(JSON.stringify(p.codes)),games:inc.map(g=>({id:uid(),...g})),posts:Object.fromEntries(Object.entries(p.posts).filter(([x])=>x!=='dayprompt')),layout:p.layout,scores:p.scores,slips:{}};
   const render=async()=>{if(S.days[dr.date])await loadSlips(dr.date);const slots=SLOTS.filter(s=>dr.codes[s]&&dr.codes[s].code);const t=todayKey();const fut=dr.date>t;const ex=S.days[dr.date]&&dayHasContent(S.days[dr.date]);
     const shot=s=>{const img=dr.slips[s]||(mode==='replace'?null:slipOf(dr.date,s));return `<button class="rshot ${s}" data-rs="${s}">${img?`<img src="${img}" alt="">`:'<span>+ add</span>'}<small>${SLOTNAME[s]}</small></button>`;};
-    const gRow=g=>`<div class="gedit" data-g="${g.id}"><input type="time" data-gf="time" value="${esc(g.time||'')}"><div style="display:flex;flex-direction:column;gap:6px"><input data-gf="match" placeholder="Home vs Away" value="${esc(g.match)}"><div style="display:flex;gap:6px"><input data-gf="pick" placeholder="Pick" value="${esc(g.pick)}"><button class="btn-half red" data-gdel="1" style="flex:none;padding:6px 10px">✕</button></div></div></div>`;
+    const gRow=g=>`<div class="gedit" data-g="${g.id}"><input type="text" inputmode="numeric" maxlength="5" placeholder="17:45" class="t24" data-gf="time" value="${esc(g.time||'')}" style="font-variant-numeric:tabular-nums"><div style="display:flex;flex-direction:column;gap:6px"><input data-gf="match" placeholder="Home vs Away" value="${esc(g.match)}"><div style="display:flex;gap:6px"><input data-gf="pick" placeholder="Pick" value="${esc(g.pick)}"><button class="btn-half red" data-gdel="1" style="flex:none;padding:6px 10px">✕</button></div></div></div>`;
     const pk=Object.keys(dr.posts);
     $('subBody').innerHTML=`<span class="lbl" style="margin-top:0">Saving to</span><input type="date" id="rvDate" value="${dr.date}"><p class="muted" style="margin:6px 0 0"><b style="color:#fff">${longDate(dr.date)}</b>${dr.date===t?' (today)':dr.date===addDays(t,1)?' (tomorrow)':''}${p.date&&p.date!==dr.date?` · the HUB says ${shortDate(p.date)}`:''}</p>
       ${ex?`<div class="warnbox">${mode==='add'?`Adding to what is already saved for ${shortDate(dr.date)}. Nothing already there is removed.`:mode==='replace'?`Everything saved for ${shortDate(dr.date)} will be replaced by this HUB.`:`${shortDate(dr.date)} already has saved content. You will be asked before it is replaced.`}</div>`:''}
@@ -1240,7 +1245,7 @@ async function openPostSheet(k,id){const d=day(k);await loadSlips(k);await loadP
 const AF_URL='https://v3.football.api-sports.io';
 const LV={busy:false,last:0,dayAt:{},err:'',lastOk:0};
 const liveCfg=()=>({key:'',every:3,espn:true,limit:100,...(S.prefs.live||{})});
-function liveSub(){const L=liveCfg();return L.key?`API-Football${L.espn?' + ESPN':''} · every ${L.every} min`:'ESPN scores · add an API-Football key for more leagues';}
+function liveSub(){const L=liveCfg();if(SYNC.on())return 'Laptop bot (API-Football Pro) + ESPN · every minute · no key needed here';return L.key?`API-Football${L.espn?' + ESPN':''} · every ${L.every} min`:'ESPN scores · add an API-Football key for more leagues';}
 const accraFmt=(()=>{try{return {d:new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Accra',year:'numeric',month:'2-digit',day:'2-digit'}),t:new Intl.DateTimeFormat('en-GB',{timeZone:'Africa/Accra',hour:'2-digit',minute:'2-digit',hour12:false})};}catch(e){return null;}})();
 const accraDay=iso=>{const d=new Date(iso);return accraFmt?accraFmt.d.format(d):keyOf(d);};
 const accraHM=iso=>{const d=new Date(iso);return accraFmt?accraFmt.t.format(d).replace(/^24/,'00'):fmtT(d);};
@@ -1567,7 +1572,7 @@ function openDay(k0){let k=k0;
       <div><div class="top">${SLOTNAME[s]}${img?`<button class="link" data-rmslip="${s}" style="padding:0;font-size:11.5px;color:var(--dim)">Remove slip</button>`:''}</div>
       <div class="ins"><input data-cf="code" placeholder="Code" value="${esc(c.code||'')}" autocapitalize="characters"><input data-cf="odds" type="number" inputmode="decimal" step="0.01" placeholder="Odds" value="${c.odds||''}"></div>
       ${past?`<div class="seg">${['pending','won','lost'].map(v=>`<button data-res="${v}" data-v="${v}" class="${(c.result||'pending')===v?'on':''}">${v==='pending'?'Waiting':v==='won'?'Won':'Lost'}</button>`).join('')}</div>${autoTag(c)}`:''}</div></div>`;};
-    const gRow=g=>`<div class="gedit" data-g="${g.id}"><input type="time" data-gf="time" value="${esc(g.time||'')}"><div style="display:flex;flex-direction:column;gap:6px"><input data-gf="match" placeholder="Home vs Away" value="${esc(g.match)}"><div style="display:flex;gap:6px"><input data-gf="pick" placeholder="Pick" value="${esc(g.pick)}">
+    const gRow=g=>`<div class="gedit" data-g="${g.id}"><input type="text" inputmode="numeric" maxlength="5" placeholder="17:45" class="t24" data-gf="time" value="${esc(g.time||'')}" style="font-variant-numeric:tabular-nums"><div style="display:flex;flex-direction:column;gap:6px"><input data-gf="match" placeholder="Home vs Away" value="${esc(g.match)}"><div style="display:flex;gap:6px"><input data-gf="pick" placeholder="Pick" value="${esc(g.pick)}">
 <button class="btn-half red" data-gdel="1" style="flex:none;padding:6px 10px">✕</button></div></div></div>`;    const ids=itemIds(d);const missing=PREP_IDS.filter(id=>!ids.includes(id));const vs=S.videoDays&&S.videoDays[k];const vn=vs?[(vs.v1||[]).length,(vs.v2||[]).length]:[0,0];
     $('subBody').innerHTML=`<div class="daybar"><button data-nav="-1" aria-label="Previous day">‹</button><strong>${longDate(k)}</strong><button data-nav="1" aria-label="Next day">›</button></div>
       ${has||d.status?(k>todayKey()?`<div class="seg daystat"><button data-ds="draft" class="${d.status==='draft'?'on':''}">Draft</button><button data-ds="scheduled" class="${d.status!=='draft'?'on':''}">Scheduled</button></div>`:d.status==='draft'?`<div class="warnbox">Saved as a draft. <button class="link" data-ds="scheduled" style="padding:0">Mark as ready</button></div>`:''):`<div class="card"><p class="empty" style="margin:0">Nothing saved for ${longDate(k)} yet. Paste a HUB or fill in the boxes below.</p></div>`}
@@ -2433,13 +2438,18 @@ const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:
         const c=d.codes[s];if(!c||!c.code)continue;
         if(r.mine&&['won','lost'].includes(r.mine)&&!c.manual){if(c.result!==r.mine){c.result=r.mine;c.manual=true;delete c.auto;ch=true;}}
         else if(!c.manual&&['won','lost'].includes(r.result)&&c.result!==r.result){c.result=r.result;c.auto={at:Date.now()};ch=true;}}
-      for(const g of d.games||[]){const r=(b.legs||{})[lk(g)];if(!r)continue;if(r.res&&!g.res&&g.res!==r.res){g.res=r.res;ch=true;}if(r.auto&&!g.auto&&['won','lost','void'].includes(r.auto)){g.auto=r.auto;ch=true;}}
+      for(const g of d.games||[]){const r=(b.legs||{})[lk(g)];if(!r)continue;if(r.res&&!g.res&&g.res!==r.res){g.res=r.res;ch=true;}if(r.auto&&!g.auto&&['won','lost','void'].includes(r.auto)){g.auto=r.auto;ch=true;}
+        const L=r.live;if(L&&L.st&&L.st!=='NS'){d.fx=d.fx||{};const x=mKey(g.match),F0=d.fx[x];const RK={NS:0,PST:1,LIVE:2,HT:2,CANC:3,FT:4};   /* v51.4 (F72/F78): the laptop bot's API-Football scores */
+          const nf={src:'bot',st:L.st,m:L.min||null,hs:L.gh==null?null:+L.gh,as:L.ga==null?null:+L.ga,hh:L.hh==null?null:+L.hh,ha:L.ha==null?null:+L.ha,goals:(F0&&F0.goals)||null,at:Date.now()};
+          if(!F0||F0.miss||(RK[nf.st]||0)>=(RK[F0.st]||0)){d.fx[x]=Object.assign({},F0&&!F0.miss?F0:{},nf);if(applyLive(d)){}ch=true;}}}
       for(const [id,v] of Object.entries(b.posted||{})){const app=id.startsWith('win_')?(id==='win_vip'?'vip_res':'win_tg'):id;if(v&&v.tg&&ITEMS[app]){d.posted[app]=d.posted[app]||{};if(!d.posted[app].tg){d.posted[app].tg=true;ch=true;}}}}
     if(ch){save('days');refresh();}return ch;}
   async function push(){for(const k of keysToSend()){const p=await pkg(k);const sig=h(JSON.stringify({...p,updated:0}));if(st.up['app/'+k]===sig)continue;
       await put(`app/${k}.json`,b64(JSON.stringify(p)),`app: ${k}`);st.up['app/'+k]=sig;saveUp();S.days[k].appEditedAt=Date.now();}}
   async function run(force){if(!on()||st.busy||!navigator.onLine||!storageReady)return;if(!force&&Date.now()-st.last<20000)return;st.busy=true;st.last=Date.now();
-    try{await pull();await push();st.ok=Date.now();st.err='';}catch(e){st.err=String(e.message||e).slice(0,80);}finally{st.busy=false;if(tab==='settings')renderSettings();}}
+    try{await pull();await push();st.ok=Date.now();st.err='';
+      if(Date.now()-(st.tAt||0)>120e3){st.tAt=Date.now();try{const bt=await botTimes();if(bt&&!((S.prefs.timesWait||0)>Date.now()-15*60e3)){const was=JSON.stringify(S.prefs.botTimes||{});S.prefs.botTimes=bt;if(JSON.stringify(bt)!==was){save('prefs');if(tab==='settings')renderSettings();}}}catch(e){}}   /* v51.4 (F71): the laptop's posting times on every sync */
+    }catch(e){st.err=String(e.message||e).slice(0,80);}finally{st.busy=false;if(tab==='settings')renderSettings();}}
   function open(){const render=()=>{const c=cfg();
       $('subBody').innerHTML=`<p class="muted" style="margin-bottom:12px">Your laptop bot and this app share one private mailbox on GitHub. What you paste and add here goes to the bot (it posts at the right times), and what the bot sees (live scores, won and lost, what it posted, a HUB you pasted in Telegram) comes back here by itself. Your taps always win.</p>
       <span class="lbl">Mailbox (repository)</span><input id="syRepo" value="${esc(c.repo)}" autocapitalize="off" autocomplete="off">
