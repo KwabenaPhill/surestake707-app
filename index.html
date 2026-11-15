@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.7</title>
+<title>Sure Stake 707 Hub v51.8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.7</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.8</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.7'; /* v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
+const VERSION='v51.8'; /* v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
 /* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
 function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
@@ -2432,7 +2432,7 @@ const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:
         for(const [x,v] of Object.entries(b.day.posts||{}))if(x!=='dayprompt'&&String(v||'').trim())d.posts[x]=v;if(b.day.layout)d.layout=b.day.layout;
         for(const [nm,path] of Object.entries(b.images||{})){const im=await gh('GET',path);if(!im||!im.content)continue;const u='data:image/jpeg;base64,'+im.content.replace(/\s/g,'');
           if(nm==='morning'){const id=uid();await cset('pimg:'+id,u);d.postImgs=d.postImgs||{};d.postImgs.morning=[id];}else{await cset(`slip:${k}:${nm}`,u);d.slips[nm]=true;}}
-        d.botHubAt=b.hub_at||Date.now()/1000;if(k>todayKey()&&!d.status)d.status='scheduled';ch=true;toast(`${shortDate(k)} came from the laptop bot ✓`,3000);}
+        d.botHubAt=b.hub_at||Date.now()/1000;if(k>todayKey()&&!d.status)d.status='scheduled';ch=true;toast(`${shortDate(k)} came from the laptop bot ✓`,3000);/* v51.8 (Philip 15 Nov): every game of the #SCORECARD, with its score, goes into Video 1 and Video 2 of that day (a newer HUB replaces them) */try{const sc=parseHub(b.hub||'').scores||[];if(sc.length){await loadScores(sc,true,k,true);if(videoDateKey===k)renderVideoTabs();}}catch(e){console.warn('scorecard from bot',e);}}
       if(!d)continue;
       for(const [s,r] of Object.entries(b.codes||{})){if(r&&r.code&&!(d.codes[s]&&d.codes[s].code)){d.codes[s]={code:r.code,odds:r.odds||0,result:'pending'};ch=true;}   // v48.8: a code the bot read from the slip picture
         else if(r&&r.code&&d.codes[s]&&d.codes[s].code===r.code&&!d.codes[s].odds&&r.odds){d.codes[s].odds=r.odds;ch=true;}
