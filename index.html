@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.8</title>
+<title>Sure Stake 707 Hub v51.9</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.8</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.9</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.8'; /* v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
+const VERSION='v51.9'; /* v51.9 (Philip 15 Nov): To do now exactly like Match Vision: the post's picture, short titles, the same sizes. v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
 /* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
 function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
@@ -2697,20 +2697,33 @@ function homeCard(){const c=C();if(!c.on)return;const el=$('p-home');if(!el||$('
   const lab=(p,a)=>['x','tg','wa','yt'].includes(a)?NM(a):`${NM(a)} ${p==='s1'||p==='s2'?'A':'B'}`;
   const chip2=(dk,t,done)=>{const at=new Date(dk+'T'+t+':00'),min=(at-new Date())/6e4,lb=(dk===todayKey()?'':dk<todayKey()?'Yest ':'Tmrw ')+t;
     return done?`<span class="sx-t ok">✓ ${lb}</span>`:min<0?`<span class="sx-t late">${lb}</span>`:min<=60?`<span class="sx-t soon">${lb}</span>`:`<span class="sx-t">${lb}</span>`;};
-  const icon=p=>{const bd=p==='s1'||p==='s2'?'tt':'ig';const main=p==='cs'?'🎯':p==='day'?'📋':'🎬';return `<div class="sx-ic"><div class="sx-main">${main}</div><span class="sx-bdg">${SV2[bd]||''}</span></div>`;};
+  const icon=(p,dk)=>{const bd=p==='s1'||p==='s2'?'tt':'ig';const k0=p+'|'+dk,u=(SXT[k0]||{}).u;const main=u?`<img src="${u}" alt="">`:(p==='cs'?'🎯':p==='day'?'📋':'🎬');return `<div class="sx-ic" data-thumb="${k0}"><div class="sx-main">${main}</div><span class="sx-bdg">${SV2[bd]||''}</span></div>`;};   /* v51.9: the post's own picture, like Match Vision */
   const items=[];const hasDay=x=>{const gg=dayGames(x);return !!(gg.picks.length||gg.banker.length);};
-  if(hasDay(k)){items.push(['s2',k,T.morn,`Short 2 · ${c.accAName}`,'Video 2 of today · record it in Video']);
-    items.push(['day',k,T.morn,`Day post · ${c.accBName}`,`Top picks, ${C().banker==='VIP (707 Elite)'?'VIP':'Banker'}, end card`]);}
-  if(hasDay(tk))items.push(['s1',tk,T.eve,`Short 1 · ${c.accAName}`,`Video 1 for ${niceD(tk)}`]);
-  if(nCs)items.push(['cs',tk,T.eve,`Correct scores post · ${c.accBName}`,`${niceD(tk)} · ${nCs} games`]);
+  if(hasDay(k)){items.push(['s2',k,T.morn,'Short 2','']);   /* v51.9 (Philip 15 Nov): short titles like Match Vision */
+    items.push(['day',k,T.morn,'Day post','']);}
+  if(hasDay(tk))items.push(['s1',tk,T.eve,'Short 1','']);
+  if(nCs)items.push(['cs',tk,T.eve,'Correct scores post','']);
   if(!items.length)return;                           // no games = nothing on Home
   let nextDone=false;
   const rowsH=items.map(([p,dk,t,title,sub])=>{const d=doneOf(dk,p),done=p==='s1'||p==='s2'?!!d.tt:allDone(dk,p);const nx=!done&&!nextDone;if(nx)nextDone=true;
-    return `<div class="sx-row">${icon(p)}<div class="sx-tx"><div class="sx-tt"><button class="sx-ttl" data-soc="${p}" data-k="${dk}">${esc(title)}${nx?'<span class="sx-nx">NEXT</span>':''}</button>${chip2(dk,t,done)}</div>
-      <div class="sx-pv">${esc(sub)}</div><div class="sx-mini">${APPS2[p].map(a=>`<button data-socapp="${p}|${dk}|${a}" class="${d[a]?'done':''}"><span class="sx-bi">${SV2[a]||''}</span>${esc(lab(p,a))}</button>`).join('')}</div></div></div>`;}).join('');
+    return `<div class="sx-row">${icon(p,dk)}<div class="sx-tx"><div class="sx-tt"><button class="sx-ttl" data-soc="${p}" data-k="${dk}">${esc(title)}${nx?'<span class="sx-nx">NEXT</span>':''}</button>${chip2(dk,t,done)}</div>
+      ${sub?`<div class="sx-pv">${esc(sub)}</div>`:''}<div class="sx-mini">${APPS2[p].map(a=>`<button data-socapp="${p}|${dk}|${a}" class="${d[a]?'done':''}"><span class="sx-bi">${SV2[a]||''}</span>${esc(lab(p,a))}</button>`).join('')}</div></div></div>`;}).join('');
   const html=`<div class="card sx-card" id="socCard"><div class="sx-h">To do now</div>${rowsH}</div>`;
   if(!document.getElementById('todoCss'))document.head.insertAdjacentHTML('beforeend',`<style id="todoCss">.sx-card{border-radius:20px;background:#141416;border:1px solid #26262B;padding:14px 16px;margin:0 0 14px}.sx-h{font-size:19px;font-weight:800;margin:2px 0 6px}.sx-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #262626}.sx-row:last-child{border-bottom:0}.sx-ic{width:44px;height:44px;border-radius:12px;background:#1E1E1E;display:grid;place-items:center;flex:none;position:relative;font-size:20px}.sx-bdg{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:99px;background:#000;display:grid;place-items:center;overflow:hidden}.sx-bdg svg{width:16px;height:16px}.sx-tx{flex:1;min-width:0}.sx-tt{display:flex;align-items:center;justify-content:space-between;gap:8px}.sx-ttl{font-size:15px;font-weight:800;background:none;border:0;padding:0;color:#fff;text-align:left;display:flex;align-items:center;gap:6px;min-width:0;font-family:inherit}.sx-nx{font-size:9.5px;font-weight:800;letter-spacing:1px;color:#2a0a0a;background:${ACC};padding:2px 7px;border-radius:99px}.sx-t{font-size:12px;font-weight:800;padding:4px 9px;border-radius:99px;background:#242424;color:#bbb;white-space:nowrap}.sx-t.late{background:#FF453A;color:#fff}.sx-t.soon{background:#3A2E0A;color:#FFD60A}.sx-t.ok{background:#0F3A22;color:#4BE27A}.sx-pv{font-size:12px;color:#9a9a9f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.sx-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.sx-mini button{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:99px;font:700 12.5px Inter,system-ui;background:#1E1E1E;border:1px solid #2A2A2A;color:#e8e8e8}.sx-mini button.done{border-color:#30D158;color:#fff}.sx-bi{width:16px;height:16px;display:inline-grid}.sx-bi svg{width:16px;height:16px}</style>`);
-  const sg=el.querySelector('.summary-grid');if(sg)sg.insertAdjacentHTML('afterend',html);else el.insertAdjacentHTML('afterbegin',html);}
+  if(!document.getElementById('todoCss2'))document.head.insertAdjacentHTML('beforeend',`<style id="todoCss2">/* v51.9: the Match Vision sizes, Sure Stake colours */.sx-ic{width:40px;height:40px;background:none;overflow:visible}.sx-main{width:40px;height:40px;border-radius:12px;background:#1E1E1E;overflow:hidden;display:grid;place-items:center;font-size:19px}.sx-main img{width:100%;height:100%;object-fit:cover;display:block}.sx-bdg{width:19px;height:19px;border:2px solid #141416}.sx-ttl{font-size:15px;font-weight:600}.sx-nx{font-size:9.5px;font-weight:600}.sx-t{font-size:10px;font-weight:700;padding:1px 6px;line-height:1.5}.sx-mini button{font:500 13px Inter,system-ui;padding:8px 12px}</style>`);
+  const sg=el.querySelector('.summary-grid');if(sg)sg.insertAdjacentHTML('afterend',html);else el.insertAdjacentHTML('afterbegin',html);
+  setTimeout(sxFillThumbs,60);}
+/* v51.9 (Philip 15 Nov): each To do row shows the post's own picture (correct scores / day post) or the video's cover, like Match Vision */
+const SXT={};
+async function sxCover(r){if(!r)return null;const cv=document.createElement('canvas');cv.width=cv.height=192;const g=cv.getContext('2d');const gr=g.createLinearGradient(0,0,0,192);gr.addColorStop(0,'#3a0a0e');gr.addColorStop(1,'#0b0b0d');g.fillStyle=gr;g.fillRect(0,0,192,192);
+  g.fillStyle='#fff';g.font='800 22px Inter,system-ui';g.textAlign='center';g.fillText('FULL TIME',96,34);g.fillStyle=ACC;g.font='800 15px Inter,system-ui';g.fillText('SCORE',96,54);
+  const ld=src=>new Promise(res=>{if(!src)return res(null);const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src;});const [a,b]=await Promise.all([ld(r.hc),ld(r.ac)]);
+  if(a)g.drawImage(a,18,74,64,64);if(b)g.drawImage(b,110,74,64,64);if(r.hs!==''&&r.hs!=null&&r.as!==''&&r.as!=null){g.fillStyle='#fff';g.font='800 30px Inter,system-ui';g.fillText(`${r.hs}:${r.as}`,96,176);}return cv;}
+async function sxThumb(p,dk){try{let cv=null;if(p==='cs')cv=(await csSlides(dk,'safe'))[0];else if(p==='day')cv=(await daySlides(dk,true))[0];
+  else{try{ensureVideoDay(dk);}catch(e){}const st=videoState(dk);const L=st[p==='s1'?'v1':'v2']||[];cv=await sxCover(L.find(x=>x.home||x.away)||L[0]);}
+  if(!cv)return null;const t=document.createElement('canvas');t.width=t.height=120;const s=Math.min(cv.width,cv.height);t.getContext('2d').drawImage(cv,(cv.width-s)/2,0,s,s,0,0,120,120);return t.toDataURL('image/jpeg',.82);}catch(e){return null;}}
+async function sxFillThumbs(){for(const el of document.querySelectorAll('#socCard [data-thumb]')){const k0=el.dataset.thumb,[p,dk]=k0.split('|');let c=SXT[k0];
+  if(!c||Date.now()-c.at>120000){const u=await sxThumb(p,dk);c=SXT[k0]={u,at:Date.now()};}if(c.u){const m=el.querySelector('.sx-main');if(m&&!m.querySelector('img'))m.innerHTML=`<img src="${c.u}" alt="">`;}}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-socapp]');if(!b)return;e.stopPropagation();const [p,k,a]=b.dataset.socapp.split('|');
   if(p==='s1'||p==='s2'){videoPick=k;showTab('video');setTimeout(()=>{try{loadVideoSlot(p==='s1'?'v1':'v2');}catch(_){}},250);toast(`${p==='s1'?'Video 1':'Video 2'} of ${niceD(k)}: tap Record, then share with ${a==='yt'?'YouTube':(APPN[a]||a)}.`,4200);return;}
   socShare(p,k,a);},true);
