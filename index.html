@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.4</title>
+<title>Sure Stake 707 Hub v51.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.4</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.5</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.4';
+const VERSION='v51.5';
 /* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
 function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
@@ -2534,7 +2534,7 @@ if(bc)bc.onmessage=e=>{const m=e.data||{};if(m.from===TAB_ID)return;if(m.type===
    Safe mode: TikTok / Instagram / Threads pictures and captions never show odds, betting words, bookmakers, codes or Telegram.
    Nothing posts by itself: each post is shared from here (app button = picture shared + caption copied + ticked). */
 (function(){
-const SD={on:true,accAName:'Match Predict',accAHandle:'@matchpredict707',accBName:'Score Predict',accBHandle:'@scorepredict2',
+const SD={on:true,accAName:'Match Predict',accAHandle:'@matchpredict707',accBName:'Final Whistle Scores',accBHandle:'',
   xAccounts:1,xHandle:'@SureStake707',safe:true,review:true,banker:'Lowest free code',
   endSafe:"More Games In Bio|Follow For Tomorrow's Picks|Free Tips Daily: Tap The Link In Bio",
   endCs:'Check Bio: For More Games|More Games: In Bio|Free Tips Daily: Check Bio',
@@ -2557,7 +2557,7 @@ const NAMES={on:'Social posts on Home',accAName:'Account A name',accAHandle:'Acc
   dayBio:'Day post bio line',dayTags:'Day post hashtags',hooks:'Correct scores hooks',dayHooks:'Day post hooks',perPic:'Games per picture',maxGames:'Most games'};
 const ACC='#E5243B',ACC2='#8E0F1F',W=1080,H=1350;
 const BLOCKED=/(@\s*\d+[.,]\d+|\bodds?\b|\bbet\w*\b|\bwager\w*\b|\bstake\b|\bbooking\b|\bcodes?\b|\btelegram\b|t\.me\/|sportybet|betway|bet9ja|1xbet|betika|msport|betpawa|22bet|melbet|bet365|betking|\bslip\b)/i;
-const C=()=>Object.assign({},SD,(S.prefs&&S.prefs.soc)||{});
+const C=()=>{const p=(S.prefs&&S.prefs.soc)||{};if(p.accBName==='Score Predict'){p.accBName='Final Whistle Scores';if(p.accBHandle==='@scorepredict2')p.accBHandle='';}return Object.assign({},SD,p);};   /* v51.5 (F15): Score Predict was banned: account B = Final Whistle Scores, SAFE MODE on */
 const setC=(k,v)=>{S.prefs.soc=Object.assign({},(S.prefs&&S.prefs.soc)||{});if(v===null)delete S.prefs.soc[k];else S.prefs.soc[k]=v;save('prefs');};
 const list=s=>String(s||'').split(/[|\n]/).map(x=>x.trim()).filter(Boolean);
 const ord=k=>Math.floor(dateOf(k).getTime()/864e5);
