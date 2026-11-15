@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v51.9</title>
+<title>Sure Stake 707 Hub v52.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v51.9</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v52.0</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v51.9'; /* v51.9 (Philip 15 Nov): To do now exactly like Match Vision: the post's picture, short titles, the same sizes. v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
+const VERSION='v52.0'; /* v52.0 (Philip 15 Nov): the To do time is the real posting time (today 21:00 for tomorrow's Short 1 and correct scores). v51.9 (Philip 15 Nov): To do now exactly like Match Vision: the post's picture, short titles, the same sizes. v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
 /* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
 function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
@@ -2706,7 +2706,8 @@ function homeCard(){const c=C();if(!c.on)return;const el=$('p-home');if(!el||$('
   if(!items.length)return;                           // no games = nothing on Home
   let nextDone=false;
   const rowsH=items.map(([p,dk,t,title,sub])=>{const d=doneOf(dk,p),done=p==='s1'||p==='s2'?!!d.tt:allDone(dk,p);const nx=!done&&!nextDone;if(nx)nextDone=true;
-    return `<div class="sx-row">${icon(p,dk)}<div class="sx-tx"><div class="sx-tt"><button class="sx-ttl" data-soc="${p}" data-k="${dk}">${esc(title)}${nx?'<span class="sx-nx">NEXT</span>':''}</button>${chip2(dk,t,done)}</div>
+    const pd=(p==='s1'||p==='cs')?addDays(dk,-1):dk;   /* v52.0 (Philip 15 Nov): the time chip is WHEN it is posted: Short 1 and the correct scores of a day go out the evening BEFORE, so they show today's 21:00, not "Tmrw" */
+    return `<div class="sx-row">${icon(p,dk)}<div class="sx-tx"><div class="sx-tt"><button class="sx-ttl" data-soc="${p}" data-k="${dk}">${esc(title)}${nx?'<span class="sx-nx">NEXT</span>':''}</button>${chip2(pd,t,done)}</div>
       ${sub?`<div class="sx-pv">${esc(sub)}</div>`:''}<div class="sx-mini">${APPS2[p].map(a=>`<button data-socapp="${p}|${dk}|${a}" class="${d[a]?'done':''}"><span class="sx-bi">${SV2[a]||''}</span>${esc(lab(p,a))}</button>`).join('')}</div></div></div>`;}).join('');
   const html=`<div class="card sx-card" id="socCard"><div class="sx-h">To do now</div>${rowsH}</div>`;
   if(!document.getElementById('todoCss'))document.head.insertAdjacentHTML('beforeend',`<style id="todoCss">.sx-card{border-radius:20px;background:#141416;border:1px solid #26262B;padding:14px 16px;margin:0 0 14px}.sx-h{font-size:19px;font-weight:800;margin:2px 0 6px}.sx-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #262626}.sx-row:last-child{border-bottom:0}.sx-ic{width:44px;height:44px;border-radius:12px;background:#1E1E1E;display:grid;place-items:center;flex:none;position:relative;font-size:20px}.sx-bdg{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:99px;background:#000;display:grid;place-items:center;overflow:hidden}.sx-bdg svg{width:16px;height:16px}.sx-tx{flex:1;min-width:0}.sx-tt{display:flex;align-items:center;justify-content:space-between;gap:8px}.sx-ttl{font-size:15px;font-weight:800;background:none;border:0;padding:0;color:#fff;text-align:left;display:flex;align-items:center;gap:6px;min-width:0;font-family:inherit}.sx-nx{font-size:9.5px;font-weight:800;letter-spacing:1px;color:#2a0a0a;background:${ACC};padding:2px 7px;border-radius:99px}.sx-t{font-size:12px;font-weight:800;padding:4px 9px;border-radius:99px;background:#242424;color:#bbb;white-space:nowrap}.sx-t.late{background:#FF453A;color:#fff}.sx-t.soon{background:#3A2E0A;color:#FFD60A}.sx-t.ok{background:#0F3A22;color:#4BE27A}.sx-pv{font-size:12px;color:#9a9a9f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}.sx-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.sx-mini button{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:99px;font:700 12.5px Inter,system-ui;background:#1E1E1E;border:1px solid #2A2A2A;color:#e8e8e8}.sx-mini button.done{border-color:#30D158;color:#fff}.sx-bi{width:16px;height:16px;display:inline-grid}.sx-bi svg{width:16px;height:16px}</style>`);
