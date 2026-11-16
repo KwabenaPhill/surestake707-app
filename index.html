@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>Sure Stake 707 Hub v52.0</title>
+<title>Sure Stake 707 Hub v52.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Archivo+Narrow:wght@400;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Barlow+Semi+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Changa:wght@400;600;700;800&family=DM+Sans:wght@400;600;700;800&family=Fjalla+One&family=Inter:wght@400;600;700;800;900&family=Kaushan+Script&family=Kanit:wght@400;600;700;800&family=Lato:wght@400;700;900&family=League+Spartan:wght@400;600;700;800;900&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Poppins:wght@400;600;700;800;900&family=Rajdhani:wght@400;600;700&family=Raleway:wght@400;600;700;800&family=Roboto+Condensed:wght@400;700;900&family=Roboto+Slab:wght@400;600;700;800&family=Saira+Condensed:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700&family=Teko:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
@@ -630,7 +630,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </style>
 </head>
 <body>
-<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v52.0</span></header>
+<header class="app-top"><div class="brand"><span class="blogo" id="hLogo" hidden></span><div><div class="bn">SURE STAKE 707</div><div class="bd" id="hDate"></div></div></div><span class="tver">v52.1</span></header>
 
 <main class="page active" id="p-home"></main>
 <main class="page" id="p-history"></main>
@@ -673,7 +673,7 @@ const TPL={navy:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMC
 <script>
 (()=>{
 'use strict';
-const VERSION='v52.0'; /* v52.0 (Philip 15 Nov): the To do time is the real posting time (today 21:00 for tomorrow's Short 1 and correct scores). v51.9 (Philip 15 Nov): To do now exactly like Match Vision: the post's picture, short titles, the same sizes. v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
+const VERSION='v52.1'; /* v52.0 (Philip 15 Nov): the To do time is the real posting time (today 21:00 for tomorrow's Short 1 and correct scores). v51.9 (Philip 15 Nov): To do now exactly like Match Vision: the post's picture, short titles, the same sizes. v51.8 (Philip 15 Nov): the bot's scorecard fills both videos with every game and score; the greeting shows. v51.7 (Philip 15 Nov): live check every minute = default; tap a picture in Fix notes while recording. v51.6 (F80): the notes button no longer covers the cards */
 /* v51.4 (F70, Philip 15 Nov): every time in 24-hour Ghana time (17:45), never the phone's 12-hour "05:45 p" */
 function hm24(v){v=String(v||'').trim().toLowerCase();let m=/^(\d{1,2})[:.h ]?(\d{2})?\s*(am|pm|a|p)?$/.exec(v.replace(/\s+/g,' '));if(!m)return v;let H=+m[1],M=+(m[2]||0);if(m[3]){const pm=m[3][0]==='p';if(pm&&H<12)H+=12;if(!pm&&H===12)H=0;}if(H>23||M>59)return v;return String(H).padStart(2,'0')+':'+String(M).padStart(2,'0');}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('input.t24'))t.value=hm24(t.value);},true);
@@ -2017,6 +2017,7 @@ function renderSettings(){const imgs=Object.values(S.imgIndex).reduce((a,L)=>a+L
   <div class="set-group"><div class="set-title">Records</div><div class="set-list">
     ${row('live',picImg('live'),'Live scores',liveSub(),'','pic')}
     ${row('botsync',appImg('tg'),'Laptop bot sync',SYNC.sub(),'','pic')}
+    ${row('tplate',appImg('tg'),'Template','Every post: when, picture, words, every case, its settings (from the laptop)','','pic')}
     ${row('times',clockSvg('#F59E0B'),'Posting times',timesSub(),'','pic')}
     ${row('stake',picImg('chart'),'Profit tracker',stakeOf()===1?'1 unit per slip (Records shows units)':`GH₵ ${stakeOf()} per slip (Records shows GH₵)`,'','pic')}</div></div>
   <div class="set-group"><div class="set-title">Social posts</div><div class="set-list">${row('soc',appImg('tt')+appImg('ig')+appImg('x'),'Social posts',window.SOC?SOC.sub():'Accounts, safe mode, end cards, captions','','pic stack')}</div></div>
@@ -2032,6 +2033,7 @@ $('p-settings').addEventListener('click',async e=>{const b=e.target.closest('but
     cancelSaves();await wipe();Object.keys(blobCache).forEach(k=>delete blobCache[k]);S=blankState();takeSnap('days',{});takeSnap('videoDays',{});await kset('migrated',true);await kset('migrated2',true);S.vrows=[];curId=null;LY=null;tplLoaded=null;refresh();renderVideoUI();toast('Hub cleared');return;}
   if(s==='logo'){pickFile('image/*',false,async fs=>{if(!fs[0])return;S.logo=await shrink(await fileToDataURL(fs[0]),1200,'image/png');save('logo');refresh();toast('Logo saved ✓');});}
   else if(s==='botsync')SYNC.open();
+  else if(s==='tplate')SYNC.tpl();
   else if(s==='channel')editField('Telegram link',S.prefs.channel,v=>{if(v&&v.trim()){S.prefs.channel=v.trim();save('prefs');refresh();toast('Saved ✓');}});
   else if(s==='handle')editField('Ticket handle',S.prefs.handle,v=>{if(v&&v.trim()){S.prefs.handle=v.trim();save('prefs');refresh();toast('Saved ✓');}});
   else if(s==='price')editField('Price per month (GHS)',S.prefs.price,v=>{const n=Number(v);if(n>0){S.prefs.price=n;save('prefs');refresh();toast('Saved ✓');}},{type:'number'});
@@ -2468,7 +2470,24 @@ const SYNC=(()=>{const LS='ss707_sync',st={busy:false,last:0,err:'',ok:null,sha:
   /* v50.2 (Philip, 5 Nov): posting times picked on a clock in the app go to the laptop bot */
   async function botTimes(){if(!on())return null;const j=await gh('GET','bot/settings.json');if(!j)return null;try{return JSON.parse(unb64(j.content)).times||null;}catch(e){return null;}}
   async function sendTimes(times){if(!on())throw new Error('Laptop bot sync is off. Settings > Laptop bot sync');await put('app/settings.json',b64(JSON.stringify({v:1,times,at:Date.now()})),'app: posting times');}
-  return {run,open,sub,botTimes,sendTimes,on};})();
+  /* v52.1 (Philip 16 Nov: "a menu ... each template ... the picture, the text under it ... if one wins, if both win, this is how it
+     will be ... anything we change on the laptop should reflect on the app"): bot/template.json from the laptop (Template window). */
+  async function tpl(){if(!on()){toast('Laptop bot sync is off. Settings > Laptop bot sync');return;}
+    toast('Getting the template…');let j;try{const f=await gh('GET','bot/template.json');if(!f){toast('No template from the laptop yet');return;}j=JSON.parse(unb64(f.content));}catch(e){toast('Template: '+String(e.message||e).slice(0,50));return;}
+    const groups=[];for(const c of j.cards||[]){let g=groups.find(x=>x.w===c.where);if(!g){g={w:c.where,L:[]};groups.push(g);}g.L.push(c);}
+    const box='white-space:pre-wrap;background:rgba(255,255,255,.06);border-radius:12px;padding:10px;margin:4px 0 8px;font-size:14px;line-height:1.35';
+    const H='<div style="padding:4px 2px 12px"><div style="font-size:20px;font-weight:800">Template</div><div style="opacity:.7;font-size:13px">Every post as it goes out. Change it on the laptop (Template.bat) or in Posting times / Post templates here: it shows here a few minutes later. Updated '+esc(j.made||'')+'</div></div>'+
+      groups.map(g=>`<div style="font-weight:800;opacity:.8;margin:14px 2px 6px;font-size:13px;letter-spacing:.04em">${esc(String(g.w).toUpperCase())}</div>`+g.L.map(c=>`<div style="background:rgba(255,255,255,.04);border-radius:16px;padding:12px;margin:0 0 10px">`+
+        `<div style="font-weight:800;font-size:16px">${esc(c.title)}</div>`+(c.when?`<div style="opacity:.8;margin:2px 0">🕒 ${esc(c.when)}</div>`:'')+(c.rule?`<div style="opacity:.65;margin:2px 0 8px;white-space:pre-wrap;font-size:13px">${esc(c.rule)}</div>`:'')+
+        ((c.pics||[]).length?`<div style="display:flex;gap:8px;overflow-x:auto;margin:6px 0">${c.pics.map(p=>`<img data-tp="${esc(p)}" alt="" style="${c.pics.length>1?'width:70%;flex:0 0 70%':'width:100%'};border-radius:12px;min-height:60px;background:#111">`).join('')}</div>`:'')+
+        (c.caption?`<div style="${box}">${esc(c.caption)}</div>`:'')+
+        ((c.cases||[]).length?'<div style="font-weight:800;margin:10px 0 2px;font-size:13px">EVERY CASE</div>'+c.cases.map(k=>`<div style="font-weight:700;margin:6px 0 2px">${esc(k.name)}</div><div style="${box}">${esc(k.text||'')}</div>`).join(''):'')+
+        ((c.settings||[]).length?'<div style="font-weight:800;margin:10px 0 2px;font-size:13px">ITS SETTINGS</div>'+c.settings.map(x=>`<div style="opacity:.85;margin:3px 0;font-size:13px"><b>${esc(x.label)}</b>: ${esc(x.value)}</div>`).join(''):'')+
+        `</div>`).join('')).join('')+
+      ((j.changes||[]).length?'<div style="font-weight:800;opacity:.8;margin:14px 2px 6px;font-size:13px">LAST CHANGES</div>'+j.changes.map(h=>`<div style="opacity:.7;font-size:13px;margin:3px 2px">${esc(h.at||'')} · ${esc(h.what||'')}${h.undone?' (undone)':''}</div>`).join(''):'');
+    openSheet(H);
+    for(const img of document.querySelectorAll('#sheetBox img[data-tp]')){try{const f=await gh('GET',img.dataset.tp);if(f&&f.content)img.src='data:image/jpeg;base64,'+f.content.replace(/\s/g,'');}catch(e){}}}
+  return {run,open,sub,botTimes,sendTimes,on,tpl};})();
 // Keep every open copy in step: save on leaving, reload on return if another copy saved.
 let syncing=false;
 async function syncFromStorage(){if(!storageReady||storageBroken||syncing)return;syncing=true;try{const rev=Number(await kget('_rev'))||0;if(rev===lastRev)return;
